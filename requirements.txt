@@ -1,0 +1,16 @@
+flask
+yfinance
+pandas
+numpy
+matplotlib
+mplfinance
+scipy
+TA-Lib
+langchain
+langchain-openai
+langchain-core
+langgraph
+openai
+ipython
+Pillow
+requests

@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>QuantAgents: Multi-Agent Trading System</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,400&display=fallback" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-tertiary: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --background-header: #f8fafc;
+            --button-primary: #3b82f6;
+            --button-secondary: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #ffffff;
+            --text-secondary: #ffffff;
+            --text-tertiary: #ffffff;
+            --border-color: #334155;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --background-header: #1e293b;
+            --button-primary: #3b82f6;
+            --button-secondary: #334155;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+            transition: all 0.3s ease;
+        }
+
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--background-header);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: background-color 0.3s ease;
+        }
+
+        [data-theme="light"] .header {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .header {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Image entrance animation */
+        .tab-pane img {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .tab-pane.active img {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Staggered animation for tab content */
+        .tab-pane h3 {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out 0.2s;
+        }
+
+        .tab-pane.active h3 {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tab-pane p {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out 0.4s;
+        }
+
+        .tab-pane.active p {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Results tab animations */
+        .results-tab-pane img {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .results-tab-pane.active img {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .results-tab-pane h4 {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out 0.2s;
+        }
+
+        .results-tab-pane.active h4 {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .results-tab-pane p {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out 0.4s;
+        }
+
+        .results-tab-pane.active p {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .header-container {
+            max-width: 2000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 3rem;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #10b981 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+        }
+
+        .logo i {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.3rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--button-primary);
+        }
+
+        /* Main content */
+        .main-content {
+            max-width: 2000px;
+            margin: 0 auto;
+            padding: 120px 2rem 4rem;
+        }
+
+        /* Title section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 4rem;
+            max-width: 3000px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 1rem;
+        }
+
+        .main-title {
+            font-size: 4.0rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.0;
+            transition: color 0.3s ease;
+        }
+
+        .subtitle {
+            font-size: 4.0rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            line-height: 1.0;
+            transition: color 0.3s ease;
+        }
+
+        .authors {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            transition: color 0.3s ease;
+        }
+
+        .affiliations {
+            font-size: 1.3rem;
+            color: var(--text-tertiary);
+            line-height: 1.8;
+            transition: color 0.3s ease;
+        }
+
+        .author-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .author-link:hover {
+            color: #1d4ed8;
+            text-decoration: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 1.125rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .action-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .action-btn i {
+            font-size: 1.1rem;
+        }
+
+        /* Method overview */
+        .method-overview {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 4rem;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .method-overview h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+        }
+
+                 .method-overview p {
+             font-size: 2.8rem;
+             color: #475569;
+             line-height: 1.8;
+         }
+
+        /* Interactive Agent sections */
+        .agents-section {
+            margin-bottom: 4rem;
+        }
+
+        .interactive-agents-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .agent-selection {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .agent-selector-card {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 120px;
+        }
+
+        .agent-selector-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .agent-selector-card.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .agent-selector-card.active h3,
+        .agent-selector-card.active p {
+            color: white;
+        }
+
+        .agent-selector-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .agent-selector-card p {
+            color: #64748b;
+            line-height: 1.4;
+            font-size: 0.85rem;
+            margin-bottom: 0;
+        }
+
+        .agent-icon {
+            position: absolute;
+            bottom: 0.5rem;
+            right: 0.5rem;
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
+        .agent-detail-display {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid #e2e8f0;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .agent-detail {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .agent-detail.active {
+            display: block;
+        }
+
+        .agent-detail-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .agent-visualization {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Legacy agent card styles for other sections */
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .agent-card {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .agent-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .agent-card h3 i {
+            color: #3b82f6;
+            font-size: 1.2rem;
+        }
+
+        .agent-card p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        /* Evaluation metrics */
+        .evaluation-section {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 4rem;
+        }
+
+        .evaluation-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #3b82f6;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Results section */
+        .results-section {
+            margin-bottom: 4rem;
+        }
+
+        .results-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .results-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .results-text {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .results-text h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+                 .results-text p {
+             color: #475569;
+             line-height: 1.8;
+             margin-bottom: 1rem;
+             font-size: 1.8rem;
+         }
+
+        .results-image {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .results-image i {
+            font-size: 4rem;
+            color: #94a3b8;
+        }
+
+        /* Bibliography */
+        .bibliography-section {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 16px;
+        }
+
+        .bibliography-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2rem;
+        }
+
+        .bib-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .bib-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .bib-citation {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .bib-details {
+            color: #64748b;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Section headers */
+        .section-header {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            text-align: center;
+            transition: color 0.3s ease;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1.2rem;
+            }
+
+            .authors {
+                font-size: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .action-btn {
+                width: 200px;
+                justify-content: center;
+            }
+
+            .agents-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .interactive-agents-container {
+                gap: 1.5rem;
+            }
+
+            .agent-selection {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .agent-selector-card {
+                min-height: 100px;
+            }
+
+            .agent-detail-display {
+                min-height: 250px;
+            }
+
+            .results-content {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .nav-links a {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Section IDs for navigation */
+        #abstract, #method, #evaluation, #results {
+            scroll-margin-top: 100px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo" onclick="scrollToTop()">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#abstract">Abstract</a></li>
+                    <li><a href="#evaluation">Evaluation</a></li>
+                    <li><a href="#results">Results</a></li>
+                    <li><a href="#bibtex">BibTeX</a></li>
+                </ul>
+            </nav>
+            
+            <!-- Theme Toggle Button -->
+            <button id="theme-toggle" style="background: none; border: none; cursor: pointer; padding: 0.5rem; border-radius: 8px; transition: all 0.3s ease;">
+                <i class="fas fa-moon" id="theme-icon" style="font-size: 1.2rem; color: var(--text-secondary);"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Title Section -->
+        <section class="title-section">
+            <h1 class="main-title">
+                <span style="display: block; font-size: 4.0rem; font-weight: 900; color: var(--text-primary); line-height: 1.0;">QuantAgent:</span>
+                <span style="display: block; font-size: 3.2rem; font-weight: 900; color: var(--text-primary); line-height: 1.0; margin-top: 0.5rem;">Price-Driven Multi-Agent LLMs for High-Frequency Trading</span>
+            </h1>
+            <div class="authors">
+                <span><a href="" class="author-link">Fei Xiong</a><sup>1,2 ★</sup></span>
+                <span><a href="https://wyattz23.github.io" class="author-link">Xiang Zhang</a><sup>3 ★</sup></span>
+                <span><a href="https://intersun.github.io/" class="author-link">Siqi Sun</a><sup>4</sup></span>
+                <span><a href="https://chenyuyou.me/" class="author-link">Chenyu You</a><sup>1</sup></span>
+            </div>
+                         <div class="affiliations">
+                 <div><sup>1</sup>Stony Brook University, <sup>2</sup>Carnegie Mellon University, <sup>3</sup>University of British Columbia</div>
+                 <div><sup>4</sup>Fudan University, ★ Equal Contribution</div>
+             </div>
+            <div class="action-buttons">
+                <a href="#" class="action-btn paper-btn">
+                    <i class="fas fa-file-alt"></i>
+                    Paper
+                </a>
+                <a href="https://github.com/Y-Research-SBU/QuantAgent" class="action-btn code-btn">
+                    <i class="fab fa-github"></i>
+                    Code
+                </a>
+            </div>
+        </section>
+
+                 <!-- Abstract Section -->
+         <section id="abstract">
+             <h2 class="section-header">Abstract</h2>
+                           <div style="background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%); padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px -5px var(--shadow-color); margin-bottom: 4rem; max-width: 1200px; margin-left: auto; margin-right: auto;">
+                 <p style="font-size: 1.6rem; color: var(--text-primary); line-height: 1.8; margin-bottom: 1.5rem; font-weight: 500;">
+                     Recent advances in Large Language Models (LLMs) have demonstrated impressive capabilities in financial reasoning 
+                     and market understanding. However, existing LLM frameworks for High-Frequency Trading (HFT) face significant 
+                     limitations in terms of latency, interpretability, and the ability to handle real-time market dynamics. 
+                     We introduce QuantAgent, the first multi-agent LLM framework specifically designed for HFT, which decomposes 
+                     trading into four specialized agents: Indicator, Pattern, Trend, and Risk.
+                 </p>
+                 <p style="font-size: 1.6rem; color: var(--text-primary); line-height: 1.8; font-weight: 500;">
+                     Our framework leverages structured financial priors and language-native reasoning to achieve superior performance 
+                     in zero-shot evaluations across ten financial instruments, including Bitcoin and Nasdaq futures, in terms of 
+                     predictive accuracy and cumulative return over 4-hour trading intervals. The results suggest that combining 
+                     structured financial priors with language-native reasoning unlocks new potential for traceable, real-time 
+                     decision systems in high-frequency financial markets.
+                 </p>
+             </div>
+         </section>
+
+        <!-- Interactive Tabs Section -->
+        <section id="interactive-tabs" style="margin-bottom: 4rem;">
+            <h2 class="section-header">Multi-Agent Interaction</h2>
+            
+            <!-- Tab Navigation -->
+            <div class="tab-navigation" style="display: flex; justify-content: center; margin-bottom: 2rem; gap: 0.5rem;">
+                <button class="tab-btn active" data-tab="indicator" style="padding: 1rem 2rem; background: var(--button-primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-chart-bar" style="margin-right: 0.5rem;"></i>
+                    Indicator Agent
+                </button>
+                <button class="tab-btn" data-tab="pattern" style="padding: 1rem 2rem; background: var(--button-secondary); color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-shapes" style="margin-right: 0.5rem;"></i>
+                    Pattern Agent
+                </button>
+                <button class="tab-btn" data-tab="trend" style="padding: 1rem 2rem; background: var(--button-secondary); color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-chart-line" style="margin-right: 0.5rem;"></i>
+                    Trend Agent
+                </button>
+                <button class="tab-btn" data-tab="decision" style="padding: 1rem 2rem; background: var(--button-secondary); color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-cogs" style="margin-right: 0.5rem;"></i>
+                    Decision Agent
+                </button>
+            </div>
+            
+            <!-- Tab Content -->
+            <div class="tab-content"
+            style="background: var(--bg-secondary);
+                   border-radius: 16px;
+                   padding: 2rem;
+                   min-height: 400px;
+                   display: flex;
+                   align-items: center;
+                   justify-content: center;
+                   max-width: 1600px;
+                   width: 100%;
+                   margin: 0 auto;
+                   transition: background 0.3s ease;">
+       
+
+                <!-- Indicator Tab -->
+                <div class="tab-pane active" id="indicator-tab" style="display: block; width: 100%;">
+                    <div style="text-align: center; max-width: 100%; margin: 0 auto;">
+                        <img src="assets/indicator.png" alt="Indicator Agent" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
+                        <h3 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Technical Indicators</h3>
+                        <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
+                            Comprehensive technical analysis using multiple indicators including RSI, MACD, and Bollinger Bands 
+                            to generate robust trading signals with high accuracy.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Pattern Tab -->
+                <div class="tab-pane" id="pattern-tab" style="display: none; width: 100%;">
+                    <div style="text-align: center; max-width: 100%; margin: 0 auto;">
+                        <img src="assets/pattern.png" alt="Pattern Agent" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
+                        <h3 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Pattern Recognition</h3>
+                        <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
+                            Sophisticated pattern recognition systems detect classic chart patterns and market structures, 
+                            providing reliable signals for trading decisions.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Trend Tab -->
+                <div class="tab-pane" id="trend-tab" style="display: none; width: 100%;">
+                    <div style="text-align: center; max-width: 100%; margin: 0 auto;">
+                        <img src="assets/trend.png" alt="Trend Agent" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
+                        <h3 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Trend Analysis</h3>
+                        <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
+                            Advanced trend detection algorithms identify market direction and momentum patterns, 
+                            enabling precise entry and exit timing for optimal trading performance.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Decision Tab -->
+                <div class="tab-pane" id="decision-tab" style="display: none; width: 100%;">
+                    <div style="text-align: center; max-width: 100%; margin: 0 auto;">
+                        <img src="assets/decision.png" alt="Decision Agent" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
+                        <h3 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Decision Making</h3>
+                        <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
+                            Intelligent decision-making systems combine multiple data sources and analysis methods 
+                            to generate optimal trading strategies with risk management considerations.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Evaluation Section -->
+        <section id="evaluation">
+            <h2 class="section-header">Evaluation Metrics</h2>
+            <div class="results-content"
+     style="display: grid;
+            grid-template-columns: 1fr;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;">
+
+                <div class="results-image" style="max-width: 100%; margin: 0 auto;">
+                    <img src="assets/benchmark.png" alt="Benchmark Asset Properties" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                </div>
+                <div style="text-align: center; margin-top: 0.25rem;">
+                    <p class="figure-caption" style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1000px; margin: 0 auto;">Overview of benchmark asset properties. Each asset is characterized by its name, market type, the start and end dates of the data collection window, and the total number of bars sampled. All assets are sampled using 4-hour OHLC intervals, with a fixed total of 5,000 bars per asset to ensure comparability.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results" style="margin-top: 6rem;">
+            <h2 class="section-header">Main Results</h2>
+            <div class="results-content"
+            style="display: grid;
+                    grid-template-columns: 1fr;
+                    max-width: 1200px;
+                    width: 100%;
+                    margin: 0 auto;">
+
+                <div class="results-image" style="max-width: 100%; margin: 0 auto;">
+                    <img src="assets/table.png" alt="Performance Comparison Table" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                </div>
+                <div style="text-align: center; margin-top: 0.25rem;">
+                    <p class="figure-caption" style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1000px; margin: 0 auto;">Performance comparison across trading symbols. Results are shown for a random baseline and our method (highlighted in Green). Bold values indicate improvements, and upward arrows denote metrics where higher values are better.</p>
+                </div>
+            </div>
+            
+            <!-- Results Tabs Section -->
+            <div style="margin-top: 4rem;">
+                <h3 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2rem; text-align: center;">Detailed Analysis</h3>
+                
+                <!-- Results Tab Navigation -->
+                <div class="results-tab-navigation" style="display: flex; justify-content: center; margin-bottom: 2rem; gap: 0.5rem;">
+                    <button class="results-tab-btn active" data-results-tab="rolling" style="padding: 1rem 2rem; background: var(--button-primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+                        <i class="fas fa-chart-area" style="margin-right: 0.5rem;"></i>
+                        Rolling Performance
+                    </button>
+                    <button class="results-tab-btn" data-results-tab="trendcase" style="padding: 1rem 2rem; background: var(--button-secondary); color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+                        <i class="fas fa-chart-line" style="margin-right: 0.5rem;"></i>
+                        Trend Case Study
+                    </button>
+                    <button class="results-tab-btn" data-results-tab="patterncase" style="padding: 1rem 2rem; background: var(--button-secondary); color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+                        <i class="fas fa-shapes" style="margin-right: 0.5rem;"></i>
+                        Pattern Case Study
+                    </button>
+                </div>
+                
+                <!-- Results Tab Content -->
+                <div class="results-tab-content"
+                style="background: var(--bg-secondary);
+                        border-radius: 16px;
+                        padding: 2rem;
+                        min-height: 400px;
+                        max-width: 1400px;
+                        width: 100%;
+                        margin: 0 auto;
+                        transition: background 0.3s ease;">
+
+                    <!-- Rolling Performance Tab -->
+                    <div class="results-tab-pane active" id="rolling-tab" style="display: block;">
+                        <div style="text-align: center;">
+                            <img src="assets/rolling.png" alt="Rolling Performance" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
+                            <h4 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Rolling Performance Analysis</h4>
+                            <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
+                                Sample-based verification accuracy on SPX (2025). During the highlighted window, the LLM generated 10 directional signals. Correct predictions are shown in color (green/red), while grey indicates errors. The model achieved 80% accuracy in this segment.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Trend Case Study Tab -->
+                    <div class="results-tab-pane" id="trendcase-tab" style="display: none;">
+                        <div style="text-align: center;">
+                            <img src="assets/trend case.png" alt="Trend Case Study" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
+                            <h4 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Trend Case Study</h4>
+                            <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
+                                TrendAgent case sample on DJI (2022). The agent identifies an upward-sloping resistance and flat support, confirms higher highs and lows, and outputs three structured summaries. A green "Bullish Signal" badge reflects its overall bullish interpretation.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Pattern Case Study Tab -->
+                    <div class="results-tab-pane" id="patterncase-tab" style="display: none;">
+                        <div style="text-align: center;">
+                            <img src="assets/pattern case.png" alt="Pattern Case Study" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
+                            <h4 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Pattern Case Study</h4>
+                            <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
+                                PatternAgent case sample on CL (2024). The agent detects a Descending Triangle by identifying lower highs against flat support near 78. It outputs structured summaries on pattern structure, bearish trend bias, and geometric symmetry. Visual overlays aid interpretation; classification is based purely on bar geometry.                    </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Bibliography -->
+        <section id="bibtex" style="margin-top: 6rem;">
+            <h2 class="section-header">BibTeX</h2>
+            <div style="display: flex; justify-content: center; margin-top: 2rem;">
+                <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 1.2rem; color: var(--text-primary); line-height: 1.6; max-width: 800px; width: 100%; transition: all 0.3s ease;">
+                    <pre style="margin: 0; white-space: pre-wrap;">@article{xiong2025quantagent,
+  title={QuantAgent: Price-Driven Multi-Agent LLMs for High-Frequency Trading},
+  author={Xiong, Fei and Zhang, Xiang and Sun, Siqi and You, Chenyu},
+  journal={arXiv preprint arXiv:2XXX.XXXXX},
+  year={2025}
+}</pre>
+                </div>
+            </div>
+        </section>
+    </main>
+
+         <!-- Footer -->
+     <footer style="background: var(--bg-secondary); padding: 2rem; margin-top: 4rem; border-top: 1px solid var(--border-color); transition: all 0.3s ease;">
+         <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+             <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                 © 2025 QuantAgent. All Rights Reserved.
+             </div>
+         </div>
+     </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll to top function
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Add scroll effect to header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header');
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            
+            if (window.scrollY > 100) {
+                if (currentTheme === 'dark') {
+                    header.style.background = '#1e293b';
+                    header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.3)';
+                } else {
+                    header.style.background = '#f8fafc';
+                    header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+                }
+            } else {
+                if (currentTheme === 'dark') {
+                    header.style.background = '#1e293b';
+                    header.style.boxShadow = 'none';
+                } else {
+                    header.style.background = '#f8fafc';
+                    header.style.boxShadow = 'none';
+                }
+            }
+        });
+
+        // Add hover effects to agent cards
+        document.querySelectorAll('.agent-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Interactive agent switching functionality
+        document.querySelectorAll('.agent-selector-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const agentType = this.getAttribute('data-agent');
+                
+                // Remove active class from all selector cards
+                document.querySelectorAll('.agent-selector-card').forEach(c => {
+                    c.classList.remove('active');
+                });
+                
+                // Add active class to clicked card
+                this.classList.add('active');
+                
+                // Hide all agent details
+                document.querySelectorAll('.agent-detail').forEach(detail => {
+                    detail.classList.remove('active');
+                });
+                
+                // Show selected agent detail
+                const targetDetail = document.getElementById(agentType + '-detail');
+                if (targetDetail) {
+                    targetDetail.classList.add('active');
+                }
+            });
+        });
+
+        // Tab switching functionality
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                
+                // Remove active class from all tab buttons
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.style.background = 'var(--button-secondary)';
+                    btn.style.color = 'var(--text-secondary)';
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                this.style.background = 'var(--button-primary)';
+                this.style.color = 'white';
+                
+                // Hide all tab panes
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.style.display = 'none';
+                    pane.classList.remove('active');
+                });
+                
+                // Show selected tab pane
+                const targetPane = document.getElementById(tabName + '-tab');
+                if (targetPane) {
+                    targetPane.style.display = 'block';
+                    // Trigger animation after a small delay
+                    setTimeout(() => {
+                        targetPane.classList.add('active');
+                    }, 50);
+                }
+            });
+        });
+
+        // Results tab switching functionality
+        document.querySelectorAll('.results-tab-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-results-tab');
+                
+                // Remove active class from all results tab buttons
+                document.querySelectorAll('.results-tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.style.background = 'var(--button-secondary)';
+                    btn.style.color = 'var(--text-secondary)';
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                this.style.background = 'var(--button-primary)';
+                this.style.color = 'white';
+                
+                // Hide all results tab panes
+                document.querySelectorAll('.results-tab-pane').forEach(pane => {
+                    pane.style.display = 'none';
+                    pane.classList.remove('active');
+                });
+                
+                // Show selected results tab pane
+                const targetPane = document.getElementById(tabName + '-tab');
+                if (targetPane) {
+                    targetPane.style.display = 'block';
+                    // Trigger animation after a small delay
+                    setTimeout(() => {
+                        targetPane.classList.add('active');
+                    }, 50);
+                }
+            });
+        });
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        
+        // Check for saved theme preference or default to light
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+        
+        // Set initial header background
+        const header = document.querySelector('.header');
+        if (currentTheme === 'dark') {
+            header.style.background = '#1e293b';
+            header.style.boxShadow = window.scrollY > 100 ? '0 2px 10px rgba(0, 0, 0, 0.3)' : 'none';
+        } else {
+            header.style.background = '#f8fafc';
+            header.style.boxShadow = window.scrollY > 100 ? '0 2px 10px rgba(0, 0, 0, 0.1)' : 'none';
+        }
+        
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+            
+            // Update header background immediately
+            const header = document.querySelector('.header');
+            if (newTheme === 'dark') {
+                header.style.background = '#1e293b';
+                header.style.boxShadow = window.scrollY > 100 ? '0 2px 10px rgba(0, 0, 0, 0.3)' : 'none';
+            } else {
+                header.style.background = '#f8fafc';
+                header.style.boxShadow = window.scrollY > 100 ? '0 2px 10px rgba(0, 0, 0, 0.1)' : 'none';
+            }
+        });
+        
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
+    </script>
+</body>
+</html>
