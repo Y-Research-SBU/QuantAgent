@@ -34,12 +34,13 @@
 
 <br>
 
-[![GitHub stars](https://img.shields.io/github/stars/your-username/QuantAgents)](https://github.com/Y-Research-SBU/QuantAgent/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/your-username/QuantAgents)](https://github.com/Y-Research-SBU/QuantAgent/forks)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/your-username/QuantAgents)](https://github.com/Y-Research-SBU/QuantAgent/pulls)
-[![GitHub issues](https://img.shields.io/github/issues/your-username/QuantAgents)](https://github.com/Y-Research-SBU/QuantAgent/issues)
-[![GitHub contributors](https://img.shields.io/github/contributors/your-username/QuantAgents?color=2b9348)](https://github.com/your-username/QuantAgents/graphs/contributors)
-[![GitHub license](https://img.shields.io/github/license/your-username/QuantAgents?color=2b9348)](https://github.com/Y-Research-SBU/QuantAgent/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Y-Research-SBU/QuantAgent?style=flat&logo=github)](https://github.com/Y-Research-SBU/QuantAgent/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/Y-Research-SBU/QuantAgent?style=flat&logo=github)](https://github.com/Y-Research-SBU/QuantAgent/forks)
+[![Pull Requests](https://img.shields.io/github/issues-pr/Y-Research-SBU/QuantAgent?label=Pull%20Requests&logo=gitbook)](https://github.com/Y-Research-SBU/QuantAgent/pulls)
+
+[![GitHub issues](https://img.shields.io/github/issues/Y-Research-SBU/QuantAgent?style=flat&logo=github)](https://github.com/Y-Research-SBU/QuantAgent/issues)
+[![GitHub contributors](https://img.shields.io/github/contributors/Y-Research-SBU/QuantAgent?style=flat&color=2b9348&logo=github)](https://github.com/Y-Research-SBU/QuantAgent/graphs/contributors)
+[![GitHub license](https://img.shields.io/github/license/Y-Research-SBU/QuantAgent?style=flat&color=2b9348&logo=open-source-initiative)](https://github.com/Y-Research-SBU/QuantAgent/blob/main/LICENSE)
 [![WeChat](https://img.shields.io/badge/WeChat-07C160?style=flat&logo=wechat&logoColor=white)](assets/wechat.jpg)
 
 </div>
@@ -48,7 +49,7 @@
 
 <div align="center">
 
-🚀 [功能特性](#-功能特性) | ⚡ [安装](#-安装) | 🎬 [使用](#-使用) | 🔧 [实现细节](#-实现细节) | 📊 [基准测试](#-基准测试) | 🤝 [贡献](#-贡献) | 📄 [许可证](#-许可证)
+🚀 [功能特性](#-功能特性) | ⚡ [安装](#-安装) | 🎬 [使用](#-使用) | 🔧 [实现细节](#-实现细节) | 🤝 [贡献](#-贡献) | 📄 [许可证](#-许可证)
 
 </div>
 
@@ -188,23 +189,6 @@ final_state = trading_graph.graph.invoke(initial_state)
 
 您可以在 `default_config.py` 中查看完整的配置列表。
 
-## 📊 基准测试
-
-`benchmark/` 文件夹包含用于在多个资产上测试 QuantAgents 系统的评估数据集。对于每个资产，我们通过 yfinance 等公共交易 API 收集 5000 个历史柱状图。
-
-从这些数据中，我们为每个资产随机采样 100 个评估段。每个段由 100 个连续的蜡烛图序列组成，最后三个蜡烛图被保留在输入之外，以防止在测试时提示中暴露已验证的市场结果。系统在零样本设置中运行——无需任何监督微调——通过生成结构化交易报告，包括方向性决策（做多或做空）、简洁的文本理由和预测的风险回报比。
-
-### 可用资产
-- **BTC**：比特币（100 个 CSV 文件）
-- **CL**：原油（100 个 CSV 文件）
-- **DJI**：道琼斯工业平均指数（100 个 CSV 文件）
-- **ES**：E-mini 标普 500（100 个 CSV 文件）
-- **GC**：黄金期货（100 个 CSV 文件）
-- **NQ**：纳斯达克期货（100 个 CSV 文件）
-- **QQQ**：Invesco QQQ 信托（100 个 CSV 文件）
-- **SPX**：标普 500（100 个 CSV 文件）
-
-每个 CSV 文件包含 4 小时蜡烛图数据，具有 OHLCV（开盘、最高、最低、收盘、成交量）信息，用于评估和回测目的。
 
 ## 🚀 使用
 
@@ -272,4 +256,9 @@ python web_interface.py
 
 如有问题、反馈或合作机会，请联系：
 
-**邮箱**：[chenyu.you@stonybrook.edu](mailto:chenyu.you@stonybrook.edu) 
+**邮箱**：[chenyu.you@stonybrook.edu](mailto:chenyu.you@stonybrook.edu)
+
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Y-Research-SBU/QuantAgent&type=Date)](https://www.star-history.com/#Y-Research-SBU/QuantAgent&Date) 
