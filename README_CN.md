@@ -39,7 +39,8 @@
     <img src="https://img.shields.io/badge/💡%20ArXiv-2508.17188-blue?style=flat-square" alt="Paper">
   </a>
   <a href="https://Y-Research-SBU.github.io/QuantAgent">
-    <img src="https://img.shields.io/badge/Project-Website-4285F4?style=flat-square&logo=googlechrome" alt="Project Website">
+    <img src="https://img.shields.io/badge/Project-Website-FFD700?style=flat-square&logo=googlechrome
+    " alt="Project Website">
   </a>
   <a href="">
     <img src="https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord" alt="Discord Community">
