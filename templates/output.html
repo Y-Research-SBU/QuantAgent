@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantAgent - Analysis Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --etrade-purple: #241056;
+            --etrade-purple-light: #5627D8;
+            --etrade-purple-dark: #1A0B3A;
+            --etrade-purple-bg: #F8F5FF;
+            --white: #ffffff;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--etrade-purple-bg);
+            color: var(--gray-800);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-container {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(36, 16, 86, 0.25);
+            margin: 2rem auto;
+            max-width: 1200px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--etrade-purple) 0%, var(--etrade-purple-light) 100%);
+            color: var(--white);
+            padding: 2rem;
+            text-align: center;
+        }
+
+                 .results-section {
+             padding: 3rem 2rem;
+             background: var(--white);
+         }
+
+                   /* Panel Layout Styles */
+          .panel-group {
+              display: grid;
+              grid-template-columns: 1fr 1fr 1fr;
+              gap: 2rem;
+              margin-bottom: 2rem;
+          }
+          
+          .panel-group-2 {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 2rem;
+              margin-bottom: 2rem;
+          }
+         
+         .panel {
+             background: var(--white);
+             border: 2px solid var(--gray-200);
+             border-radius: 16px;
+             padding: 1.5rem;
+             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+             transition: all 0.3s ease;
+         }
+         
+         .panel:hover {
+             border-color: var(--etrade-purple-light);
+             box-shadow: 0 8px 24px rgba(86, 39, 216, 0.1);
+         }
+         
+         .panel-title {
+             color: var(--etrade-purple);
+             font-weight: 600;
+             font-size: 1.1rem;
+             margin-bottom: 1.5rem;
+             padding-bottom: 0.5rem;
+             border-bottom: 2px solid var(--gray-100);
+         }
+         
+         .full-width-panel {
+             grid-column: 1 / -1;
+         }
+         
+         .form-group {
+             margin-bottom: 1.5rem;
+         }
+         
+         .form-group:last-child {
+             margin-bottom: 0;
+         }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 120px;
+        }
+
+        .stats-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--etrade-purple);
+        }
+
+        .stats-label {
+            color: var(--gray-600);
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.5rem;
+        }
+
+        .analysis-card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            border: 2px solid var(--gray-200);
+        }
+
+        .analysis-header {
+            background: var(--etrade-purple);
+            color: var(--white);
+            padding: 1.5rem 2rem;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .analysis-content {
+            padding: 2rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .decision-badge {
+            font-size: 1.5em;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .decision-long {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: var(--white);
+        }
+
+        .decision-short {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: var(--white);
+        }
+
+        .image-container {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .image-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            border: 2px dashed var(--etrade-purple);
+            border-radius: 15px;
+            padding: 2rem;
+            color: var(--gray-500);
+        }
+
+        .analysis-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .row { display: flex; flex-wrap: wrap; margin-left: -0.75rem; margin-right: -0.75rem; }
+        .col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; padding-left: 0.75rem; padding-right: 0.75rem; }
+        .col-md-6 { flex: 0 0 50%; max-width: 50%; padding-left: 0.75rem; padding-right: 0.75rem; }
+        .mb-4 { margin-bottom: 1.5rem; }
+        .mb-3 { margin-bottom: 1rem; }
+        .mt-3 { margin-top: 1rem; }
+        .text-center { text-align: center; }
+        .d-flex { display: flex; }
+        .align-items-stretch { align-items: stretch; }
+        .w-100 { width: 100%; }
+        .img-fluid { max-width: 100%; height: auto; }
+
+                 @media (max-width: 768px) {
+             .col-md-4, .col-md-6 { flex: 0 0 100%; max-width: 100%; }
+             .main-container { margin: 1rem; border-radius: 16px; }
+             .results-section { padding: 2rem 1rem; }
+             .stats-card { height: 100px; }
+             .stats-number { font-size: 2em; }
+             
+                           /* Mobile panel layout */
+              .panel-group,
+              .panel-group-2 {
+                  grid-template-columns: 1fr;
+                  gap: 1rem;
+              }
+             
+             .panel {
+                 padding: 1rem;
+             }
+         }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> QuantAgent Analysis Results</h1>
+            <p>Multi-Agent Trading System Analysis Complete</p>
+        </div>
+        
+                 <!-- Results Section -->
+         <div class="results-section">
+             <!-- Row 1: Analysis Summary, Final Decision, Technical Indicators -->
+             <div class="panel-group">
+                 <div class="panel">
+                     <h4 class="panel-title">Analysis Summary</h4>
+                     <div class="row align-items-stretch">
+                         <div class="col-md-4 d-flex">
+                             <div class="stats-card w-100">
+                                 <div class="stats-number">1,247</div>
+                                 <div class="stats-label">Data Points</div>
+                             </div>
+                         </div>
+                         <div class="col-md-4 d-flex">
+                             <div class="stats-card w-100">
+                                 <div class="stats-number">1h</div>
+                                 <div class="stats-label">Timeframe</div>
+                             </div>
+                         </div>
+                         <div class="col-md-4 d-flex">
+                             <div class="stats-card w-100">
+                                 <div class="stats-number">BTC</div>
+                                 <div class="stats-label">Asset</div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 
+                 <!-- Final Decision Panel -->
+                 <div class="panel">
+                     <h4 class="panel-title">
+                         <i class="fas fa-bullseye"></i> Final Trading Decision
+                     </h4>
+                     <div class="text-center mb-3">
+                         <span class="decision-badge decision-long">LONG</span>
+                     </div>
+                     <div>
+                         <p><strong>Forecast Horizon:</strong> 24-48 hours</p>
+                         <p><strong>Risk/Reward Ratio:</strong> 1:2.5</p>
+                         <p><strong>Justification:</strong></p>
+                         <p>Based on comprehensive analysis of technical indicators, pattern recognition, and trend analysis, the system recommends a LONG position on BTC. The analysis shows strong bullish momentum with key support levels holding, and multiple technical indicators confirming upward movement.</p>
+                     </div>
+                 </div>
+                 
+                 <!-- Technical Indicators Panel -->
+                 <div class="panel">
+                     <h4 class="panel-title">
+                         <i class="fas fa-chart-bar"></i> Technical Indicators
+                     </h4>
+                     <div class="form-group">
+                         <h5>Key Technical Indicators:</h5>
+                         <ul>
+                             <li><strong>RSI (14):</strong> 65.4 - Neutral to bullish momentum</li>
+                             <li><strong>MACD:</strong> Bullish crossover with increasing histogram</li>
+                             <li><strong>Moving Averages:</strong> Price above 50-day and 200-day MA</li>
+                             <li><strong>Bollinger Bands:</strong> Price in upper band, showing strength</li>
+                             <li><strong>Volume:</strong> Above average volume supporting price action</li>
+                         </ul>
+                     </div>
+                     
+                     <div class="form-group">
+                         <h5>Support & Resistance Levels:</h5>
+                         <ul>
+                             <li><strong>Key Support:</strong> $42,500</li>
+                             <li><strong>Key Resistance:</strong> $45,200</li>
+                             <li><strong>Stop Loss:</strong> $41,800</li>
+                             <li><strong>Take Profit:</strong> $47,500</li>
+                         </ul>
+                     </div>
+                 </div>
+             </div>
+            
+
+            
+                         <!-- Row 2: Pattern Recognition + Pattern Chart (same row) -->
+             <div class="panel-group-2">
+                 <div class="panel">
+                     <h4 class="panel-title">
+                         <i class="fas fa-shapes"></i> Pattern Recognition
+                     </h4>
+                     <div class="form-group">
+                         <h5>Identified Patterns:</h5>
+                         <ul>
+                             <li><strong>Bull Flag Pattern:</strong> Consolidation after strong upward move</li>
+                             <li><strong>Golden Cross:</strong> 50-day MA crossing above 200-day MA</li>
+                             <li><strong>Higher Highs & Higher Lows:</strong> Uptrend confirmation</li>
+                             <li><strong>Volume Pattern:</strong> Increasing volume on price advances</li>
+                         </ul>
+                     </div>
+                     
+                     <div class="form-group">
+                         <h5>Pattern Reliability:</h5>
+                         <p>The bull flag pattern has a historical success rate of 85% in similar market conditions. The golden cross is a strong long-term bullish signal.</p>
+                     </div>
+                 </div>
+                 
+                 <div class="panel">
+                     <h4 class="panel-title">
+                         <i class="fas fa-chart-line"></i> Pattern Chart
+                     </h4>
+                     <div class="image-container">
+                         <div class="image-placeholder">
+                             <i class="fas fa-chart-line" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                             <p>Pattern chart visualization</p>
+                             <small>Chart showing bull flag pattern and key levels</small>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             
+             <!-- Row 3: Trend Analysis + Trend Chart (same row) -->
+             <div class="panel-group-2">
+                 <div class="panel">
+                     <h4 class="panel-title">
+                         <i class="fas fa-trending-up"></i> Trend Analysis
+                     </h4>
+                     <div class="form-group">
+                         <h5>Trend Summary:</h5>
+                         <ul>
+                             <li><strong>Primary Trend:</strong> Bullish (Long-term)</li>
+                             <li><strong>Secondary Trend:</strong> Bullish (Medium-term)</li>
+                             <li><strong>Short-term Trend:</strong> Consolidating with bullish bias</li>
+                         </ul>
+                     </div>
+                     
+                     <div class="form-group">
+                         <h5>Trend Strength Indicators:</h5>
+                         <ul>
+                             <li><strong>ADX:</strong> 28.5 - Moderate trend strength</li>
+                             <li><strong>Price Action:</strong> Higher highs and higher lows maintained</li>
+                             <li><strong>Momentum:</strong> Positive divergence on RSI</li>
+                         </ul>
+                     </div>
+                     
+                     <div class="form-group">
+                         <h5>Market Context:</h5>
+                         <p>BTC is currently in a strong uptrend within a broader bullish market structure. The recent consolidation appears to be a healthy pause before continuation.</p>
+                     </div>
+                 </div>
+                 
+                 <div class="panel">
+                     <h4 class="panel-title">
+                         <i class="fas fa-trending-up"></i> Trend Chart
+                     </h4>
+                     <div class="image-container">
+                         <div class="image-placeholder">
+                             <i class="fas fa-trending-up" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                             <p>Trend analysis visualization</p>
+                             <small>Chart showing trend lines and momentum indicators</small>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -501,9 +501,7 @@
             document.getElementById('assetSelect').addEventListener('change', updateFileSelection);
             document.getElementById('timeframeSelect').addEventListener('change', function() {
                 updateFileSelection();
-                if (document.getElementById('dataSource').value === 'live') {
-                    updateTimeframeLimits();
-                }
+                updateTimeframeLimits();
             });
             
             // Date validation listeners
@@ -526,17 +524,7 @@
             checkApiKeyStatus();
         });
         
-        function updateDataSource() {
-            const dataSource = document.getElementById('dataSource').value;
-            const dateRangeDiv = document.getElementById('dateRangeDiv');
-            
-            if (dataSource === 'live') {
-                dateRangeDiv.style.display = 'block';
-            } else {
-                dateRangeDiv.style.display = 'none';
-            }
-        }
-        
+
         function updateFileSelection() {
             const asset = document.getElementById('assetSelect').value;
             const timeframe = document.getElementById('timeframeSelect').value;
@@ -592,7 +580,7 @@
             var errorBar = document.getElementById('errorBar');
             if (errorBar) errorBar.style.display = 'none';
 
-            const dataSource = document.getElementById('dataSource').value;
+            const dataSource = 'live'; // Always use live data
             let asset = document.getElementById('assetSelect').value;
             const timeframe = document.getElementById('timeframeSelect').value;
 

@@ -34,14 +34,20 @@
 
 <br>
 
-[![GitHub stars](https://img.shields.io/github/stars/Y-Research-SBU/QuantAgent?style=flat&logo=github)](https://github.com/Y-Research-SBU/QuantAgent/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/Y-Research-SBU/QuantAgent?style=flat&logo=github)](https://github.com/Y-Research-SBU/QuantAgent/forks)
-[![Pull Requests](https://img.shields.io/github/issues-pr/Y-Research-SBU/QuantAgent?label=Pull%20Requests&logo=gitbook)](https://github.com/Y-Research-SBU/QuantAgent/pulls)
-
-[![GitHub issues](https://img.shields.io/github/issues/Y-Research-SBU/QuantAgent?style=flat&logo=github)](https://github.com/Y-Research-SBU/QuantAgent/issues)
-[![GitHub contributors](https://img.shields.io/github/contributors/Y-Research-SBU/QuantAgent?style=flat&color=2b9348&logo=github)](https://github.com/Y-Research-SBU/QuantAgent/graphs/contributors)
-[![GitHub license](https://img.shields.io/github/license/Y-Research-SBU/QuantAgent?style=flat&color=2b9348&logo=open-source-initiative)](https://github.com/Y-Research-SBU/QuantAgent/blob/main/LICENSE)
-[![WeChat](https://img.shields.io/badge/WeChat-07C160?style=flat&logo=wechat&logoColor=white)](assets/wechat.jpg)
+<p align="center">
+  <a href="">
+    <img src="https://img.shields.io/badge/💡%20ArXiv-2508.17188-blue?style=flat-square" alt="Paper">
+  </a>
+  <a href="https://Y-Research-SBU.github.io/QuantAgent">
+    <img src="https://img.shields.io/badge/Project-Website-4285F4?style=flat-square&logo=googlechrome" alt="Project Website">
+  </a>
+  <a href="">
+    <img src="https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord" alt="Discord Community">
+  </a>
+  <a href="assets/wechat.jpg">
+    <img src="https://img.shields.io/badge/WeChat-Group-green?style=flat-square&logo=wechat" alt="WeChat Group">
+  </a>
+</p>
 
 </div>
 
