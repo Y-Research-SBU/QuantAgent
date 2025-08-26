@@ -40,6 +40,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/your-username/QuantAgents)](https://github.com/Y-Research-SBU/QuantAgent/issues)
 [![GitHub contributors](https://img.shields.io/github/contributors/your-username/QuantAgents?color=2b9348)](https://github.com/your-username/QuantAgents/graphs/contributors)
 [![GitHub license](https://img.shields.io/github/license/your-username/QuantAgents?color=2b9348)](https://github.com/Y-Research-SBU/QuantAgent/blob/main/LICENSE)
+[![WeChat](https://img.shields.io/badge/WeChat-07C160?style=flat&logo=wechat&logoColor=white)](assets/wechat.jpg)
 
 </div>
 

@@ -4,9 +4,12 @@
     <meta charset="utf-8">
     <title>QuantAgents: Multi-Agent Trading System</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,400&display=fallback" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,400&display=fallback" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Base styles */
         * {
@@ -22,10 +25,12 @@
             --text-primary: #1e293b;
             --text-secondary: #64748b;
             --text-tertiary: #94a3b8;
+            --text-affiliations: #636363;
+            --author-link-color: #0644AD;
             --border-color: #e2e8f0;
             --shadow-color: rgba(0, 0, 0, 0.1);
             --background-header: #f8fafc;
-            --button-primary: #3b82f6;
+            --button-primary: #0645ad;
             --button-secondary: #e2e8f0;
         }
 
@@ -36,10 +41,12 @@
             --text-primary: #ffffff;
             --text-secondary: #ffffff;
             --text-tertiary: #ffffff;
+            --text-affiliations: #ffffff;
+            --author-link-color: #ffffff;
             --border-color: #334155;
             --shadow-color: rgba(0, 0, 0, 0.3);
             --background-header: #1e293b;
-            --button-primary: #3b82f6;
+            --button-primary: #0645ad;
             --button-secondary: #334155;
         }
 
@@ -142,19 +149,31 @@
         }
 
         .header-container {
-            max-width: 2000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-left: 3rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-right: 1.8rem;
         }
 
         .logo {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #10b981 100%);
+            background: linear-gradient(135deg, #0645ad 0%, #06b6d4 50%, #10b981 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -182,7 +201,7 @@
             color: var(--text-secondary);
             text-decoration: none;
             font-weight: 500;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             transition: color 0.3s ease;
         }
 
@@ -192,7 +211,7 @@
 
         /* Main content */
         .main-content {
-            max-width: 2000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 120px 2rem 4rem;
         }
@@ -201,19 +220,22 @@
         .title-section {
             text-align: center;
             margin-bottom: 4rem;
-            max-width: 3000px;
+            max-width: 1200px;
             margin-left: auto;
             margin-right: auto;
             padding: 0 1rem;
         }
 
         .main-title {
-            font-size: 4.0rem;
-            font-weight: 900;
+            font-family: 'Inter', sans-serif;
+            font-size: 64px;
+            font-weight: 800;
             color: var(--text-primary);
             margin-bottom: 0.5rem;
             line-height: 1.0;
+            letter-spacing: -0.02em;
             transition: color 0.3s ease;
+            text-align: center;
         }
 
         .subtitle {
@@ -226,40 +248,47 @@
         }
 
         .authors {
-            font-size: 1.5rem;
+            font-family: 'Inter', sans-serif;
             color: var(--text-secondary);
             margin-bottom: 1rem;
-            margin-top: 3rem;
+            margin-top: 2.2rem;
             display: flex;
             justify-content: center;
             gap: 2rem;
             flex-wrap: wrap;
             transition: color 0.3s ease;
+            font-weight: 300; 
         }
 
         .affiliations {
-            font-size: 1.3rem;
-            color: var(--text-secondary);
+            font-size: 1.1rem;
+            color: var(--text-affiliations);
             line-height: 1.8;
             transition: color 0.3s ease;
+            max-width: 780px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center; 
+            margin-top: 1.7rem;
+            
         }
 
         .author-link {
-            color: #3b82f6;
+            color: var(--author-link-color);
             text-decoration: none;
-            font-weight: 500;
+            /* font-weight: 500; */
             transition: color 0.3s ease;
         }
 
         .author-link:hover {
-            color: #1d4ed8;
-            text-decoration: none;
+            color: var(--author-link-color);
+            text-decoration: underline;
         }
 
         .action-buttons {
             display: flex;
             justify-content: center;
-            gap: 1.5rem;
+            gap: 4rem;
             margin-top: 2rem;
         }
 
@@ -268,18 +297,18 @@
             align-items: center;
             gap: 0.5rem;
             padding: 0.75rem 1.5rem;
-            background: #3b82f6;
+            background: #0645ad;
             color: white;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 1.125rem;
+            border-radius: 10px;
+            font-weight: 400;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
             box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
         }
 
         .action-btn:hover {
-            background: #1d4ed8;
+            background: #0645ad;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
         }
@@ -294,7 +323,7 @@
             padding: 2rem;
             border-radius: 16px;
             margin-bottom: 4rem;
-            border-left: 4px solid #3b82f6;
+            border-left: 4px solid #0645ad;
         }
 
         .method-overview h2 {
@@ -350,9 +379,9 @@
         }
 
         .agent-selector-card.active {
-            background: #3b82f6;
+            background: #0645ad;
             color: white;
-            border-color: #3b82f6;
+            border-color: #0645ad;
         }
 
         .agent-selector-card.active h3,
@@ -453,7 +482,7 @@
         }
 
         .agent-card h3 i {
-            color: #3b82f6;
+            color: #0645ad;
             font-size: 1.2rem;
         }
 
@@ -495,7 +524,7 @@
         .metric-value {
             font-size: 2.5rem;
             font-weight: 800;
-            color: #3b82f6;
+            color: #0645ad;
             margin-bottom: 0.5rem;
         }
 
@@ -507,27 +536,27 @@
 
         /* Results section */
         .results-section {
-            margin-bottom: 4rem;
+            margin-bottom: 0rem;
         }
 
         .results-section h2 {
             font-size: 2rem;
             font-weight: 700;
             color: #1e293b;
-            margin-bottom: 2rem;
+            margin-bottom: 0rem;
             text-align: center;
         }
 
         .results-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 3rem;
+            gap: 0.3rem;
             align-items: start;
         }
 
         .results-text {
             background: #f8fafc;
-            padding: 1.5rem;
+            padding: 0rem;
             border-radius: 12px;
         }
 
@@ -538,16 +567,16 @@
             margin-bottom: 1rem;
         }
 
-                 .results-text p {
+        .results-text p {
              color: #475569;
              line-height: 1.8;
              margin-bottom: 1rem;
-             font-size: 1.8rem;
+             font-size: 1.5rem;
          }
 
         .results-image {
             background: #f8fafc;
-            padding: 1.5rem;
+            padding: 1rem;
             border-radius: 12px;
             text-align: center;
             min-height: 250px;
@@ -580,7 +609,7 @@
             padding: 1.5rem;
             border-radius: 8px;
             margin-bottom: 1rem;
-            border-left: 4px solid #3b82f6;
+            border-left: 4px solid #0645ad;
         }
 
         .bib-item:last-child {
@@ -612,7 +641,7 @@
         /* Responsive design */
         @media (max-width: 768px) {
             .main-title {
-                font-size: 2rem;
+                font-size: 4rem;
             }
 
             .subtitle {
@@ -668,8 +697,62 @@
             }
 
             .nav-links a {
-                font-size: 0.9rem;
+                font-size: 0.5rem;
             }
+        }
+
+        /* Fade-in animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        .fade-in-delay-1 {
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+            opacity: 0;
+        }
+
+        .fade-in-delay-2 {
+            animation: fadeInUp 0.8s ease-out 0.4s forwards;
+            opacity: 0;
+        }
+
+        .fade-in-delay-3 {
+            animation: fadeInUp 0.8s ease-out 0.6s forwards;
+            opacity: 0;
+        }
+
+        .fade-in-delay-4 {
+            animation: fadeInUp 0.8s ease-out 0.8s forwards;
+            opacity: 0;
+        }
+
+        .fade-in-delay-5 {
+            animation: fadeInUp 0.8s ease-out 1s forwards;
+            opacity: 0;
         }
 
         /* Smooth scrolling */
@@ -687,44 +770,56 @@
     <!-- Header -->
     <header class="header">
         <div class="header-container">
-            <div class="logo" onclick="scrollToTop()">
-                <i class="fas fa-chart-line"></i>
+            <div class="header-left">
+                <div class="logo" onclick="scrollToTop()">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" style="background: none; border: none; cursor: pointer; padding: 0.5rem; border-radius: 8px; transition: all 0.3s ease;">
+                    <i class="fas fa-moon" id="theme-icon" style="font-size: 1.2rem; color: var(--text-secondary);"></i>
+                </button>
             </div>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="#abstract">Abstract</a></li>
-                    <li><a href="#evaluation">Evaluation</a></li>
-                    <li><a href="#results">Results</a></li>
-                    <li><a href="#bibtex">BibTeX</a></li>
-                </ul>
-            </nav>
-            
-            <!-- Theme Toggle Button -->
-            <button id="theme-toggle" style="background: none; border: none; cursor: pointer; padding: 0.5rem; border-radius: 8px; transition: all 0.3s ease;">
-                <i class="fas fa-moon" id="theme-icon" style="font-size: 1.2rem; color: var(--text-secondary);"></i>
-            </button>
+            <div class="header-right">
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="#abstract">Abstract</a></li>
+                        <li><a href="#evaluation">Evaluation</a></li>
+                        <li><a href="#results">Results</a></li>
+                        <li><a href="#bibtex">BibTeX</a></li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </header>
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Title Section -->
+                <!-- Title Section -->
         <section class="title-section">
-            <h1 class="main-title">
-                <span style="display: block; font-size: 4.0rem; font-weight: 900; color: var(--text-primary); line-height: 1.0;">QuantAgent:</span>
-                <span style="display: block; font-size: 3.2rem; font-weight: 900; color: var(--text-primary); line-height: 1.0; margin-top: 0.5rem;">Price-Driven Multi-Agent LLMs for High-Frequency Trading</span>
+            <h1 class="main-title fade-in-up">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 0rem; margin-bottom: 0.5rem;">
+                    <img id="theme-logo" src="assets/logo.png" alt="QuantAgent Logo" style="width: 7rem; height: 7rem; object-fit: contain;">
+                    <span style="font-size: 4.0rem; font-weight: 800; color: var(--text-primary); line-height: 1.0;">QuantAgent:</span>
+                </div>
+                <span style="display: block; font-size: 1.875rem; font-weight: 800; color: var(--text-primary); line-height: 1.0; letter-spacing: -0.02em;">
+                    Price-Driven Multi-Agent LLMs for High-Frequency Trading</span>
             </h1>
-            <div class="authors">
+            <div class="fade-in-delay-1 authors" style="font-family: 'Inter', sans-serif; font-weight: 400 !important; font-size: 1.3rem;">
                 <span><a href="https://machineily.github.io/" class="author-link">Fei Xiong</a><sup>1,2 ★</sup></span>
                 <span><a href="https://wyattz23.github.io" class="author-link">Xiang Zhang</a><sup>3 ★</sup></span>
                 <span><a href="https://intersun.github.io/" class="author-link">Siqi Sun</a><sup>4</sup></span>
                 <span><a href="https://chenyuyou.me/" class="author-link">Chenyu You</a><sup>1</sup></span>
             </div>
-                         <div class="affiliations">
-                 <div><sup>1</sup>Stony Brook University, <sup>2</sup>Carnegie Mellon University, <sup>3</sup>University of British Columbia</div>
-                 <div><sup>4</sup>Fudan University, ★ Equal Contribution</div>
+                                 <div class="affiliations fade-in-delay-2" style="font-family: 'Inter', sans-serif; 
+                 font-weight: 400 !important; font-size: 1.15rem; color: var(--text-affiliations); line-height: 1.5;">
+                 <div><sup>1</sup>Stony Brook University&nbsp;&nbsp;&nbsp;
+                    <sup>2</sup>Carnegie Mellon University</div>
+                    <div><sup>3</sup>University of British Columbia&nbsp;&nbsp;&nbsp;
+                        <sup>4</sup>Fudan University&nbsp;&nbsp;&nbsp;
+                     <sup>★</sup>
+                     Equal Contribution</div>
              </div>
-            <div class="action-buttons">
+            <div class="action-buttons fade-in-delay-3">
                 <a href="#" class="action-btn paper-btn">
                     <i class="fas fa-file-alt"></i>
                     Paper
@@ -737,17 +832,19 @@
         </section>
 
                  <!-- Abstract Section -->
-         <section id="abstract">
-             <h2 class="section-header">Abstract</h2>
-                           <div style="background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%); padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px -5px var(--shadow-color); margin-bottom: 4rem; max-width: 1200px; margin-left: auto; margin-right: auto;">
-                 <p style="font-size: 1.6rem; color: var(--text-primary); line-height: 1.8; margin-bottom: 1.5rem; font-weight: 500;">
+         <section id="abstract" style="margin-top: 13rem;">
+             <h2 class="section-header fade-in-delay-4">Abstract</h2>
+                           <div class="fade-in-delay-5" style="background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%); padding: 2.5rem; 
+                           border-radius: 20px; box-shadow: 0 10px 25px -5px var(--shadow-color); margin-bottom: 8rem; 
+                           max-width: 950px; margin-left: auto; margin-right: auto;">
+                 <p style="font-size: 1.2rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.5rem;">
                      Recent advances in Large Language Models (LLMs) have demonstrated impressive capabilities in financial reasoning 
                      and market understanding. However, existing LLM frameworks for High-Frequency Trading (HFT) face significant 
                      limitations in terms of latency, interpretability, and the ability to handle real-time market dynamics. 
                      We introduce QuantAgent, the first multi-agent LLM framework specifically designed for HFT, which decomposes 
                      trading into four specialized agents: Indicator, Pattern, Trend, and Risk.
                  </p>
-                 <p style="font-size: 1.6rem; color: var(--text-primary); line-height: 1.8; font-weight: 500;">
+                 <p style="font-size: 1.2rem; color: var(--text-secondary); line-height: 1.6;">
                      Our framework leverages structured financial priors and language-native reasoning to achieve superior performance 
                      in zero-shot evaluations across ten financial instruments, including Bitcoin and Nasdaq futures, in terms of 
                      predictive accuracy and cumulative return over 4-hour trading intervals. The results suggest that combining 
@@ -758,24 +855,28 @@
          </section>
 
         <!-- Interactive Tabs Section -->
-        <section id="interactive-tabs" style="margin-bottom: 4rem;">
+        <section id="interactive-tabs" style="margin-bottom: 8rem;">
             <h2 class="section-header">Multi-Agent Interaction</h2>
             
             <!-- Tab Navigation -->
-            <div class="tab-navigation" style="display: flex; justify-content: center; margin-bottom: 2rem; gap: 0.5rem;">
-                <button class="tab-btn active" data-tab="indicator" style="padding: 1rem 2rem; background: var(--button-primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+            <div class="tab-navigation" style="display: flex; justify-content: center; margin-bottom: 0rem; gap: 0.5rem;">
+                <button class="tab-btn active" data-tab="indicator" style="padding: 1rem 1rem; background: var(--button-primary); 
+                color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
                     <i class="fas fa-chart-bar" style="margin-right: 0.5rem;"></i>
                     Indicator Agent
                 </button>
-                <button class="tab-btn" data-tab="pattern" style="padding: 1rem 2rem; background: var(--button-secondary); color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+                <button class="tab-btn" data-tab="pattern" style="padding: 1rem 1rem; background: var(--button-secondary); 
+                color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
                     <i class="fas fa-shapes" style="margin-right: 0.5rem;"></i>
                     Pattern Agent
                 </button>
-                <button class="tab-btn" data-tab="trend" style="padding: 1rem 2rem; background: var(--button-secondary); color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+                <button class="tab-btn" data-tab="trend" style="padding: 1rem 1rem; background: var(--button-secondary); 
+                color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
                     <i class="fas fa-chart-line" style="margin-right: 0.5rem;"></i>
                     Trend Agent
                 </button>
-                <button class="tab-btn" data-tab="decision" style="padding: 1rem 2rem; background: var(--button-secondary); color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+                <button class="tab-btn" data-tab="decision" style="padding: 1rem 1rem; background: var(--button-secondary); 
+                color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
                     <i class="fas fa-cogs" style="margin-right: 0.5rem;"></i>
                     Decision Agent
                 </button>
@@ -785,101 +886,113 @@
             <div class="tab-content"
             style="background: var(--bg-secondary);
                    border-radius: 16px;
-                   padding: 2rem;
+                   padding: 1rem;
                    min-height: 400px;
                    display: flex;
                    align-items: center;
                    justify-content: center;
-                   max-width: 1600px;
+                   max-width: 1000px;
                    width: 100%;
                    margin: 0 auto;
+                   margin-top: 1rem;
                    transition: background 0.3s ease;">
        
 
                 <!-- Indicator Tab -->
-                <div class="tab-pane active" id="indicator-tab" style="display: block; width: 100%;">
+                <div class="tab-pane active" id="indicator-tab" style="display: block; width: 100%; max-width: 1100px;">
                     <div style="text-align: center; max-width: 100%; margin: 0 auto;">
-                        <img src="assets/indicator.png" alt="Indicator Agent" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
-                        <h3 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Technical Indicators</h3>
-                        <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
-                            Comprehensive technical analysis using multiple indicators including RSI, MACD, and Bollinger Bands 
+
+                        <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6; max-width: 850px; margin: 0 auto; margin-bottom: 1rem;">
+                            <strong>Indicator Agent</strong>: Comprehensive technical analysis using multiple indicators including RSI, MACD, and Bollinger Bands 
                             to generate robust trading signals with high accuracy.
                         </p>
+                        <img src="assets/indicator.png" alt="Indicator Agent" style="max-width: 100%;
+                        height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 0.2rem;">
+                        
                     </div>
                 </div>
                 
                 <!-- Pattern Tab -->
                 <div class="tab-pane" id="pattern-tab" style="display: none; width: 100%;">
                     <div style="text-align: center; max-width: 100%; margin: 0 auto;">
-                        <img src="assets/pattern.png" alt="Pattern Agent" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
-                        <h3 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Pattern Recognition</h3>
-                        <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
-                            Sophisticated pattern recognition systems detect classic chart patterns and market structures, 
+                        <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6; max-width: 850px; margin: 0 auto; margin-bottom: 0.2rem;">
+                            <strong>Pattern Agent</strong>: Sophisticated pattern recognition systems detect classic chart patterns and market structures, 
                             providing reliable signals for trading decisions.
                         </p>
+                        <img src="assets/pattern.png" alt="Pattern Agent" style="max-width: 100%; height: auto; border-radius: 12px; 
+                        box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 0.2rem;">
+                        
                     </div>
                 </div>
                 
                 <!-- Trend Tab -->
                 <div class="tab-pane" id="trend-tab" style="display: none; width: 100%;">
                     <div style="text-align: center; max-width: 100%; margin: 0 auto;">
-                        <img src="assets/trend.png" alt="Trend Agent" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
-                        <h3 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Trend Analysis</h3>
-                        <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
-                            Advanced trend detection algorithms identify market direction and momentum patterns, 
+                        <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6; max-width: 850px; margin: 0 auto; margin-bottom: 0.2rem;">
+                            <strong>Trend Agent</strong>: Advanced trend detection algorithms identify market direction and momentum patterns, 
                             enabling precise entry and exit timing for optimal trading performance.
                         </p>
+                        <img src="assets/trend.png" alt="Trend Agent" style="max-width: 100%; height: auto; border-radius: 12px; 
+                        box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 0.2rem;">
+                        
                     </div>
                 </div>
                 
                 <!-- Decision Tab -->
                 <div class="tab-pane" id="decision-tab" style="display: none; width: 100%;">
                     <div style="text-align: center; max-width: 100%; margin: 0 auto;">
-                        <img src="assets/decision.png" alt="Decision Agent" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
-                        <h3 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Decision Making</h3>
-                        <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
-                            Intelligent decision-making systems combine multiple data sources and analysis methods 
+                        <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6; max-width: 850px; margin: 0 auto; margin-bottom: 0.2rem;">
+                            <strong>Decision Agent</strong>: Intelligent decision-making systems combine multiple data sources and analysis methods 
                             to generate optimal trading strategies with risk management considerations.
                         </p>
+                        <img src="assets/decision.png" alt="Decision Agent" style="max-width: 100%; height: auto; 
+                        border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 0.2rem;">
+                        
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Evaluation Section -->
-        <section id="evaluation">
+        <section id="evaluation" style="margin-bottom: 8rem;">
             <h2 class="section-header">Evaluation Metrics</h2>
             <div class="results-content"
      style="display: grid;
             grid-template-columns: 1fr;
-            max-width: 1200px;
+            max-width: 1000px;
             width: 100%;
             margin: 0 auto;">
 
                 <div class="results-image" style="max-width: 100%; margin: 0 auto;">
-                    <img src="assets/benchmark.png" alt="Benchmark Asset Properties" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                    <img src="assets/benchmark.png" alt="Benchmark Asset Properties" style="width: 100%; 
+                    height: auto; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                 </div>
-                <div style="text-align: center; margin-top: 0.25rem;">
-                    <p class="figure-caption" style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1000px; margin: 0 auto;">Overview of benchmark asset properties. Each asset is characterized by its name, market type, the start and end dates of the data collection window, and the total number of bars sampled. All assets are sampled using 4-hour OHLC intervals, with a fixed total of 5,000 bars per asset to ensure comparability.</p>
+                <div style="text-align: center; margin-top: 0rem;">
+                    <p class="figure-caption" style="font-size: 1rem; color: var(--text-secondary); 
+                    line-height: 1.6; max-width: 850px; margin: 0 auto;">
+                    Overview of benchmark assets, including market type, data collection window, and a fixed sample of 5,000 four-hour OHLC bars per asset for consistent comparison.</p>
                 </div>
             </div>
         </section>
 
         <!-- Results Section -->
-        <section id="results" style="margin-top: 6rem;">
+        <section id="results" style="margin-bottom: 8rem;">
             <h2 class="section-header">Main Results</h2>
             <div class="results-content"
             style="display: grid;
                     grid-template-columns: 1fr;
-                    max-width: 1200px;
+                    max-width: 1000px;
                     width: 100%;
                     margin: 0 auto;">
 
                 <div class="results-image" style="max-width: 100%; margin: 0 auto;">
                     <img src="assets/table.png" alt="Performance Comparison Table" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                 </div>
-                <div style="text-align: center; margin-top: 0.25rem;">
-                    <p class="figure-caption" style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1000px; margin: 0 auto;">Performance comparison across trading symbols. Results are shown for a random baseline and our method (highlighted in Green). Bold values indicate improvements, and upward arrows denote metrics where higher values are better.</p>
+                <div style="text-align: center; margin-top: 0rem;">
+                    <p class="figure-caption" style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6; max-width: 850px; margin: 0 auto; margin-top: 0.5rem;">
+                        Performance comparison across assets between a random baseline and our method (highlighted in 
+                        <span style="color: #66BB6A;">green</span>). 
+                        Bolded values and upward arrows indicate improvements on metrics where higher is better.</p>
                 </div>
             </div>
             
@@ -888,16 +1001,19 @@
                 <h3 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2rem; text-align: center;">Detailed Analysis</h3>
                 
                 <!-- Results Tab Navigation -->
-                <div class="results-tab-navigation" style="display: flex; justify-content: center; margin-bottom: 2rem; gap: 0.5rem;">
-                    <button class="results-tab-btn active" data-results-tab="rolling" style="padding: 1rem 2rem; background: var(--button-primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+                <div class="results-tab-navigation" style="display: flex; justify-content: center; margin-bottom: 1rem; gap: 0.5rem;">
+                    <button class="results-tab-btn active" data-results-tab="rolling" style="padding: 1rem 2rem; background: var(--button-primary); 
+                    color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
                         <i class="fas fa-chart-area" style="margin-right: 0.5rem;"></i>
                         Rolling Performance
                     </button>
-                    <button class="results-tab-btn" data-results-tab="trendcase" style="padding: 1rem 2rem; background: var(--button-secondary); color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+                    <button class="results-tab-btn" data-results-tab="trendcase" style="padding: 1rem 2rem; background: var(--button-secondary); 
+                    color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
                         <i class="fas fa-chart-line" style="margin-right: 0.5rem;"></i>
                         Trend Case Study
                     </button>
-                    <button class="results-tab-btn" data-results-tab="patterncase" style="padding: 1rem 2rem; background: var(--button-secondary); color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1.4rem; cursor: pointer; transition: all 0.3s ease;">
+                    <button class="results-tab-btn" data-results-tab="patterncase" style="padding: 1rem 2rem; background: var(--button-secondary); 
+                    color: var(--text-secondary); border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
                         <i class="fas fa-shapes" style="margin-right: 0.5rem;"></i>
                         Pattern Case Study
                     </button>
@@ -909,7 +1025,7 @@
                         border-radius: 16px;
                         padding: 2rem;
                         min-height: 400px;
-                        max-width: 1400px;
+                        max-width: 1000px;
                         width: 100%;
                         margin: 0 auto;
                         transition: background 0.3s ease;">
@@ -917,55 +1033,72 @@
                     <!-- Rolling Performance Tab -->
                     <div class="results-tab-pane active" id="rolling-tab" style="display: block;">
                         <div style="text-align: center;">
-                            <img src="assets/rolling.png" alt="Rolling Performance" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
-                            <h4 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Rolling Performance Analysis</h4>
-                            <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
-                                Sample-based verification accuracy on SPX (2025). During the highlighted window, the LLM generated 10 directional signals. Correct predictions are shown in color (green/red), while grey indicates errors. The model achieved 80% accuracy in this segment.
+                            <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6; max-width: 850px; margin: 0 auto; margin-bottom: 1rem;">
+                                <strong>Rolling Performance</strong>: Sample-based directional accuracy on SPX. Of 10 LLM-generated signals, correct predictions are shown in green/red, errors in grey, yielding 80% accuracy during the highlighted period.
                             </p>
+                            <img src="assets/rolling.png" alt="Rolling Performance" style="max-width: 100%; height: auto; border-radius: 12px; 
+                            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);">
                         </div>
                     </div>
                     
                     <!-- Trend Case Study Tab -->
                     <div class="results-tab-pane" id="trendcase-tab" style="display: none;">
                         <div style="text-align: center;">
-                            <img src="assets/trend case.png" alt="Trend Case Study" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
-                            <h4 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Trend Case Study</h4>
-                            <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
-                                TrendAgent case sample on DJI (2022). The agent identifies an upward-sloping resistance and flat support, confirms higher highs and lows, and outputs three structured summaries. A green "Bullish Signal" badge reflects its overall bullish interpretation.
-                            </p>
+                            <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6; max-width: 850px; margin: 0 auto; margin-bottom: 1rem;">
+                                <strong>Trend Agent</strong> identifies an upward trend characterized by higher highs and stable support. The price currently hovers near the resistance line, reflecting recent bullish momentum.                            </p>
+                            <img src="assets/trend case.png" alt="Trend Case Study" style="max-width: 100%; height: auto; border-radius: 12px; 
+                            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);">
                         </div>
                     </div>
                     
-                    <!-- Pattern Case Study Tab -->
+                                        <!-- Pattern Case Study Tab -->
                     <div class="results-tab-pane" id="patterncase-tab" style="display: none;">
                         <div style="text-align: center;">
-                            <img src="assets/pattern case.png" alt="Pattern Case Study" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
-                            <h4 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Pattern Case Study</h4>
-                            <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.6; max-width: 1100px; margin: 0 auto;">
-                                PatternAgent case sample on CL (2024). The agent detects a Descending Triangle by identifying lower highs against flat support near 78. It outputs structured summaries on pattern structure, bearish trend bias, and geometric symmetry. Visual overlays aid interpretation; classification is based purely on bar geometry.                    </p>
+                            <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6; max-width: 850px; margin: 0 auto; margin-bottom: 1rem;">
+                                <strong>Pattern Agent</strong> identifies a Descending Triangle with lower highs and flat support near 78. 
+                                Structured summaries explain the pattern, bearish bias, and symmetry, with overlays aiding interpretation based solely on bar geometry.                        </p>
+                            <img src="assets/pattern case.png" alt="Pattern Case Study" style="max-width: 100%; height: auto; border-radius: 12px;
+                             box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);">
                         </div>
                     </div>
-                </div>
             </div>
         </section>
 
 
 
-        <!-- Bibliography -->
-        <section id="bibtex" style="margin-top: 6rem;">
-            <h2 class="section-header">BibTeX</h2>
-            <div style="display: flex; justify-content: center; margin-top: 2rem;">
-                <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 1.2rem; color: var(--text-primary); line-height: 1.6; max-width: 800px; width: 100%; transition: all 0.3s ease;">
-                    <pre style="margin: 0; white-space: pre-wrap;">@article{xiong2025quantagent,
+        <section id="bibtex" style="margin-bottom: 8rem;">
+  <h2 class="section-header">BibTeX</h2>
+  <div style="display: flex; justify-content: center;">
+    <div style="
+      background: var(--bg-secondary);
+      padding: 2rem;
+      border-radius: 8px;
+      font-family: Menlo, Consolas, 'Courier New', monospace;
+      font-size: 1rem;
+      color: var(--text-primary);
+      line-height: 1.6;
+      max-width: 750px;  /* reduced from 900px */
+      width: 100%;
+      transition: all 0.3s ease;
+      margin: 0 0rem;     /* adds space on sides for small screens */
+      max-height: 240px;
+    ">
+      <pre style="
+        margin: 0;
+        padding: 0rem;
+        white-space: pre-wrap;
+      ">
+@article{xiong2025quantagent,
   title={QuantAgent: Price-Driven Multi-Agent LLMs for High-Frequency Trading},
   author={Xiong, Fei and Zhang, Xiang and Sun, Siqi and You, Chenyu},
   journal={arXiv preprint arXiv:2XXX.XXXXX},
   year={2025}
-}</pre>
-                </div>
-            </div>
-        </section>
-    </main>
+}
+      </pre>
+    </div>
+  </div>
+</section>
+
 
          <!-- Footer -->
      <footer style="background: var(--bg-secondary); padding: 2rem; margin-top: 4rem; border-top: 1px solid var(--border-color); transition: all 0.3s ease;">
@@ -1138,6 +1271,7 @@
         const currentTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
         updateThemeIcon(currentTheme);
+        updateThemeLogo(currentTheme);
         
         // Set initial header background
         const header = document.querySelector('.header');
@@ -1156,6 +1290,7 @@
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             updateThemeIcon(newTheme);
+            updateThemeLogo(newTheme);
             
             // Update header background immediately
             const header = document.querySelector('.header');
@@ -1173,6 +1308,17 @@
                 themeIcon.className = 'fas fa-sun';
             } else {
                 themeIcon.className = 'fas fa-moon';
+            }
+        }
+        
+        function updateThemeLogo(theme) {
+            const logo = document.getElementById('theme-logo');
+            if (logo) {
+                if (theme === 'dark') {
+                    logo.src = 'assets/darklogo.png';
+                } else {
+                    logo.src = 'assets/logo.png';
+                }
             }
         }
     </script>

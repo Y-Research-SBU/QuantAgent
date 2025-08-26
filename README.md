@@ -33,12 +33,14 @@
 
 <br>
 
-[![GitHub stars](https://img.shields.io/github/stars/your-username/QuantAgents)](https://github.com/Y-Research-SBU/QuantAgent/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/your-username/QuantAgents)](https://github.com/Y-Research-SBU/QuantAgent/forks)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/your-username/QuantAgents)](https://github.com/Y-Research-SBU/QuantAgent/pulls)
-[![GitHub issues](https://img.shields.io/github/issues/your-username/QuantAgents)](https://github.com/Y-Research-SBU/QuantAgent/issues)
-[![GitHub contributors](https://img.shields.io/github/contributors/your-username/QuantAgents?color=2b9348)](https://github.com/your-username/QuantAgents/graphs/contributors)
-[![GitHub license](https://img.shields.io/github/license/your-username/QuantAgents?color=2b9348)](https://github.com/Y-Research-SBU/QuantAgent/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Y-Research-SBU/QuantAgent?style=flat&logo=github)](https://github.com/Y-Research-SBU/QuantAgent/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/Y-Research-SBU/QuantAgent?style=flat&logo=github)](https://github.com/Y-Research-SBU/QuantAgent/forks)
+[![Pull Requests](https://img.shields.io/github/issues-pr/Y-Research-SBU/QuantAgent?label=Pull%20Requests&logo=gitbook)](https://github.com/Y-Research-SBU/QuantAgent/pulls)
+
+[![GitHub issues](https://img.shields.io/github/issues/Y-Research-SBU/QuantAgent?style=flat&logo=github)](https://github.com/Y-Research-SBU/QuantAgent/issues)
+[![GitHub contributors](https://img.shields.io/github/contributors/Y-Research-SBU/QuantAgent?style=flat&color=2b9348&logo=github)](https://github.com/Y-Research-SBU/QuantAgent/graphs/contributors)
+[![GitHub license](https://img.shields.io/github/license/Y-Research-SBU/QuantAgent?style=flat&color=2b9348&logo=open-source-initiative)](https://github.com/Y-Research-SBU/QuantAgent/blob/main/LICENSE)
+[![WeChat](https://img.shields.io/badge/WeChat-07C160?style=flat&logo=wechat&logoColor=white)](assets/wechat.jpg)
 
 </div>
 
@@ -123,7 +125,6 @@ export OPENAI_API_KEY="your_api_key_here"
 
 ## 🔧 Implementation Details
 
-We built QuantAgents with LangGraph to ensure flexibility and modularity. We utilize gpt-4o and gpt-4o-mini as our deep thinking and fast thinking LLMs for our experiments. However, for testing purposes, we recommend you use gpt-4o-mini to save on costs as our framework makes lots of API calls.
 
 **Important Note**: Our model requires an LLM that can take images as input, as our agents generate and analyze visual charts for pattern recognition and trend analysis.
 
@@ -191,23 +192,7 @@ The system supports the following configuration parameters:
 
 You can view the full list of configurations in `default_config.py`.
 
-## 📊 Benchmark
 
-The `benchmark/` folder contains evaluation datasets for testing the QuantAgents system across multiple assets. For each asset, we collect 5000 historical bars via public trading APIs such as yfinance.
-
-From this data, we randomly sample 100 evaluation segments per asset. Each segment is composed of a sequence of 100 consecutive candlesticks, and the final three candlesticks are withheld from the input to prevent exposing the verified market outcome within the test-time prompt. The system operates in a zero-shot setting—without any supervised fine-tuning—by generating structured trade reports that include a directional decision (LONG or SHORT), a concise textual justification, and a predicted risk-reward ratio.
-
-### Available Assets
-- **BTC**: Bitcoin (100 CSV files)
-- **CL**: Crude Oil (100 CSV files)
-- **DJI**: Dow Jones Industrial Average (100 CSV files)
-- **ES**: E-mini S&P 500 (100 CSV files)
-- **GC**: Gold Futures (100 CSV files)
-- **NQ**: Nasdaq Futures (100 CSV files)
-- **QQQ**: Invesco QQQ Trust (100 CSV files)
-- **SPX**: S&P 500 (100 CSV files)
-
-Each CSV file contains 4-hour candlestick data with OHLCV (Open, High, Low, Close, Volume) information for evaluation and backtesting purposes.
 
 ## 🚀 Usage
 
@@ -276,3 +261,8 @@ If you encounter any issues, please:
 For questions, feedback, or collaboration opportunities, please contact:
 
 **Email**: [chenyu.you@stonybrook.edu](mailto:chenyu.you@stonybrook.edu) 
+
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Y-Research-SBU/QuantAgent&type=Date)](https://www.star-history.com/#Y-Research-SBU/QuantAgent&Date)
