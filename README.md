@@ -39,13 +39,6 @@
   <a href="https://Y-Research-SBU.github.io/PosterGen">
     <img src="https://img.shields.io/badge/Project-Website-blue?style=flat-square&logo=googlechrome" alt="Project Website">
   </a>
-  <!-- <a href="https://huggingface.co/spaces/Y-Research-Group/PosterGen">
-    <img src="https://img.shields.io/badge/Hugging%20Face-Demo-yellow?style=flat-square&logo=huggingface" alt="Hugging Face Demo">
-  </a>
-  <a href="#">
-    <img src="https://img.shields.io/badge/LangGraph-0.4.8-042f2c?style=flat-square&logo=langgraph" alt="LangGraph 0.4.8">
-  </a> -->
-  <!-- <br> -->
   <a href="https://github.com/Y-Research-SBU/PosterGen/issues/1">
     <img src="https://img.shields.io/badge/WeChat-Group-green?style=flat-square&logo=wechat" alt="WeChat Group">
   </a>
