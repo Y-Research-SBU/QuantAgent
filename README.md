@@ -42,7 +42,7 @@
   <a href="https://github.com/Y-Research-SBU/QuantAgent/blob/main/assets/wechat.jpg">
     <img src="https://img.shields.io/badge/WeChat-Group-green?style=flat-square&logo=wechat" alt="WeChat Group">
   </a>
-  <a href="">
+  <a href="https://discord.gg/K8DqX53q">
     <img src="https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord" alt="Discord Community">
   </a>
 </p>
