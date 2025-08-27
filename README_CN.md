@@ -36,7 +36,7 @@
 
 <p align="center">
   <a href="">
-    <img src="https://img.shields.io/badge/💡%20ArXiv-2508.17188-B31B1B?style=flat-square
+    <img src="https://img.shields.io/badge/💡%20ArXiv-25.XXX-B31B1B?style=flat-square
     " alt="Paper">
   </a>
   <a href="https://Y-Research-SBU.github.io/QuantAgent">
