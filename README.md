@@ -33,18 +33,24 @@
 
 <br>
 <p align="center">
-  <a href="">
-    <img src="https://img.shields.io/badge/💡%20ArXiv-2508.17188-blue?style=flat-square" alt="Paper">
+  <a href="https://arxiv.org/abs/2508.17188">
+    <img src="https://img.shields.io/badge/ArXiv-2508.17188-red?style=flat-square&logo=arxiv" alt="Paper">
   </a>
-  <a href="https://Y-Research-SBU.github.io/QuantAgent">
-    <img src="https://img.shields.io/badge/Project-Website-FFD700?style=flat-square&logo=googlechrome
-    " alt="Project Website">
+  <a href="https://Y-Research-SBU.github.io/PosterGen">
+    <img src="https://img.shields.io/badge/Project-Website-blue?style=flat-square&logo=googlechrome" alt="Project Website">
   </a>
-  <a href="">
-    <img src="https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord" alt="Discord Community">
+  <!-- <a href="https://huggingface.co/spaces/Y-Research-Group/PosterGen">
+    <img src="https://img.shields.io/badge/Hugging%20Face-Demo-yellow?style=flat-square&logo=huggingface" alt="Hugging Face Demo">
   </a>
-  <a href="assets/wechat.jpg">
+  <a href="#">
+    <img src="https://img.shields.io/badge/LangGraph-0.4.8-042f2c?style=flat-square&logo=langgraph" alt="LangGraph 0.4.8">
+  </a> -->
+  <!-- <br> -->
+  <a href="https://github.com/Y-Research-SBU/PosterGen/issues/1">
     <img src="https://img.shields.io/badge/WeChat-Group-green?style=flat-square&logo=wechat" alt="WeChat Group">
+  </a>
+  <a href="https://discord.gg/5K8cPpWP">
+    <img src="https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord" alt="Discord Community">
   </a>
 </p>
 

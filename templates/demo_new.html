@@ -169,17 +169,31 @@
             border: 2px solid var(--gray-200);
             border-radius: 12px;
             padding: 0.75rem 1rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background: var(--white);
             width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
-                 .form-control:focus, .form-select:focus {
-             border-color: var(--etrade-purple);
-             box-shadow: 0 0 0 3px rgba(36, 16, 86, 0.1);
-             outline: none;
-         }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--etrade-purple);
+            box-shadow: 0 0 0 3px rgba(36, 16, 86, 0.1), 0 4px 12px rgba(36, 16, 86, 0.1);
+            outline: none;
+            transform: translateY(-1px);
+        }
+        
+        .form-control:hover, .form-select:hover {
+            border-color: var(--gray-300);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Glow or Gradient Border on Active Fields */
+        input[type="time"]:focus, input[type="date"]:focus {
+            border: 1px solid #9b6bff;
+            box-shadow: 0 0 0 2px rgba(155, 107, 255, 0.2);
+            transition: all 0.2s ease-in-out;
+        }
 
         .form-label {
             font-weight: 600;
@@ -205,6 +219,88 @@
              transform: translateY(-2px);
              box-shadow: 0 8px 25px rgba(86, 39, 216, 0.4);
              background: var(--etrade-purple);
+         }
+         
+         .btn-primary:disabled {
+             opacity: 0.7;
+             cursor: not-allowed;
+             transform: none;
+         }
+         
+         /* Enhanced Button Styles */
+         .btn {
+             display: inline-flex;
+             align-items: center;
+             justify-content: center;
+             gap: 0.5rem;
+             padding: 0.75rem 1.5rem;
+             border: none;
+             border-radius: 12px;
+             font-weight: 600;
+             font-size: 0.95rem;
+             text-decoration: none;
+             cursor: pointer;
+             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+             position: relative;
+             overflow: hidden;
+             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+         }
+         
+         .btn::before {
+             content: '';
+             position: absolute;
+             top: 0;
+             left: -100%;
+             width: 100%;
+             height: 100%;
+             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+             transition: left 0.5s;
+         }
+         
+         .btn:hover::before {
+             left: 100%;
+         }
+         
+         .btn-outline-primary {
+             background: transparent;
+             color: var(--etrade-purple);
+             border: 2px solid var(--etrade-purple);
+             box-shadow: 0 2px 8px rgba(36, 16, 86, 0.1);
+         }
+         
+         .btn-outline-primary:hover {
+             background: var(--etrade-purple);
+             color: var(--white);
+             transform: translateY(-2px);
+             box-shadow: 0 8px 20px rgba(36, 16, 86, 0.3);
+         }
+         
+         .btn-outline-primary:active {
+             transform: translateY(0);
+             box-shadow: 0 4px 12px rgba(36, 16, 86, 0.2);
+         }
+         
+         .btn-outline-primary:disabled {
+             opacity: 0.6;
+             cursor: not-allowed;
+             transform: none;
+             box-shadow: 0 2px 8px rgba(36, 16, 86, 0.1);
+         }
+         
+         .btn-outline-primary:disabled:hover {
+             background: transparent;
+             color: var(--etrade-purple);
+             transform: none;
+             box-shadow: 0 2px 8px rgba(36, 16, 86, 0.1);
+         }
+         
+         .fa-spin {
+             animation: fa-spin 2s infinite linear;
+         }
+         
+         @keyframes fa-spin {
+             0% { transform: rotate(0deg); }
+             100% { transform: rotate(360deg); }
          }
 
         .alert {
@@ -336,11 +432,29 @@
          
          .input-group {
              display: flex;
-             gap: 0.5rem;
+             gap: 0.75rem;
+             align-items: stretch;
          }
          
          .input-group .form-control {
              flex: 1;
+             border-radius: 12px;
+             border: 2px solid var(--gray-200);
+             padding: 0.75rem 1rem;
+             font-size: 0.95rem;
+             transition: all 0.3s ease;
+         }
+         
+         .input-group .form-control:focus {
+             border-color: var(--etrade-purple);
+             box-shadow: 0 0 0 3px rgba(36, 16, 86, 0.1);
+             outline: none;
+         }
+         
+         .input-group .btn {
+             border-radius: 12px;
+             white-space: nowrap;
+             min-width: 100px;
          }
 
          /* Panel Layout Styles */
@@ -368,17 +482,149 @@
          .panel-title {
              color: var(--etrade-purple);
              font-weight: 600;
-             font-size: 1.1rem;
-             margin-bottom: 1.5rem;
+             font-size: 1.4rem;
+             margin: 0.5rem 0 1.5rem 0;
              padding-bottom: 0.5rem;
              border-bottom: 2px solid var(--gray-100);
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             gap: 0.75rem;
+         }
+         
+         .panel-title i {
+             font-size: 1.5rem;
+             color: var(--etrade-purple-light);
+             background: linear-gradient(135deg, var(--etrade-purple-light) 0%, var(--etrade-purple) 100%);
+             -webkit-background-clip: text;
+             -webkit-text-fill-color: transparent;
+             background-clip: text;
+             filter: drop-shadow(0 2px 4px rgba(86, 39, 216, 0.2));
+         }
+         
+         .action-panel .panel-title {
+             color: var(--white);
+             border-bottom-color: rgba(255, 255, 255, 0.2);
+         }
+         
+         .action-panel .panel-title i {
+             color: var(--white);
+             background: linear-gradient(135deg, var(--white) 0%, rgba(255, 255, 255, 0.8) 100%);
+             -webkit-background-clip: text;
+             -webkit-text-fill-color: transparent;
+             background-clip: text;
+             filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.3));
+         }
+         
+         /* Modern Hero Button */
+         .hero-btn {
+             display: inline-flex;
+             align-items: center;
+             gap: 1rem;
+             background: linear-gradient(135deg, var(--etrade-purple-light) 0%, var(--etrade-purple) 100%);
+             color: var(--white);
+             padding: 1.25rem 2.5rem;
+             border-radius: 50px;
+             text-decoration: none;
+             font-weight: 600;
+             font-size: 1.1rem;
+             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+             box-shadow: 0 8px 25px rgba(86, 39, 216, 0.3);
+             position: relative;
+             overflow: hidden;
+         }
+         
+         .hero-btn::before {
+             content: '';
+             position: absolute;
+             top: 0;
+             left: -100%;
+             width: 100%;
+             height: 100%;
+             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+             transition: left 0.6s;
+         }
+         
+         .hero-btn:hover::before {
+             left: 100%;
+         }
+         
+         .hero-btn:hover {
+             transform: translateY(-3px);
+             box-shadow: 0 12px 35px rgba(86, 39, 216, 0.4);
+             background: linear-gradient(135deg, var(--etrade-purple) 0%, var(--etrade-purple-light) 100%);
+         }
+         
+         .hero-btn:active {
+             transform: translateY(-1px);
+             box-shadow: 0 6px 20px rgba(86, 39, 216, 0.3);
+         }
+         
+         .hero-btn-text {
+             position: relative;
+             z-index: 1;
+         }
+         
+         .hero-btn-icon {
+             position: relative;
+             z-index: 1;
+             transition: transform 0.3s ease;
+         }
+         
+         .hero-btn:hover .hero-btn-icon {
+             transform: translateX(4px);
+         }
+         
+         /* Modern Header Button */
+         .header-btn {
+             display: inline-flex;
+             align-items: center;
+             gap: 0.75rem;
+             background: var(--white);
+             color: var(--etrade-purple);
+             padding: 0.75rem 1.5rem;
+             border-radius: 25px;
+             text-decoration: none;
+             font-weight: 600;
+             font-size: 0.95rem;
+             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+             border: 2px solid transparent;
+         }
+         
+         .header-btn:hover {
+             background: var(--etrade-purple);
+             color: var(--white);
+             transform: translateY(-2px);
+             box-shadow: 0 8px 25px rgba(36, 16, 86, 0.2);
+             border-color: var(--etrade-purple);
+         }
+         
+         .header-btn:active {
+             transform: translateY(0);
+             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+         }
+         
+         .header-btn-text {
+             position: relative;
+             z-index: 1;
+         }
+         
+         .header-btn-icon {
+             position: relative;
+             z-index: 1;
+             transition: transform 0.3s ease;
+         }
+         
+         .header-btn:hover .header-btn-icon {
+             transform: translateX(3px);
          }
          
          .action-panel {
              grid-column: 1 / -1;
-             background: linear-gradient(135deg, var(--etrade-purple) 0%, var(--etrade-purple-light) 100%);
-             border: none;
-             color: var(--white);
+             background: var(--white);
+             border: 2px solid var(--gray-200);
+             color: var(--gray-800);
          }
          
          .action-panel .panel-title {
@@ -396,40 +642,60 @@
          
          /* Security Panel Styles */
          .security-panel {
-             background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
-             border: 2px solid #F59E0B;
+             background: #FEFBF3;
+             border: 2px solid #E5E7EB;
+             border-radius: 16px;
          }
          
          .security-panel .panel-title {
-             color: #92400E;
+             color: #374151;
+             border-bottom: 2px solid #E5E7EB;
+             margin-bottom: 1.5rem;
+             padding-bottom: 1rem;
          }
          
          .security-info {
              display: flex;
              flex-direction: column;
-             gap: 1rem;
+             gap: 1.5rem;
          }
          
          .security-item {
              display: flex;
              align-items: flex-start;
-             gap: 0.75rem;
+             gap: 1rem;
+             padding: 1rem;
+             background: #FFFFFF;
+             border-radius: 12px;
+             border: 1px solid #F3F4F6;
+             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
          }
          
          .security-icon {
              color: #F59E0B;
-             font-size: 1.1rem;
-             margin-top: 0.2rem;
+             font-size: 1.3rem;
+             margin-top: 0.1rem;
              flex-shrink: 0;
+             background: #FEF3C7;
+             padding: 0.5rem;
+             border-radius: 8px;
          }
          
          .security-content {
-             color: #92400E;
-             line-height: 1.5;
+             color: #374151;
+             line-height: 1.6;
          }
          
          .security-content strong {
-             color: #92400E;
+             color: #1F2937;
+             font-size: 1.1rem;
+             display: block;
+             margin-bottom: 0.5rem;
+         }
+         
+         .security-content p {
+             margin: 0;
+             color: #6B7280;
          }
          
          /* Title Styles */
@@ -602,37 +868,7 @@
     <!-- Page wrapper -->
     <div class="flex flex-col min-h-screen overflow-hidden">
 
-        <!-- Site header -->
-        <header class="absolute w-full z-30">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6">
-                <div class="flex items-center justify-between h-16 md:h-20">
 
-                    <!-- Site branding -->
-                    <div class="shrink-0 mr-4">
-                        <!-- Logo -->
-                        <a class="block" href="#" aria-label="QuantAgent">
-                            <i class="fas fa-chart-line text-2xl text-etrade-purple"></i>
-                        </a>
-                    </div>
-
-                    <!-- Desktop navigation -->
-                    <nav class="flex grow">
-                        <!-- Desktop sign in links -->
-                        <ul class="flex grow justify-end flex-wrap items-center">
-                            <li class="ml-3">
-                                <a class="btn-sm inline-flex items-center text-slate-100 bg-slate-800 hover:bg-slate-900 group shadow-sm" href="#analysis">
-                                    Start Analysis
-                                    <span class="tracking-normal text-etrade-purple group-hover:translate-x-0.5 transition-transform duration-150 ease-in-out ml-2">
-                                        <i class="fas fa-arrow-right"></i>
-                                    </span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-
-                </div>
-            </div>
-        </header>
 
         <!-- Page content -->
         <main class="grow">
@@ -640,33 +876,38 @@
             <!-- Hero -->
             <section class="hero-section relative">
                 <div class="max-w-6xl mx-auto px-4 sm:px-6">
-                    <div class="pt-36 md:pt-40 md:pb-20">
+                    <div class="pt-8 md:pt-12 md:pb-20">
 
                         <!-- Hero content -->
                         <div class="relative max-w-xl mx-auto md:max-w-none text-center md:text-left">
                         
                                                     <!-- Content -->
-                        <div class="md:w-[600px] mx-auto text-center">
+                        <div class="md:w-[800px] mx-auto text-center">
 
                                 <!-- Copy -->
                                 <h1 class="h1 text-white mb-6">
-                                    <span class="title-main">QuantAgent:</span>
-                                    <span class="title-highlight">Multi-Agent Trading System</span>
+                                    <div class="text-center">
+                                        
+                                    </div>
+                                    <div style="display: flex; align-items: center; justify-content: center; gap: 0rem; margin-bottom: 0.5rem;">
+                                        <img src="assets/darklogo.png" alt="QuantAgent Logo" style="width: 7rem; height: 7rem; object-fit: contain; background: transparent; box-shadow: none; border: none; border-radius: 0; transform: translateY(0.5rem);">
+                                        <span style="font-size: 4.0rem; font-weight: 700; color: white; line-height: 1.0;">QuantAgent:</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <span class="title-highlight">Multi-Agent Trading System</span>
+                                    </div>
                                 </h1>
-                                <p class="text-lg text-white mb-8">Advanced multi-agent system combining technical indicators, pattern recognition, and trend analysis for comprehensive market insights.</p>
+                                <p class="text-lg text-white mb-8" style="font-size: 1.3rem; margin-top: 1.5rem;">Advanced multi-agent system combining technical indicators, pattern recognition, and trend analysis for comprehensive market insights.</p>
 
                                 <!-- Buttons -->
-                                <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12 md:mb-0">
+                                <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center mb-12 md:mb-0">
                                     <div>
-                                        <a class="btn-sm w-full inline-flex items-center text-white bg-gradient-to-tr from-etrade-purple hover:bg-etrade-purple-light shadow-sm relative before:absolute before:inset-0 before:bg-etrade-purple before:bg-opacity-60 before:-z-10 before:rounded-full" href="#analysis">
-                                            Start Analysis
-                                            <span class="tracking-normal text-white group-hover:translate-x-0.5 transition-transform duration-150 ease-in-out ml-2">
+                                        <a class="hero-btn" href="#analysis">
+                                            <span class="hero-btn-text">Start Analysis</span>
+                                            <span class="hero-btn-icon">
                                                 <i class="fas fa-arrow-right"></i>
                                             </span>
                                         </a>
-                                    </div>
-                                    <div>
-                                        <a class="btn-sm w-full inline-flex items-center text-white bg-gradient-to-tr from-etrade-purple-light hover:bg-etrade-purple shadow-sm relative before:absolute before:inset-0 before:bg-etrade-purple-light before:bg-opacity-60 before:-z-10 before:rounded-full" href="#features">Learn More</a>
                                     </div>
                                 </div>
                                 
@@ -689,16 +930,22 @@
                 <div class="form-container">
                     <!-- Analysis Form -->
                     <div class="form-section">
-                        <h3><i class="fas fa-cog"></i> Analysis Configuration</h3>
+                        <h3 style="text-align: center; font-size: 1.6rem; font-weight: 600; color: var(--etrade-purple); margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
+                            <i class="fas fa-cog" style="font-size: 1.5rem; color: var(--etrade-purple-light);"></i> Analysis Configuration
+                        </h3>
                         
-                        <!-- Panel 1: Data Selection Parameters -->
+                        <!-- Panel 1: Data Selection -->
                         <div class="panel-group">
                             <div class="panel">
-                                <h4 class="panel-title">Data Selection</h4>
+                                <h4 class="panel-title">
+                                    <i class="fas fa-database"></i> Data Selection
+                                </h4>
                                 
                                 <!-- Asset Selection -->
                                 <div class="form-group">
-                                    <label class="form-label">Asset</label>
+                                    <label class="form-label">
+                                        <i class="fas fa-coins"></i> Asset
+                                    </label>
                                     <div class="asset-button-grid">
                                         <button type="button" class="asset-btn" data-asset="BTC" onclick="selectAsset(this, 'BTC')">
                                             <i class="fas fa-bitcoin"></i> BTC
@@ -742,7 +989,9 @@
                                 
                                 <!-- Timeframe Selection -->
                                 <div class="form-group">
-                                    <label class="form-label">Timeframe</label>
+                                    <label class="form-label">
+                                        <i class="fas fa-chart-line"></i> Timeframe
+                                    </label>
                                     <div class="timeframe-selector">
                                         <button type="button" class="timeframe-btn" data-timeframe="1m" onclick="selectTimeframe(this, '1m')">
                                             1m
@@ -769,48 +1018,51 @@
                                 </div>
                             </div>
                             
-                            <!-- Panel 2: Date and Time Configuration -->
+                            <!-- Panel 2: Date & Time Configuration -->
                             <div class="panel">
-                                <h4 class="panel-title">Date & Time Configuration</h4>
+                                <h4 class="panel-title">
+                                    <i class="fas fa-calendar-alt"></i> Date & Time Configuration
+                                </h4>
                                 
                                 <!-- Date Range -->
                                 <div class="form-group">
-                                    <label class="form-label">Date Range</label>
+                                    <label class="form-label" style="font-size: 1.2rem; font-weight: 600; color: #374151; margin-bottom: 0.75rem;">
+                                        <i class="fas fa-calendar-week" style="color: #6B7280; margin-right: 0.5rem;"></i> Date Range
+                                    </label>
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input type="date" id="startDate" class="form-control" placeholder="mm/dd/yyyy" required>
+                                            <input type="date" id="startDate" class="form-control" placeholder="mm/dd/yyyy" required style="font-size: 1.1rem; padding: 0.875rem 1rem; border: 2px solid #E5E7EB; border-radius: 8px;">
                                         </div>
                                         <div class="col-md-6">
-                                            <input type="date" id="endDate" class="form-control" placeholder="mm/dd/yyyy" required>
+                                            <input type="date" id="endDate" class="form-control" placeholder="mm/dd/yyyy" required style="font-size: 1.1rem; padding: 0.875rem 1rem; border: 2px solid #E5E7EB; border-radius: 8px;">
                                         </div>
                                     </div>
                                 </div>
                                 
                                 <!-- Time Selector -->
                                 <div class="form-group">
-                                    <label class="form-label">Time Selector</label>
+                                    <label class="form-label" style="font-size: 1.2rem; font-weight: 600; color: #374151; margin-bottom: 0.75rem;">
+                                        <i class="fas fa-clock" style="color: #6B7280; margin-right: 0.5rem;"></i> Time Selector
+                                    </label>
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input type="time" id="startTime" class="form-control" value="00:00" step="60">
+                                            <input type="time" id="startTime" class="form-control" value="00:00" step="60" style="font-size: 1.1rem; padding: 0.875rem 1rem; border: 2px solid #E5E7EB; border-radius: 8px;">
                                         </div>
                                         <div class="col-md-6">
-                                            <input type="time" id="endTime" class="form-control" value="23:59" step="60">
+                                            <input type="time" id="endTime" class="form-control" value="23:59" step="60" style="font-size: 1.1rem; padding: 0.875rem 1rem; border: 2px solid #E5E7EB; border-radius: 8px;">
                                         </div>
                                     </div>
                                 </div>
                                 
-                                                                 <!-- Prediction Option -->
-                                 <div class="form-group">
-                                     <label class="form-label">
-                                         Prediction <i class="fas fa-info-circle" title="Use current date & time for end"></i>
-                                     </label>
-                                     <div class="form-check">
-                                         <input class="form-check-input" type="checkbox" id="useCurrentTime" checked>
-                                         <label class="form-check-label" for="useCurrentTime">
-                                             Use current date & time for end
-                                         </label>
-                                     </div>
-                                 </div>
+                                <!-- Current Time Option -->
+                                <div class="form-group">
+                                    <div class="form-check" style="margin-top: 1rem;">
+                                        <input class="form-check-input" type="checkbox" id="useCurrentTime" checked style="transform: scale(1.2); margin-right: 0.75rem;">
+                                        <label class="form-check-label" for="useCurrentTime" style="font-size: 1.3rem; font-weight: 500; color: #374151; cursor: pointer;">
+                                            Use current date & time for end
+                                        </label>
+                                    </div>
+                                </div>
                                 
                                 <!-- Validation Messages -->
                                 <div id="dateRangeInfo" class="alert alert-info mt-2" style="display: none;">
@@ -825,7 +1077,7 @@
                             </div>
                         </div>
                         
-                        <!-- Panel 3: Settings -->
+                        <!-- Panel 3: Settings & Security -->
                         <div class="panel-group">
                             <div class="panel">
                                 <h4 class="panel-title">
@@ -866,36 +1118,37 @@
                                 
                                 <div class="security-info">
                                     <div class="security-item">
-                                        <i class="fas fa-lock security-icon"></i>
+                                        <i class="fas fa-server security-icon"></i>
                                         <div class="security-content">
-                                            <strong>🔒 Localhost Only:</strong> This server runs exclusively on localhost (127.0.0.1)
+                                            <strong>Localhost Only</strong>
+                                            <p>This server runs exclusively on localhost (127.0.0.1)</p>
                                         </div>
                                     </div>
                                     
                                     <div class="security-item">
-                                        <i class="fas fa-lock security-icon"></i>
+                                        <i class="fas fa-key security-icon"></i>
                                         <div class="security-content">
-                                            <strong>🔐 API Key Security:</strong> Your API key is stored locally and never uploaded to external servers
+                                            <strong>API Key Security</strong>
+                                            <p>Your API key is stored locally and never uploaded to external servers</p>
                                         </div>
                                     </div>
                                     
                                     <div class="security-item">
                                         <i class="fas fa-shield-alt security-icon"></i>
                                         <div class="security-content">
-                                            <strong>🛡️ Data Privacy:</strong> All analysis data remains on your local machine
+                                            <strong>Data Privacy</strong>
+                                            <p>All analysis data remains on your local machine</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Panel 4: Action Button -->
-                        <div class="panel action-panel">
-                            <div class="text-center">
-                                <button class="btn btn-primary btn-lg" id="analyzeBtn" onclick="runAnalysis()">
-                                    <i class="fas fa-play"></i> Run Analysis
-                                </button>
-                            </div>
+                        <!-- Run Analysis Button -->
+                        <div class="text-center" style="margin-top: 2rem;">
+                            <button class="btn btn-primary btn-lg" id="analyzeBtn" onclick="runAnalysis()" style="padding: 1.5rem 3rem; font-size: 1.3rem; border-radius: 15px;">
+                                <i class="fas fa-play"></i> Run Analysis
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -912,17 +1165,34 @@
         
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            // Set up event listeners
-            document.getElementById('timeframeSelect').addEventListener('change', function() {
-                currentTimeframe = this.value;
-                if (this.value === 'live') {
-                    document.getElementById('dateRangeDiv').style.display = 'block';
-                    updateTimeframeLimits();
-                } else {
-                    document.getElementById('dateRangeDiv').style.display = 'none';
-                    hideDateValidation();
-                }
-            });
+            // Set default dates
+            const now = new Date();
+            const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+            
+            // Format dates for input fields
+            const formatDate = (date) => {
+                return date.toISOString().split('T')[0];
+            };
+            
+            // Set default start date (30 days ago)
+            document.getElementById('startDate').value = formatDate(thirtyDaysAgo);
+            
+            // Set default end date (today)
+            document.getElementById('endDate').value = formatDate(now);
+            
+            // Set default active timeframe
+            const defaultTimeframeBtn = document.querySelector('[data-timeframe="1h"]');
+            if (defaultTimeframeBtn) {
+                defaultTimeframeBtn.classList.add('active');
+                selectedTimeframe = '1h';
+            }
+            
+            // Set default asset
+            const defaultAssetBtn = document.querySelector('[data-asset="BTC"]');
+            if (defaultAssetBtn) {
+                defaultAssetBtn.classList.add('active');
+                selectedAsset = 'BTC';
+            }
             
             document.getElementById('useCurrentTime').addEventListener('change', handleUseCurrentTimeChange);
             
@@ -934,12 +1204,6 @@
             
             // Initialize current time update
             setInterval(updateCurrentTime, 1000);
-            
-            // Set default active timeframe
-            const defaultTimeframeBtn = document.querySelector('[data-timeframe="1h"]');
-            if (defaultTimeframeBtn) {
-                defaultTimeframeBtn.classList.add('active');
-            }
             
             // Add keyboard navigation for timeframe selector
             document.addEventListener('keydown', function(e) {
@@ -955,7 +1219,26 @@
                     buttons[currentIndex + 1].click();
                 }
             });
+            
+            // Check API key status on page load
+            checkApiKeyStatus();
         });
+        
+        function checkApiKeyStatus() {
+            fetch('/api/get-api-key-status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.has_key) {
+                        showApiKeyStatus(`API key is set: ${data.masked_key}`);
+                    } else {
+                        showApiKeyError('No API key found. Please enter your OpenAI API key.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking API key status:', error);
+                    showApiKeyError('Unable to check API key status');
+                });
+        }
         
                  // Global variables
          let selectedAsset = '';
@@ -1040,19 +1323,74 @@
                  alert('Please select both asset and timeframe.');
                  return;
              }
-            
-            // Show loading
-            alert('Analysis started! This is a demo version.');
-            console.log('Analysis parameters:', {
-                dataSource: dataSource,
-                asset: asset,
-                timeframe: timeframe,
-                startDate: document.getElementById('startDate').value,
-                startTime: document.getElementById('startTime').value,
-                endDate: document.getElementById('endDate').value,
-                endTime: document.getElementById('endTime').value,
-                useCurrentTime: document.getElementById('useCurrentTime').checked
-            });
+             
+             // Get date and time values
+             const startDate = document.getElementById('startDate').value;
+             const startTime = document.getElementById('startTime').value;
+             const endDate = document.getElementById('endDate').value;
+             const endTime = document.getElementById('endTime').value;
+             const useCurrentTime = document.getElementById('useCurrentTime').checked;
+             
+             // Validate dates
+             if (!startDate || !endDate) {
+                 alert('Please select both start and end dates.');
+                 return;
+             }
+             
+             // Show loading state
+             const analyzeBtn = document.getElementById('analyzeBtn');
+             const originalText = analyzeBtn.innerHTML;
+             analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+             analyzeBtn.disabled = true;
+             
+             // Prepare request data
+             const requestData = {
+                 data_source: dataSource,
+                 asset: asset,
+                 timeframe: timeframe,
+                 start_date: startDate,
+                 start_time: startTime,
+                 end_date: endDate,
+                 end_time: endTime,
+                 use_current_time: useCurrentTime,
+                 redirect_to_output: true
+             };
+             
+             // Make API call
+             fetch('/api/analyze', {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json',
+                 },
+                 body: JSON.stringify(requestData)
+             })
+             .then(response => response.json())
+             .then(data => {
+                 if (data.redirect) {
+                     // Redirect to output page with results
+                     window.location.href = data.redirect;
+                 } else if (data.error) {
+                     // Show error message
+                     alert('Analysis failed: ' + data.error);
+                     // Reset button
+                     analyzeBtn.innerHTML = originalText;
+                     analyzeBtn.disabled = false;
+                 } else {
+                     // Handle other responses
+                     console.log('Analysis completed:', data);
+                     alert('Analysis completed successfully!');
+                     // Reset button
+                     analyzeBtn.innerHTML = originalText;
+                     analyzeBtn.disabled = false;
+                 }
+             })
+             .catch(error => {
+                 console.error('Error:', error);
+                 alert('An error occurred during analysis. Please try again.');
+                 // Reset button
+                 analyzeBtn.innerHTML = originalText;
+                 analyzeBtn.disabled = false;
+             });
         }
         
         function handleUseCurrentTimeChange() {
@@ -1138,11 +1476,38 @@
              // Hide previous messages
              hideApiKeyMessages();
              
-             // Simulate API key update (replace with actual API call)
-             setTimeout(() => {
-                 showApiKeySuccess('API key updated successfully!');
-                 document.getElementById('apiKeyInput').value = '';
-             }, 1000);
+             // Show loading state
+             const updateBtn = document.querySelector('button[onclick="updateApiKey()"]');
+             const originalText = updateBtn.innerHTML;
+             updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+             updateBtn.disabled = true;
+             
+             // Make API call to update the key
+             fetch('/api/update-api-key', {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json',
+                 },
+                 body: JSON.stringify({ api_key: apiKey })
+             })
+             .then(response => response.json())
+             .then(data => {
+                 if (data.success) {
+                     showApiKeySuccess('API key updated successfully!');
+                     document.getElementById('apiKeyInput').value = '';
+                 } else {
+                     showApiKeyError(data.error || 'Failed to update API key');
+                 }
+             })
+             .catch(error => {
+                 console.error('Error:', error);
+                 showApiKeyError('An error occurred while updating the API key');
+             })
+             .finally(() => {
+                 // Reset button
+                 updateBtn.innerHTML = originalText;
+                 updateBtn.disabled = false;
+             });
          }
          
          function showApiKeySuccess(message) {

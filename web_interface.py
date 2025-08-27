@@ -322,6 +322,12 @@ class WebTradingAnalyzer:
         trend_analysis = final_state.get("trend_report", "")
         final_decision_raw = final_state.get("final_trade_decision", "")
         
+        # Extract chart data if available
+        pattern_chart = final_state.get("pattern_image", "")
+        trend_chart = final_state.get("trend_image", "")
+        pattern_image_filename = final_state.get("pattern_image_filename", "")
+        trend_image_filename = final_state.get("trend_image_filename", "")
+        
         # Parse final decision
         final_decision = ""
         if final_decision_raw:
@@ -353,6 +359,10 @@ class WebTradingAnalyzer:
             "technical_indicators": technical_indicators,
             "pattern_analysis": pattern_analysis,
             "trend_analysis": trend_analysis,
+            "pattern_chart": pattern_chart,
+            "trend_chart": trend_chart,
+            "pattern_image_filename": pattern_image_filename,
+            "trend_image_filename": trend_image_filename,
             "final_decision": final_decision
         }
 
@@ -461,21 +471,51 @@ analyzer = WebTradingAnalyzer()
 
 @app.route('/')
 def index():
-    """Main page with analysis form."""
-    assets = analyzer.get_available_assets()
-    timeframes = analyzer.timeframes
-    asset_mapping = analyzer.asset_mapping
+    """Main landing page - redirect to demo."""
+    return render_template('demo_new.html')
+
+@app.route('/demo')
+def demo():
+    """Demo page with new interface."""
+    return render_template('demo_new.html')
+
+@app.route('/output')
+def output():
+    """Output page with analysis results."""
+    # Get results from session or query parameters
+    results = request.args.get('results')
+    if results:
+        try:
+            # Handle URL-encoded results
+            import urllib.parse
+            results = urllib.parse.unquote(results)
+            results_data = json.loads(results)
+            return render_template('output.html', results=results_data)
+        except (json.JSONDecodeError, Exception) as e:
+            print(f"Error parsing results: {e}")
+            # Fall back to default results
     
-    # Get current date for default date picker values
-    now = datetime.now()
-    thirty_days_ago = now - timedelta(days=30)
+    # Default results if none provided
+    default_results = {
+        "asset_name": "BTC",
+        "timeframe": "1h",
+        "data_length": 1247,
+        "technical_indicators": "RSI (14): 65.4 - Neutral to bullish momentum\nMACD: Bullish crossover with increasing histogram\nMoving Averages: Price above 50-day and 200-day MA\nBollinger Bands: Price in upper band, showing strength\nVolume: Above average volume supporting price action",
+        "pattern_analysis": "Bull Flag Pattern: Consolidation after strong upward move\nGolden Cross: 50-day MA crossing above 200-day MA\nHigher Highs & Higher Lows: Uptrend confirmation\nVolume Pattern: Increasing volume on price advances",
+        "trend_analysis": "Primary Trend: Bullish (Long-term)\nSecondary Trend: Bullish (Medium-term)\nShort-term Trend: Consolidating with bullish bias\nADX: 28.5 - Moderate trend strength\nPrice Action: Higher highs and higher lows maintained\nMomentum: Positive divergence on RSI",
+        "pattern_chart": "",
+        "trend_chart": "",
+        "pattern_image_filename": "",
+        "trend_image_filename": "",
+        "final_decision": {
+            "decision": "LONG",
+            "risk_reward_ratio": "1:2.5",
+            "forecast_horizon": "24-48 hours",
+            "justification": "Based on comprehensive analysis of technical indicators, pattern recognition, and trend analysis, the system recommends a LONG position on BTC. The analysis shows strong bullish momentum with key support levels holding, and multiple technical indicators confirming upward movement."
+        }
+    }
     
-    return render_template('index.html', 
-                         assets=assets, 
-                         timeframes=timeframes, 
-                         asset_mapping=asset_mapping,
-                         now=now,
-                         thirty_days_ago=thirty_days_ago)
+    return render_template('output.html', results=default_results)
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze():
@@ -484,6 +524,8 @@ def analyze():
         data_source = data.get('data_source')
         asset = data.get('asset')
         timeframe = data.get('timeframe')
+        redirect_to_output = data.get('redirect_to_output', False)
+        
         if data_source != 'live':
             return jsonify({"error": "Only live Yahoo Finance data is supported."})
         
@@ -531,6 +573,19 @@ def analyze():
             display_name = asset
         results = analyzer.run_analysis(df, display_name, timeframe)
         formatted_results = analyzer.extract_analysis_results(results)
+        
+        # If redirect is requested, return redirect URL with results
+        if redirect_to_output:
+            if formatted_results.get("success", False):
+                # Encode results for URL
+                import urllib.parse
+                results_json = json.dumps(formatted_results)
+                encoded_results = urllib.parse.quote(results_json)
+                redirect_url = f"/output?results={encoded_results}"
+                return jsonify({"redirect": redirect_url})
+            else:
+                return jsonify({"error": formatted_results.get("error", "Analysis failed")})
+        
         return jsonify(formatted_results)
     except Exception as e:
         return jsonify({"error": str(e)})
@@ -650,6 +705,10 @@ def get_image(image_type):
             image_path = 'kline_chart.png'
         elif image_type == 'trend':
             image_path = 'trend_graph.png'
+        elif image_type == 'pattern_chart':
+            image_path = 'pattern_chart.png'
+        elif image_type == 'trend_chart':
+            image_path = 'trend_chart.png'
         else:
             return jsonify({"error": "Invalid image type"})
         
@@ -669,6 +728,14 @@ def validate_api_key():
         return jsonify(validation)
     except Exception as e:
         return jsonify({"valid": False, "error": str(e)})
+
+@app.route('/assets/<path:filename>')
+def serve_assets(filename):
+    """Serve static assets from the assets folder."""
+    try:
+        return send_file(f'assets/{filename}')
+    except FileNotFoundError:
+        return jsonify({"error": "Asset not found"}), 404
 
 if __name__ == '__main__':
     # Create templates directory if it doesn't exist

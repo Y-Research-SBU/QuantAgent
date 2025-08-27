@@ -46,8 +46,34 @@
         .header {
             background: linear-gradient(135deg, var(--etrade-purple) 0%, var(--etrade-purple-light) 100%);
             color: var(--white);
-            padding: 2rem;
+            padding: 3rem 2rem;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .title-highlight {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
                  .results-section {
@@ -55,20 +81,36 @@
              background: var(--white);
          }
 
-                   /* Panel Layout Styles */
-          .panel-group {
-              display: grid;
-              grid-template-columns: 1fr 1fr 1fr;
-              gap: 2rem;
-              margin-bottom: 2rem;
-          }
+                                                                               /* Panel Layout Styles */
+           .panel-group {
+               display: flex;
+               flex-direction: column;
+               gap: 2rem;
+               margin-bottom: 2rem;
+           }
           
-          .panel-group-2 {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 2rem;
-              margin-bottom: 2rem;
-          }
+                  .panel-group-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: start;
+        }
+        
+        .panel-group-full {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-caption {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            font-style: italic;
+        }
          
          .panel {
              background: var(--white);
@@ -84,14 +126,159 @@
              box-shadow: 0 8px 24px rgba(86, 39, 216, 0.1);
          }
          
-         .panel-title {
-             color: var(--etrade-purple);
-             font-weight: 600;
-             font-size: 1.1rem;
-             margin-bottom: 1.5rem;
-             padding-bottom: 0.5rem;
-             border-bottom: 2px solid var(--gray-100);
-         }
+                 .panel-title {
+            color: var(--etrade-purple);
+            font-weight: 600;
+            font-size: 1.8rem;
+            margin: 0.5rem 0 1.5rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+        
+        .panel-title i {
+            font-size: 2rem;
+            color: var(--etrade-purple-light);
+            background: linear-gradient(135deg, var(--etrade-purple-light) 0%, var(--etrade-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 4px rgba(86, 39, 216, 0.2));
+        }
+
+        /* Large Panel Styling */
+        .large-panel {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .large-panel:hover {
+            border-color: var(--etrade-purple-light);
+            box-shadow: 0 8px 24px rgba(86, 39, 216, 0.1);
+        }
+
+        .large-panel-title {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--etrade-purple);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--etrade-purple-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .large-panel-title i {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--etrade-purple-light) 0%, var(--etrade-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 3px 6px rgba(86, 39, 216, 0.3));
+        }
+
+        .large-panel-content {
+            padding: 1rem 0;
+        }
+
+        .large-panel-content .panel-group-2 {
+            width: 100%;
+        }
+
+        .large-panel-content .panel {
+            height: fit-content;
+            min-height: 300px;
+        }
+
+        .large-panel-section {
+            margin-bottom: 2rem;
+        }
+
+        .large-panel-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .large-panel-section h5 {
+            color: var(--etrade-purple);
+            font-weight: 600;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .large-panel-section h5 i {
+            color: var(--etrade-purple-light);
+            font-size: 1.2rem;
+        }
+
+        /* Automatic Content Beautification */
+        .auto-beautify {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: var(--gray-700);
+        }
+
+        .auto-beautify h1, .auto-beautify h2, .auto-beautify h3, .auto-beautify h4, .auto-beautify h5, .auto-beautify h6 {
+            color: var(--etrade-purple);
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .auto-beautify p {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .auto-beautify ul, .auto-beautify ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .auto-beautify li {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .auto-beautify strong {
+            color: var(--etrade-purple);
+            font-weight: 600;
+        }
+
+        .auto-beautify em {
+            color: var(--etrade-purple-light);
+            font-style: italic;
+        }
+
+        .auto-beautify code {
+            background: var(--gray-100);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: var(--etrade-purple);
+        }
+
+        .auto-beautify blockquote {
+            border-left: 4px solid var(--etrade-purple-light);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+            color: var(--gray-600);
+        }
          
          .full-width-panel {
              grid-column: 1 / -1;
@@ -196,6 +383,17 @@
             height: auto;
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .image-container {
+            text-align: center;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .row { display: flex; flex-wrap: wrap; margin-left: -0.75rem; margin-right: -0.75rem; }
@@ -209,57 +407,104 @@
         .align-items-stretch { align-items: stretch; }
         .w-100 { width: 100%; }
         .img-fluid { max-width: 100%; height: auto; }
+        
+        .btn-outline-light {
+            color: var(--white);
+            border-color: var(--white);
+            background: transparent;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-light:hover {
+            background: var(--white);
+            color: var(--etrade-purple);
+        }
+        
+        .justify-content-between { justify-content: space-between; }
+        .align-items-center { align-items: center; }
+        .btn { display: inline-block; }
 
-                 @media (max-width: 768px) {
-             .col-md-4, .col-md-6 { flex: 0 0 100%; max-width: 100%; }
-             .main-container { margin: 1rem; border-radius: 16px; }
-             .results-section { padding: 2rem 1rem; }
-             .stats-card { height: 100px; }
-             .stats-number { font-size: 2em; }
-             
-                           /* Mobile panel layout */
-              .panel-group,
-              .panel-group-2 {
-                  grid-template-columns: 1fr;
-                  gap: 1rem;
-              }
-             
-             .panel {
-                 padding: 1rem;
-             }
-         }
+        @media (max-width: 768px) {
+            .col-md-4, .col-md-6 { flex: 0 0 100%; max-width: 100%; }
+            .main-container { margin: 1rem; border-radius: 16px; }
+            .results-section { padding: 2rem 1rem; }
+            .stats-card { height: 100px; }
+            .stats-number { font-size: 2em; }
+            
+            /* Mobile panel layout */
+            .panel-group-2, .panel-group-full {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .panel {
+                padding: 1rem;
+            }
+            
+            .image-container {
+                padding: 0.5rem;
+            }
+            
+            .analysis-image {
+                max-width: 100%;
+                height: auto;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="main-container">
         <!-- Header -->
         <div class="header">
-            <h1><i class="fas fa-chart-line"></i> QuantAgent Analysis Results</h1>
-            <p>Multi-Agent Trading System Analysis Complete</p>
+            <div class="text-center">
+                <!-- Centered Logo and Title -->
+                <div style="display: flex; align-items: center; justify-content: center; gap: 0rem; margin-bottom: 1rem;">
+                    <img src="/assets/darklogo.png" alt="QuantAgent Logo" style="width: 7rem; height: 7rem; object-fit: contain; background: transparent; box-shadow: none; border: none; border-radius: 0; transform: translateY(0.5rem);">
+                    <span style="font-size: 4.0rem; font-weight: 700; color: white; line-height: 1.0;">QuantAgent</span>
+                </div>
+                <div class="text-center">
+                    <!-- <h2 class="text-2xl font-semibold text-indigo-200 tracking-wide drop-shadow-sm">
+                        Analysis Results
+                      </h2>
+                       -->
+                </div>
+                
+                <!-- Back Button -->
+                <div style="margin-top: 2rem;">
+                    <a href="/demo" class="btn btn-outline-light" style="font-size: 1.3rem; padding: 0.75rem 1.5rem; border-radius: 12px;">
+                        <i class="fas fa-arrow-left"></i>&nbsp;&nbsp; Back to Demo
+                    </a>
+                </div>
+            </div>
         </div>
         
                  <!-- Results Section -->
          <div class="results-section">
-             <!-- Row 1: Analysis Summary, Final Decision, Technical Indicators -->
+                              <!-- Row 1: Analysis Summary, Final Decision, Technical Indicators -->
              <div class="panel-group">
-                 <div class="panel">
-                     <h4 class="panel-title">Analysis Summary</h4>
+                                 <div class="panel">
+                    <h4 class="panel-title">
+                        <i class="fas fa-chart-pie"></i> Analysis Summary
+                    </h4>
                      <div class="row align-items-stretch">
                          <div class="col-md-4 d-flex">
                              <div class="stats-card w-100">
-                                 <div class="stats-number">1,247</div>
+                                 <div class="stats-number">{{ results.data_length if results.data_length else '1,247' }}</div>
                                  <div class="stats-label">Data Points</div>
                              </div>
                          </div>
                          <div class="col-md-4 d-flex">
                              <div class="stats-card w-100">
-                                 <div class="stats-number">1h</div>
+                                 <div class="stats-number">{{ results.timeframe if results.timeframe else '1h' }}</div>
                                  <div class="stats-label">Timeframe</div>
                              </div>
                          </div>
                          <div class="col-md-4 d-flex">
                              <div class="stats-card w-100">
-                                 <div class="stats-number">BTC</div>
+                                 <div class="stats-number">{{ results.asset_name if results.asset_name else 'BTC' }}</div>
                                  <div class="stats-label">Asset</div>
                              </div>
                          </div>
@@ -272,128 +517,206 @@
                          <i class="fas fa-bullseye"></i> Final Trading Decision
                      </h4>
                      <div class="text-center mb-3">
-                         <span class="decision-badge decision-long">LONG</span>
+                         {% if results.final_decision and results.final_decision.decision %}
+                             <span class="decision-badge decision-{{ results.final_decision.decision.lower() }}">{{ results.final_decision.decision }}</span>
+                         {% else %}
+                             <span class="decision-badge decision-long">LONG</span>
+                         {% endif %}
                      </div>
                      <div>
-                         <p><strong>Forecast Horizon:</strong> 24-48 hours</p>
-                         <p><strong>Risk/Reward Ratio:</strong> 1:2.5</p>
-                         <p><strong>Justification:</strong></p>
-                         <p>Based on comprehensive analysis of technical indicators, pattern recognition, and trend analysis, the system recommends a LONG position on BTC. The analysis shows strong bullish momentum with key support levels holding, and multiple technical indicators confirming upward movement.</p>
+                         {% if results.final_decision %}
+                             <p><strong>Forecast Horizon:</strong> {{ results.final_decision.forecast_horizon if results.final_decision.forecast_horizon else '24-48 hours' }}</p>
+                             <p><strong>Risk/Reward Ratio:</strong> {{ results.final_decision.risk_reward_ratio if results.final_decision.risk_reward_ratio else '1:2.5' }}</p>
+                             <p><strong>Justification:</strong></p>
+                             <p>{{ results.final_decision.justification if results.final_decision.justification else 'Based on comprehensive analysis of technical indicators, pattern recognition, and trend analysis, the system recommends a LONG position on BTC. The analysis shows strong bullish momentum with key support levels holding, and multiple technical indicators confirming upward movement.' }}</p>
+                         {% else %}
+                             <p><strong>Forecast Horizon:</strong> 24-48 hours</p>
+                             <p><strong>Risk/Reward Ratio:</strong> 1:2.5</p>
+                             <p><strong>Justification:</strong></p>
+                             <p>Based on comprehensive analysis of technical indicators, pattern recognition, and trend analysis, the system recommends a LONG position on BTC. The analysis shows strong bullish momentum with key support levels holding, and multiple technical indicators confirming upward movement.</p>
+                         {% endif %}
                      </div>
                  </div>
                  
-                 <!-- Technical Indicators Panel -->
-                 <div class="panel">
-                     <h4 class="panel-title">
-                         <i class="fas fa-chart-bar"></i> Technical Indicators
-                     </h4>
-                     <div class="form-group">
-                         <h5>Key Technical Indicators:</h5>
-                         <ul>
-                             <li><strong>RSI (14):</strong> 65.4 - Neutral to bullish momentum</li>
-                             <li><strong>MACD:</strong> Bullish crossover with increasing histogram</li>
-                             <li><strong>Moving Averages:</strong> Price above 50-day and 200-day MA</li>
-                             <li><strong>Bollinger Bands:</strong> Price in upper band, showing strength</li>
-                             <li><strong>Volume:</strong> Above average volume supporting price action</li>
-                         </ul>
-                     </div>
-                     
-                     <div class="form-group">
-                         <h5>Support & Resistance Levels:</h5>
-                         <ul>
-                             <li><strong>Key Support:</strong> $42,500</li>
-                             <li><strong>Key Resistance:</strong> $45,200</li>
-                             <li><strong>Stop Loss:</strong> $41,800</li>
-                             <li><strong>Take Profit:</strong> $47,500</li>
-                         </ul>
-                     </div>
-                 </div>
+                                 <!-- Technical Indicators Panel -->
+                <div class="large-panel">
+                    <h3 class="large-panel-title">
+                        <i class="fas fa-chart-bar"></i> Indicator Agent
+                    </h3>
+                    <div class="large-panel-section">
+                        {% if results.technical_indicators %}
+                            <div class="auto-beautify">{{ results.technical_indicators | safe }}</div>
+                        {% else %}
+                            <div class="auto-beautify">
+                                <ul>
+                                    <li><strong>RSI (14):</strong> 65.4 - Neutral to bullish momentum</li>
+                                    <li><strong>MACD:</strong> Bullish crossover with increasing histogram</li>
+                                    <li><strong>Moving Averages:</strong> Price above 50-day and 200-day MA</li>
+                                    <li><strong>Bollinger Bands:</strong> Price in upper band, showing strength</li>
+                                    <li><strong>Volume:</strong> Above average volume supporting price action</li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
              </div>
             
 
             
-                         <!-- Row 2: Pattern Recognition + Pattern Chart (same row) -->
-             <div class="panel-group-2">
-                 <div class="panel">
-                     <h4 class="panel-title">
-                         <i class="fas fa-shapes"></i> Pattern Recognition
-                     </h4>
-                     <div class="form-group">
-                         <h5>Identified Patterns:</h5>
-                         <ul>
-                             <li><strong>Bull Flag Pattern:</strong> Consolidation after strong upward move</li>
-                             <li><strong>Golden Cross:</strong> 50-day MA crossing above 200-day MA</li>
-                             <li><strong>Higher Highs & Higher Lows:</strong> Uptrend confirmation</li>
-                             <li><strong>Volume Pattern:</strong> Increasing volume on price advances</li>
-                         </ul>
-                     </div>
-                     
-                     <div class="form-group">
-                         <h5>Pattern Reliability:</h5>
-                         <p>The bull flag pattern has a historical success rate of 85% in similar market conditions. The golden cross is a strong long-term bullish signal.</p>
-                     </div>
-                 </div>
-                 
-                 <div class="panel">
-                     <h4 class="panel-title">
-                         <i class="fas fa-chart-line"></i> Pattern Chart
-                     </h4>
-                     <div class="image-container">
-                         <div class="image-placeholder">
-                             <i class="fas fa-chart-line" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                             <p>Pattern chart visualization</p>
-                             <small>Chart showing bull flag pattern and key levels</small>
-                         </div>
-                     </div>
-                 </div>
-             </div>
+                                     <!-- Pattern Agent: Pattern Recognition + Pattern Visualization -->
+            <div class="large-panel">
+                <h3 class="large-panel-title">
+                    <i class="fas fa-brain"></i> Pattern Agent
+                </h3>
+                <div style="display: flex; gap: 2rem; margin-top: 1rem;">
+                    <!-- Left Panel: Pattern Recognition -->
+                    <div class="panel" style="flex: 1;">
+                        <h4 class="panel-title">
+                            <i class="fas fa-search"></i> Pattern Recognition
+                        </h4>
+                        <div class="form-group">
+                            <h5>Identified Pattern:</h5>
+                            {% if results.pattern_analysis %}
+                                <div class="auto-beautify">{{ results.pattern_analysis | safe }}</div>
+                            {% else %}
+                                <ul>
+                                    <li><strong>Descending Triangle:</strong> Lower highs with flat support</li>
+                                    <li><strong>Structure:</strong> Converging trend lines</li>
+                                    <li><strong>Trend:</strong> Prior downtrend continuation</li>
+                                    <li><strong>Symmetry:</strong> Consistent pattern formation</li>
+                                </ul>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <h5>Pattern Reliability:</h5>
+                            <p>Descending triangle has a high success rate for bearish continuation patterns. Key support level at 110,000.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Panel: Pattern Visualization -->
+                    <div class="panel" style="flex: 1;">
+                        <h4 class="panel-title">
+                            <i class="fas fa-chart-bar"></i> Pattern Visualization
+                        </h4>
+                        <div class="image-container">
+                            {% if results.pattern_chart %}
+                                <img src="data:image/png;base64,{{ results.pattern_chart }}" alt="Pattern Analysis Chart" class="analysis-image">
+                            {% else %}
+                                <img src="/api/images/pattern" alt="Pattern Analysis Chart" class="analysis-image">
+                            {% endif %}
+                            <p class="chart-caption">Desc Triangle Overlay</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
              
-             <!-- Row 3: Trend Analysis + Trend Chart (same row) -->
-             <div class="panel-group-2">
-                 <div class="panel">
-                     <h4 class="panel-title">
-                         <i class="fas fa-trending-up"></i> Trend Analysis
-                     </h4>
-                     <div class="form-group">
-                         <h5>Trend Summary:</h5>
-                         <ul>
-                             <li><strong>Primary Trend:</strong> Bullish (Long-term)</li>
-                             <li><strong>Secondary Trend:</strong> Bullish (Medium-term)</li>
-                             <li><strong>Short-term Trend:</strong> Consolidating with bullish bias</li>
-                         </ul>
-                     </div>
-                     
-                     <div class="form-group">
-                         <h5>Trend Strength Indicators:</h5>
-                         <ul>
-                             <li><strong>ADX:</strong> 28.5 - Moderate trend strength</li>
-                             <li><strong>Price Action:</strong> Higher highs and higher lows maintained</li>
-                             <li><strong>Momentum:</strong> Positive divergence on RSI</li>
-                         </ul>
-                     </div>
-                     
-                     <div class="form-group">
-                         <h5>Market Context:</h5>
-                         <p>BTC is currently in a strong uptrend within a broader bullish market structure. The recent consolidation appears to be a healthy pause before continuation.</p>
-                     </div>
-                 </div>
-                 
-                 <div class="panel">
-                     <h4 class="panel-title">
-                         <i class="fas fa-trending-up"></i> Trend Chart
-                     </h4>
-                     <div class="image-container">
-                         <div class="image-placeholder">
-                             <i class="fas fa-trending-up" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                             <p>Trend analysis visualization</p>
-                             <small>Chart showing trend lines and momentum indicators</small>
-                         </div>
-                     </div>
-                 </div>
-             </div>
+                         <!-- Trend Agent: Trend Analysis + Trend Chart -->
+            <div class="large-panel">
+                <h3 class="large-panel-title">
+                    <i class="fas fa-chart-line"></i> Trend Agent
+                </h3>
+                <div class="large-panel-content">
+                    <div class="panel-group-2">
+                        <div class="panel">
+                            <h4 class="panel-title">
+                                <i class="fas fa-analytics"></i> Trend Analysis
+                            </h4>
+                            <div class="form-group">
+                                <h5>Trend Strength Indicators:</h5>
+                                <ul>
+                                    <li><strong>ADX:</strong> 28.5 - Moderate trend strength</li>
+                                    <li><strong>RSI Divergence:</strong> Positive divergence detected</li>
+                                    <li><strong>Momentum:</strong> Declining momentum indicators</li>
+                                    <li><strong>Volume:</strong> Decreasing volume on rallies</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="form-group">
+                                <h5>Likely Downtrend Signal:</h5>
+                                <p>Consistent downward slope and inability to break resistance suggest continued bearish pressure. Short-term trend likely to continue downward.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="panel">
+                            <h4 class="panel-title">
+                                <i class="fas fa-chart-line"></i> Trend Visualization
+                            </h4>
+                            <div class="image-container">
+                                {% if results.trend_chart %}
+                                    <img src="data:image/png;base64,{{ results.trend_chart }}" alt="Trend Analysis Chart" class="analysis-image">
+                                {% else %}
+                                    <img src="/api/images/trend" alt="Trend Analysis Chart" class="analysis-image">
+                                {% endif %}
+                                <p class="chart-caption">Support & Resistance Lines</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             
+
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        // Convert markdown to HTML and beautify content when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Find all elements that might contain markdown
+            const markdownElements = document.querySelectorAll('.form-group ul, .form-group p, .large-panel-section ul, .large-panel-section p, .large-panel-section div, .panel ul, .panel p, .form-group div, .large-panel-content ul, .large-panel-content p, .large-panel-content div');
+            
+            markdownElements.forEach(element => {
+                // Check if element contains markdown patterns
+                if (element.innerHTML.includes('**') || element.innerHTML.includes('*')) {
+                    // Convert markdown to HTML
+                    element.innerHTML = marked.parse(element.innerHTML);
+                }
+                
+                // Handle any escaped HTML that might be showing as text
+                if (element.innerHTML.includes('&lt;') || element.innerHTML.includes('&gt;')) {
+                    // Decode HTML entities
+                    element.innerHTML = element.innerHTML
+                        .replace(/&lt;/g, '<')
+                        .replace(/&gt;/g, '>')
+                        .replace(/&amp;/g, '&');
+                }
+                
+                // Auto-beautify content if it doesn't have the class
+                if (!element.classList.contains('auto-beautify') && element.innerHTML.trim()) {
+                    element.classList.add('auto-beautify');
+                }
+            });
+            
+            // Also handle any dynamic content that might be added later
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeType === 1) {
+                            if (node.innerHTML.includes('**') || node.innerHTML.includes('*')) {
+                                node.innerHTML = marked.parse(node.innerHTML);
+                            }
+                            if (node.innerHTML.includes('&lt;') || node.innerHTML.includes('&gt;')) {
+                                node.innerHTML = node.innerHTML
+                                    .replace(/&lt;/g, '<')
+                                    .replace(/&gt;/g, '>')
+                                    .replace(/&amp;/g, '&');
+                            }
+                            // Auto-beautify new content
+                            if (!node.classList.contains('auto-beautify') && node.innerHTML.trim()) {
+                                node.classList.add('auto-beautify');
+                            }
+                        }
+                    });
+                });
+            });
+            
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+    </script>
 </body>
 </html>
