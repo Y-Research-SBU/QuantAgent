@@ -266,8 +266,3 @@ If you encounter any issues, please:
 For questions, feedback, or collaboration opportunities, please contact:
 
 **Email**: [chenyu.you@stonybrook.edu](mailto:chenyu.you@stonybrook.edu) 
-
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=Y-Research-SBU/QuantAgent&type=Date)](https://www.star-history.com/#Y-Research-SBU/QuantAgent&Date)
