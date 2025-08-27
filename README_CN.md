@@ -39,13 +39,13 @@
     <img src="https://img.shields.io/badge/💡%20ArXiv-25.XXX-B31B1B?style=flat-square" alt="Paper">
   </a>
   <a href="https://Y-Research-SBU.github.io/QuantAgent">
-    <img src="https://img.shields.io/badge/Project-Website-4285F4?style=flat-square&logo=googlechrome" alt="Project Website">
+    <img src="https://img.shields.io/badge/Project-Website-blue?style=flat-square&logo=googlechrome" alt="Project Website">
+  </a>
+  <a href="https://github.com/Y-Research-SBU/QuantAgent/blob/main/assets/wechat.jpg">
+    <img src="https://img.shields.io/badge/WeChat-Group-green?style=flat-square&logo=wechat" alt="WeChat Group">
   </a>
   <a href="">
     <img src="https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord" alt="Discord Community">
-  </a>
-  <a href="assets/wechat.jpg">
-    <img src="https://img.shields.io/badge/WeChat-Group-green?style=flat-square&logo=wechat" alt="WeChat Group">
   </a>
 </p>
 
