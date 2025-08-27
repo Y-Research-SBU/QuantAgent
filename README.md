@@ -14,7 +14,8 @@
   <p>
     <a href="https://machineily.github.io/">Fei Xiong</a><sup>1,2 ★</sup>&nbsp;
     <a href="https://wyattz23.github.io">Xiang Zhang</a><sup>3 ★</sup>&nbsp;
-    <a href="https://intersun.github.io/">Siqi Sun</a><sup>4</sup>&nbsp;
+    <a href="https://scholar.google.com/citations?user=hFhhrmgAAAAJ&hl=en">Aosong Feng</a><sup>4</sup>&nbsp;
+    <a href="https://intersun.github.io/">Siqi Sun</a><sup>5</sup>&nbsp;
     <a href="https://chenyuyou.me/">Chenyu You</a><sup>1</sup>
   </p>
   
@@ -22,7 +23,8 @@
     <sup>1</sup> Stony Brook University &nbsp;&nbsp; 
     <sup>2</sup> Carnegie Mellon University &nbsp;&nbsp;
     <sup>3</sup> University of British Columbia &nbsp;&nbsp; <br>
-    <sup>4</sup> Fudan University &nbsp;&nbsp; 
+    <sup>4</sup> Yale University &nbsp;&nbsp; 
+    <sup>5</sup> Fudan University &nbsp;&nbsp; 
     ★ Equal Contribution <br>
   </p>
 </div>
@@ -266,3 +268,8 @@ If you encounter any issues, please:
 For questions, feedback, or collaboration opportunities, please contact:
 
 **Email**: [chenyu.you@stonybrook.edu](mailto:chenyu.you@stonybrook.edu) 
+
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Y-Research-SBU/QuantAgent&type=Date)](https://www.star-history.com/#Y-Research-SBU/QuantAgent&Date)
