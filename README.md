@@ -55,7 +55,7 @@ A sophisticated multi-agent trading analysis system that combines technical indi
 
 <div align="center">
 
-🚀 [Features](#-features) | ⚡ [Installation](#-installation) | 🎬 [Usage](#-usage) | 🔧 [Implementation Details](#-implementation-details) | 📊 [Benchmark](#-benchmark) | 🤝 [Contributing](#-contributing) | 📄 [License](#-license)
+🚀 [Features](#-features) | ⚡ [Installation](#-installation) | 🎬 [Usage](#-usage) | 🔧 [Implementation Details](#-implementation-details) | 🤝 [Contributing](#-contributing) | 📄 [License](#-license)
 
 </div>
 
