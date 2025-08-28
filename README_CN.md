@@ -264,3 +264,7 @@ python web_interface.py
 如有问题、反馈或合作机会，请联系：
 
 **邮箱**：[chenyu.you@stonybrook.edu](mailto:chenyu.you@stonybrook.edu)
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Y-Research-SBU/QuantAgent&type=Date)](https://www.star-history.com/#Y-Research-SBU/QuantAgent&Date)
