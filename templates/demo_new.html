@@ -946,7 +946,7 @@
                                     <label class="form-label">
                                         <i class="fas fa-coins"></i> Asset
                                     </label>
-                                    <div class="asset-button-grid">
+                                    <div class="asset-button-grid" id="assetButtonGrid">
                                         <button type="button" class="asset-btn" data-asset="BTC" onclick="selectAsset(this, 'BTC')">
                                             <i class="fas fa-bitcoin"></i> BTC
                                         </button>
@@ -965,7 +965,7 @@
                                         <button type="button" class="asset-btn" data-asset="TSLA" onclick="selectAsset(this, 'TSLA')">
                                             <i class="fas fa-car"></i> TSLA
                                         </button>
-                                        <button type="button" class="asset-btn custom-asset-btn" onclick="showCustomAssetInput()">
+                                        <button type="button" class="asset-btn custom-asset-btn" id="customAssetBtn" onclick="showCustomAssetInput()">
                                             <i class="fas fa-plus"></i> Custom
                                         </button>
                                     </div>
@@ -1163,7 +1163,186 @@
         let currentAsset = '';
         let currentTimeframe = '';
         
-        // Initialize page
+        // Persisted state keys
+        const STORAGE_KEYS = {
+            CUSTOM_ASSETS: 'quantagent_custom_assets',
+            SELECTED_ASSET: 'quantagent_selected_asset',
+            SELECTED_TIMEFRAME: 'quantagent_selected_timeframe'
+        };
+
+        // Add or render a custom asset button into the grid
+        function addCustomAssetButton(symbol, isServerLoaded = false) {
+            const grid = document.getElementById('assetButtonGrid');
+            if (!grid) return;
+
+            // Prevent duplicates (check existing data-asset values)
+            const existing = Array.from(grid.querySelectorAll('.asset-btn')).some(btn => btn.dataset.asset === symbol);
+            if (existing) return;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'asset-btn';
+            btn.dataset.asset = symbol;
+            btn.innerHTML = `<i class="fas fa-tag"></i> ${symbol}`;
+            btn.addEventListener('click', () => selectAsset(btn, symbol));
+
+            // Insert before the "Custom" button if present
+            const customBtn = document.getElementById('customAssetBtn');
+            if (customBtn && customBtn.parentNode === grid) {
+                grid.insertBefore(btn, customBtn);
+            } else {
+                grid.appendChild(btn);
+            }
+
+            // If loaded from server or localStorage, do not auto-select unless it matches stored selection
+            const storedSelected = localStorage.getItem(STORAGE_KEYS.SELECTED_ASSET);
+            if (storedSelected === symbol) {
+                // mimic click to set active and store
+                btn.click();
+            }
+        }
+
+        // Load custom assets from localStorage and server, render them
+        function loadCustomAssets() {
+            // Load from localStorage first (fast)
+            try {
+                const local = localStorage.getItem(STORAGE_KEYS.CUSTOM_ASSETS);
+                if (local) {
+                    const list = JSON.parse(local);
+                    list.forEach(sym => addCustomAssetButton(sym, false));
+                }
+            } catch (e) {
+                console.warn('Failed to parse local custom assets', e);
+            }
+
+            // Then attempt to load server-persisted custom assets and merge
+            fetch('/api/custom-assets')
+                .then(r => r.json())
+                .then(data => {
+                    if (Array.isArray(data.custom_assets)) {
+                        data.custom_assets.forEach(sym => addCustomAssetButton(sym, true));
+                        // Sync server list into localStorage (merge, dedupe)
+                        try {
+                            const local = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_ASSETS) || '[]');
+                            const merged = Array.from(new Set([...(local || []), ...data.custom_assets]));
+                            localStorage.setItem(STORAGE_KEYS.CUSTOM_ASSETS, JSON.stringify(merged));
+                        } catch (e) {
+                            console.warn('Failed to sync custom assets to localStorage', e);
+                        }
+                    }
+                })
+                .catch(err => {
+                    // Not fatal - server might not be reachable
+                    console.warn('Could not fetch server custom assets', err);
+                });
+        }
+
+        // Override confirmCustomAsset to create a persistent custom asset and persist to server/localStorage
+        function confirmCustomAsset() {
+            const customAssetEl = document.getElementById('customAssetInput');
+            const customAsset = customAssetEl.value.trim();
+
+            if (!customAsset) {
+                alert('Please enter a custom asset symbol.');
+                return;
+            }
+
+            // Normalize (trim)
+            const symbol = customAsset;
+
+            // Save to localStorage list
+            try {
+                const listRaw = localStorage.getItem(STORAGE_KEYS.CUSTOM_ASSETS);
+                const list = listRaw ? JSON.parse(listRaw) : [];
+                if (!list.includes(symbol)) {
+                    list.push(symbol);
+                    localStorage.setItem(STORAGE_KEYS.CUSTOM_ASSETS, JSON.stringify(list));
+                }
+            } catch (e) {
+                console.warn('Could not persist custom asset to localStorage', e);
+            }
+
+            // Persist to server (best-effort)
+            fetch('/api/save-custom-asset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ symbol })
+            }).then(r => r.json())
+              .then(resp => {
+                  if (!resp.success) {
+                      console.warn('Server did not save custom asset', resp);
+                  }
+              }).catch(err => {
+                  console.warn('Error saving custom asset to server', err);
+              });
+
+            // Add button and select it
+            addCustomAssetButton(symbol);
+            // Select the new asset: find button and click
+            const grid = document.getElementById('assetButtonGrid');
+            const newBtn = Array.from(grid.querySelectorAll('.asset-btn')).find(b => b.dataset.asset === symbol);
+            if (newBtn) {
+                newBtn.click();
+            }
+
+            // Hide custom asset input
+            document.getElementById('customAssetDiv').style.display = 'none';
+
+            // Clear input
+            customAssetEl.value = '';
+
+            // Notify user
+            // Use a non-blocking notification (replace alert with console + subtle DOM message if desired)
+            console.log(`Custom asset "${symbol}" selected and persisted`);
+        }
+
+        // Updated selectAsset to persist selection to localStorage
+        function selectAsset(button, asset) {
+            // Remove active class from all asset buttons
+            document.querySelectorAll('.asset-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Add active class to clicked button
+            button.classList.add('active');
+
+            // Store selected asset
+            selectedAsset = asset;
+            try {
+                localStorage.setItem(STORAGE_KEYS.SELECTED_ASSET, asset);
+            } catch (e) {
+                console.warn('Could not persist selected asset', e);
+            }
+
+            // Hide custom asset input if it was showing
+            const cav = document.getElementById('customAssetDiv');
+            if (cav) cav.style.display = 'none';
+
+            console.log('Selected asset:', asset);
+        }
+
+        // Persist timeframe selection as well
+        function selectTimeframe(button, timeframe) {
+            // Remove active class from all timeframe buttons
+            document.querySelectorAll('.timeframe-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Add active class to clicked button
+            button.classList.add('active');
+
+            // Store selected timeframe
+            selectedTimeframe = timeframe;
+            try {
+                localStorage.setItem(STORAGE_KEYS.SELECTED_TIMEFRAME, timeframe);
+            } catch (e) {
+                console.warn('Could not persist selected timeframe', e);
+            }
+
+            console.log('Selected timeframe:', timeframe);
+        }
+
+        // On page load, restore selected asset/timeframe and custom assets
         document.addEventListener('DOMContentLoaded', function() {
             // Set default dates
             const now = new Date();
@@ -1180,20 +1359,60 @@
             // Set default end date (today)
             document.getElementById('endDate').value = formatDate(now);
             
-            // Set default active timeframe
-            const defaultTimeframeBtn = document.querySelector('[data-timeframe="1h"]');
-            if (defaultTimeframeBtn) {
-                defaultTimeframeBtn.classList.add('active');
-                selectedTimeframe = '1h';
-            }
+            // Apply the current-time checkbox behavior immediately on load
+            // (this will disable & populate end date/time if the checkbox is checked by default)
+            try { handleUseCurrentTimeChange(); } catch (e) { console.warn('handleUseCurrentTimeChange not available yet', e); }
             
-            // Set default asset
-            const defaultAssetBtn = document.querySelector('[data-asset="BTC"]');
-            if (defaultAssetBtn) {
-                defaultAssetBtn.classList.add('active');
-                selectedAsset = 'BTC';
+            // Load custom assets and server-synced assets
+            loadCustomAssets();
+
+            // Restore selected timeframe (if saved)
+            try {
+                const savedTF = localStorage.getItem(STORAGE_KEYS.SELECTED_TIMEFRAME);
+                if (savedTF) {
+                    const tfBtn = Array.from(document.querySelectorAll('.timeframe-btn')).find(b => b.dataset.timeframe === savedTF);
+                    if (tfBtn) {
+                        tfBtn.classList.add('active');
+                        selectedTimeframe = savedTF;
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not restore timeframe from localStorage', e);
             }
-            
+
+            // Restore selected asset (if saved). If it is a custom asset that hasn't been added yet,
+            // add it and then select it (addCustomAssetButton handles checking duplicates).
+            try {
+                const savedAsset = localStorage.getItem(STORAGE_KEYS.SELECTED_ASSET);
+                if (savedAsset) {
+                    // Try to find an existing button
+                    let btn = Array.from(document.querySelectorAll('.asset-btn')).find(b => b.dataset.asset === savedAsset);
+                    if (!btn) {
+                        // Add it as custom and then select
+                        addCustomAssetButton(savedAsset, false);
+                        btn = Array.from(document.querySelectorAll('.asset-btn')).find(b => b.dataset.asset === savedAsset);
+                    }
+                    if (btn) {
+                        btn.classList.add('active');
+                        selectedAsset = savedAsset;
+                    }
+                } else {
+                    // fallback defaults from original code
+                    const defaultTimeframeBtn = document.querySelector('[data-timeframe="1h"]');
+                    if (defaultTimeframeBtn && !selectedTimeframe) {
+                        defaultTimeframeBtn.classList.add('active');
+                        selectedTimeframe = '1h';
+                    }
+                    const defaultAssetBtn = document.querySelector('[data-asset="BTC"]');
+                    if (defaultAssetBtn && !selectedAsset) {
+                        defaultAssetBtn.classList.add('active');
+                        selectedAsset = 'BTC';
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not restore selected asset from localStorage', e);
+            }
+
             document.getElementById('useCurrentTime').addEventListener('change', handleUseCurrentTimeChange);
             
             // Set up date/time validation
@@ -1255,10 +1474,16 @@
              
              // Store selected asset
              selectedAsset = asset;
-             
+             try {
+                 localStorage.setItem(STORAGE_KEYS.SELECTED_ASSET, asset);
+             } catch (e) {
+                 console.warn('Could not persist selected asset', e);
+             }
+
              // Hide custom asset input if it was showing
-             document.getElementById('customAssetDiv').style.display = 'none';
-             
+             const cav = document.getElementById('customAssetDiv');
+             if (cav) cav.style.display = 'none';
+
              console.log('Selected asset:', asset);
          }
          
@@ -1277,38 +1502,61 @@
          }
          
          function confirmCustomAsset() {
-             const customAsset = document.getElementById('customAssetInput').value.trim();
-             
+             const customAssetEl = document.getElementById('customAssetInput');
+             const customAsset = customAssetEl.value.trim();
+
              if (!customAsset) {
                  alert('Please enter a custom asset symbol.');
                  return;
              }
-             
-             // Store selected asset
-             selectedAsset = customAsset;
-             
-             // Hide custom asset input
-             document.getElementById('customAssetDiv').style.display = 'none';
-             
-             // Show success message
-             alert(`Custom asset "${customAsset}" selected successfully!`);
-             
-             console.log('Selected custom asset:', customAsset);
-         }
-         
-         function selectTimeframe(button, timeframe) {
-             // Remove active class from all timeframe buttons
-             document.querySelectorAll('.timeframe-btn').forEach(btn => {
-                 btn.classList.remove('active');
-             });
-             
-             // Add active class to clicked button
-             button.classList.add('active');
-             
-             // Store selected timeframe
-             selectedTimeframe = timeframe;
-             
-             console.log('Selected timeframe:', timeframe);
+
+             // Normalize (trim)
+             const symbol = customAsset;
+
+             // Save to localStorage list
+             try {
+                 const listRaw = localStorage.getItem(STORAGE_KEYS.CUSTOM_ASSETS);
+                 const list = listRaw ? JSON.parse(listRaw) : [];
+                 if (!list.includes(symbol)) {
+                     list.push(symbol);
+                     localStorage.setItem(STORAGE_KEYS.CUSTOM_ASSETS, JSON.stringify(list));
+                 }
+             } catch (e) {
+                 console.warn('Could not persist custom asset to localStorage', e);
+             }
+
+             // Persist to server (best-effort)
+             fetch('/api/save-custom-asset', {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify({ symbol })
+             }).then(r => r.json())
+               .then(resp => {
+                   if (!resp.success) {
+                       console.warn('Server did not save custom asset', resp);
+                   }
+               }).catch(err => {
+                   console.warn('Error saving custom asset to server', err);
+               });
+
+            // Add button and select it
+            addCustomAssetButton(symbol);
+            // Select the new asset: find button and click
+            const grid = document.getElementById('assetButtonGrid');
+            const newBtn = Array.from(grid.querySelectorAll('.asset-btn')).find(b => b.dataset.asset === symbol);
+            if (newBtn) {
+                newBtn.click();
+            }
+
+            // Hide custom asset input
+            document.getElementById('customAssetDiv').style.display = 'none';
+
+            // Clear input
+            customAssetEl.value = '';
+
+            // Notify user
+            // Use a non-blocking notification (replace alert with console + subtle DOM message if desired)
+            console.log(`Custom asset "${symbol}" selected and persisted`);
          }
         
                  function runAnalysis() {

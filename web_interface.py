@@ -22,6 +22,9 @@ class WebTradingAnalyzer:
         self.trading_graph = TradingGraph()
         self.data_dir = Path("data")
         
+        # Ensure data dir exists
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        
         # Available assets and their display names
         self.asset_mapping = {
             'SPX': 'S&P 500',
@@ -66,6 +69,10 @@ class WebTradingAnalyzer:
             '1d': '1d'
         }
     
+        # Load persisted custom assets
+        self.custom_assets_file = self.data_dir / "custom_assets.json"
+        self.custom_assets = self.load_custom_assets()
+
     def fetch_yfinance_data(self, symbol: str, interval: str, start_date: str, end_date: str) -> pd.DataFrame:
         """Fetch OHLCV data from Yahoo Finance."""
         try:
@@ -466,6 +473,36 @@ class WebTradingAnalyzer:
                     "error": f"❌ API Key Error: {error_msg}"
                 }
 
+    def load_custom_assets(self) -> list:
+        """Load custom assets from persistent JSON file."""
+        try:
+            if self.custom_assets_file.exists():
+                with open(self.custom_assets_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    if isinstance(data, list):
+                        return data
+            return []
+        except Exception as e:
+            print(f"Error loading custom assets: {e}")
+            return []
+
+    def save_custom_asset(self, symbol: str) -> bool:
+        """Save a custom asset symbol persistently (avoid duplicates)."""
+        try:
+            symbol = symbol.strip()
+            if not symbol:
+                return False
+            if symbol in self.custom_assets:
+                return True  # already present
+            self.custom_assets.append(symbol)
+            # write to file
+            with open(self.custom_assets_file, 'w', encoding='utf-8') as f:
+                json.dump(self.custom_assets, f, indent=2)
+            return True
+        except Exception as e:
+            print(f"Error saving custom asset '{symbol}': {e}")
+            return False
+
 # Initialize the analyzer
 analyzer = WebTradingAnalyzer()
 
@@ -611,21 +648,50 @@ def get_files(asset, timeframe):
     except Exception as e:
         return jsonify({"error": str(e)})
 
+@app.route('/api/save-custom-asset', methods=['POST'])
+def save_custom_asset():
+    """Save a custom asset symbol server-side for persistence."""
+    try:
+        data = request.get_json()
+        symbol = (data.get('symbol') or "").strip()
+        if not symbol:
+            return jsonify({"success": False, "error": "Symbol required"}), 400
+
+        ok = analyzer.save_custom_asset(symbol)
+        if not ok:
+            return jsonify({"success": False, "error": "Failed to save symbol"}), 500
+
+        return jsonify({"success": True, "symbol": symbol})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/custom-assets', methods=['GET'])
+def custom_assets():
+    """Return server-persisted custom assets."""
+    try:
+        return jsonify({"custom_assets": analyzer.custom_assets or []})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/assets')
 def get_assets():
     """API endpoint to get available assets."""
     try:
         assets = analyzer.get_available_assets()
         asset_list = []
-        
+
         for asset in assets:
             asset_list.append({
                 "code": asset,
                 "name": analyzer.asset_mapping.get(asset, asset)
             })
-        
+
+        # Include server-persisted custom assets at the end
+        for custom in analyzer.custom_assets:
+            asset_list.append({"code": custom, "name": custom})
+
         return jsonify({"assets": asset_list})
-        
+
     except Exception as e:
         return jsonify({"error": str(e)})
 
@@ -746,4 +812,4 @@ if __name__ == '__main__':
     static_dir = Path("static")
     static_dir.mkdir(exist_ok=True)
     
-    app.run(debug=True, host='127.0.0.1', port=5000) 
+    app.run(debug=True, host='127.0.0.1', port=5000)
