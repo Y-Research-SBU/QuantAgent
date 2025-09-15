@@ -130,6 +130,33 @@ Or set it as an environment variable:
 export OPENAI_API_KEY="your_api_key_here"
 ```
 
+
+
+
+
+## 🚀 Usage
+
+### Start the Web Interface
+
+```bash
+python web_interface.py
+```
+
+The web application will be available at `http://127.0.0.1:5000`
+
+### Web Interface Features
+
+1. **Asset Selection**: Choose from available stocks, crypto, commodities, and indices
+2. **Timeframe Selection**: Analyze data from 1-minute to daily intervals
+3. **Date Range**: Select custom date ranges for analysis
+4. **Real-time Analysis**: Get comprehensive technical analysis with visualizations
+5. **API Key Management**: Update your OpenAI API key through the interface
+
+## 📺 Demo
+
+![Quick preview](assets/demo.gif)
+
+
 ## 🔧 Implementation Details
 
 
@@ -198,30 +225,6 @@ The system supports the following configuration parameters:
 **Note**: The system uses default token limits for comprehensive analysis. No artificial token restrictions are applied.
 
 You can view the full list of configurations in `default_config.py`.
-
-
-
-## 🚀 Usage
-
-### Start the Web Interface
-
-```bash
-python web_interface.py
-```
-
-The web application will be available at `http://127.0.0.1:5000`
-
-### Web Interface Features
-
-1. **Asset Selection**: Choose from available stocks, crypto, commodities, and indices
-2. **Timeframe Selection**: Analyze data from 1-minute to daily intervals
-3. **Date Range**: Select custom date ranges for analysis
-4. **Real-time Analysis**: Get comprehensive technical analysis with visualizations
-5. **API Key Management**: Update your OpenAI API key through the interface
-
-## 📺 Demo
-
-![Quick preview](assets/demo.gif)
 
 ## 🤝 Contributing
 
