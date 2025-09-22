@@ -231,6 +231,17 @@ python web_interface.py
 
 本项目采用 MIT 许可证 - 详情请参阅 LICENSE 文件。
 
+## 🔖 引用
+```
+@article{xiong2025quantagent,
+  title={QuantAgent: Price-Driven Multi-Agent LLMs for High-Frequency Trading},
+  author={Fei Xiong and Xiang Zhang and Aosong Feng and Siqi Sun and Chenyu You},
+  journal={arXiv preprint arXiv:2509.09995},
+  year={2025}
+}
+
+```
+
 ## 🙏 致谢
 
 此仓库基于 [**LangGraph**](https://github.com/langchain-ai/langgraph)、[**OpenAI**](https://github.com/openai/openai-python)、[**yfinance**](https://github.com/ranaroussi/yfinance)、[**Flask**](https://github.com/pallets/flask)、[**TechnicalAnalysisAutomation**](https://github.com/neurotrader888/TechnicalAnalysisAutomation/tree/main) 和 [**tvdatafeed**](https://github.com/rongardF/tvdatafeed) 构建。

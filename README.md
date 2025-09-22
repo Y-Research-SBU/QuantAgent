@@ -238,6 +238,17 @@ You can view the full list of configurations in `default_config.py`.
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## 🔖 Citation
+```
+@article{xiong2025quantagent,
+  title={QuantAgent: Price-Driven Multi-Agent LLMs for High-Frequency Trading},
+  author={Fei Xiong and Xiang Zhang and Aosong Feng and Siqi Sun and Chenyu You},
+  journal={arXiv preprint arXiv:2509.09995},
+  year={2025}
+}
+```
+
+
 ## 🙏 Acknowledgements
 
 This repository was built off of [**LangGraph**](https://github.com/langchain-ai/langgraph), [**OpenAI**](https://github.com/openai/openai-python), [**yfinance**](https://github.com/ranaroussi/yfinance), [**Flask**](https://github.com/pallets/flask), [**TechnicalAnalysisAutomation**](https://github.com/neurotrader888/TechnicalAnalysisAutomation/tree/main) and [**tvdatafeed**](https://github.com/rongardF/tvdatafeed).
