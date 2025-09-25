@@ -55,9 +55,6 @@ class WebTradingAnalyzer:
             'DXY': 'DX-Y.NYB',  # US Dollar Index
         }
         
-        # Available timeframes
-        self.timeframes = ['1m', '5m', '15m', '30m', '1h', '4h', '1d']
-        
         # Yahoo Finance interval mapping
         self.yfinance_intervals = {
             '1m': '1m',
@@ -66,7 +63,9 @@ class WebTradingAnalyzer:
             '30m': '30m',
             '1h': '1h',
             '4h': '4h',  # yfinance supports 4h natively!
-            '1d': '1d'
+            '1d': '1d',
+            '1w': '1wk',
+            '1mo': '1mo'
         }
     
         # Load persisted custom assets
@@ -265,6 +264,10 @@ class WebTradingAnalyzer:
                 display_timeframe += 'in'
             elif timeframe.endswith('d'):
                 display_timeframe += 'ay'
+            elif timeframe == '1w':
+                display_timeframe = '1 week'
+            elif timeframe == '1mo':
+                display_timeframe = '1 month'
             
             # Create initial state
             initial_state = {
@@ -387,6 +390,7 @@ class WebTradingAnalyzer:
             "4h": {"max_days": 730, "description": "4 hour data: max 730 days"},
             "1d": {"max_days": 730, "description": "1 day data: max 730 days"},
             "5d": {"max_days": 60, "description": "5 day data: max 60 days"},
+            "1w": {"max_days": 730, "description": "1 week data: max 730 days"},
             "1wk": {"max_days": 730, "description": "1 week data: max 730 days"},
             "1mo": {"max_days": 730, "description": "1 month data: max 730 days"},
             "3mo": {"max_days": 730, "description": "3 month data: max 730 days"}
