@@ -662,6 +662,38 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
+        // Check for full results in sessionStorage and update page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if we have full results with images in sessionStorage
+            const fullResults = sessionStorage.getItem('analysisResults');
+            if (fullResults) {
+                try {
+                    const results = JSON.parse(fullResults);
+                    
+                    // Update pattern chart if available
+                    if (results.pattern_chart) {
+                        const patternImg = document.querySelector('img[alt="Pattern Analysis Chart"]');
+                        if (patternImg) {
+                            patternImg.src = `data:image/png;base64,${results.pattern_chart}`;
+                        }
+                    }
+                    
+                    // Update trend chart if available
+                    if (results.trend_chart) {
+                        const trendImg = document.querySelector('img[alt="Trend Analysis Chart"]');
+                        if (trendImg) {
+                            trendImg.src = `data:image/png;base64,${results.trend_chart}`;
+                        }
+                    }
+                    
+                    // Clear sessionStorage after using the results
+                    sessionStorage.removeItem('analysisResults');
+                } catch (e) {
+                    console.error('Error parsing sessionStorage results:', e);
+                }
+            }
+        });
+        
         // Convert markdown to HTML and beautify content when page loads
         document.addEventListener('DOMContentLoaded', function() {
             // Find all elements that might contain markdown

@@ -1613,10 +1613,14 @@
                  body: JSON.stringify(requestData)
              })
              .then(response => response.json())
-             .then(data => {
-                 if (data.redirect) {
-                     // Redirect to output page with results
-                     window.location.href = data.redirect;
+            .then(data => {
+                if (data.redirect) {
+                    // Store full results (with images) in sessionStorage before redirect
+                    if (data.full_results) {
+                        sessionStorage.setItem('analysisResults', JSON.stringify(data.full_results));
+                    }
+                    // Redirect to output page with results
+                    window.location.href = data.redirect;
                  } else if (data.error) {
                      // Show error message
                      alert('Analysis failed: ' + data.error);
