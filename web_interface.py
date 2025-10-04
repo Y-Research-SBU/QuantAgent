@@ -269,13 +269,19 @@ class WebTradingAnalyzer:
             elif timeframe == '1mo':
                 display_timeframe = '1 month'
             
+            import static_util
+            p_image = static_util.generate_kline_image(df_slice_dict)
+            t_image = static_util.generate_trend_image(df_slice_dict)
+
             # Create initial state
             initial_state = {
                 "kline_data": df_slice_dict,
                 "analysis_results": None,
                 "messages": [],
                 "time_frame": display_timeframe,
-                "stock_name": asset_name
+                "stock_name": asset_name,
+                "pattern_image": p_image["pattern_image"],
+                "trend_image": t_image["trend_image"],
             }
             
             # Run the trading graph
@@ -618,12 +624,24 @@ def analyze():
         # If redirect is requested, return redirect URL with results
         if redirect_to_output:
             if formatted_results.get("success", False):
+                # Create a version without base64 images for URL encoding
+                # Base64 images are too large for URL parameters
+                url_safe_results = formatted_results.copy()
+                url_safe_results["pattern_chart"] = ""  # Remove base64 data
+                url_safe_results["trend_chart"] = ""    # Remove base64 data
+                
                 # Encode results for URL
                 import urllib.parse
-                results_json = json.dumps(formatted_results)
+                results_json = json.dumps(url_safe_results)
                 encoded_results = urllib.parse.quote(results_json)
                 redirect_url = f"/output?results={encoded_results}"
-                return jsonify({"redirect": redirect_url})
+                
+                # Store full results (with images) in session or temporary storage
+                # For now, we'll pass them back in the response for the frontend to handle
+                return jsonify({
+                    "redirect": redirect_url,
+                    "full_results": formatted_results  # Include images in response body
+                })
             else:
                 return jsonify({"error": formatted_results.get("error", "Analysis failed")})
         

@@ -22,7 +22,7 @@ def invoke_tool_with_retry(tool_fn, tool_args, retries=3, wait_sec=4):
 def create_pattern_agent(tool_llm, graph_llm, toolkit):
     """
     Create a pattern recognition agent node for candlestick pattern analysis.
-    The agent uses an LLM and a chart generation tool to identify classic trading patterns.
+    The agent uses precomputed images from state or falls back to tool generation.
     """
     def pattern_agent_node(state):
         # --- Tool and pattern definitions ---
@@ -49,25 +49,9 @@ def create_pattern_agent(tool_llm, graph_llm, toolkit):
         16. Symmetrical Triangle: Highs and lows converge toward the apex, usually followed by a breakout.
         """
 
-        # --- Step 1: System prompt setup ---
-        prompt = ChatPromptTemplate.from_messages(
-            [
-                (
-                    "system",
-                    "You are a trading pattern recognition assistant tasked with identifying classical high-frequency trading patterns. "
-                    "You have access to tool: generate_kline_image"
-                    "Use it by providing appropriate arguments like `kline_data`\n\n"
-                    "Once the chart is generated, compare it to classical pattern descriptions and determine if any known pattern is present."
-                ),
-                MessagesPlaceholder(variable_name="messages"),
-            ]
-        ).partial(
-            kline_data=json.dumps(state["kline_data"], indent=2)
-        )
-
-        chain = prompt | tool_llm.bind_tools(tools)
-        messages = state.get("messages", [])
-
+        # --- Check for precomputed image in state ---
+        pattern_image_b64 = state.get("pattern_image")
+        
         # --- Retry wrapper for LLM invocation ---
         def invoke_with_retry(call_fn, *args, retries=3, wait_sec=8):
             for attempt in range(retries):
@@ -81,30 +65,54 @@ def create_pattern_agent(tool_llm, graph_llm, toolkit):
                     time.sleep(wait_sec)
             raise RuntimeError("Max retries exceeded")
 
-        # --- Step 2: First LLM call to determine tool usage ---
-        ai_response = invoke_with_retry(chain.invoke, messages)
-        messages.append(ai_response)
+        messages = state.get("messages", [])
+        
+        # --- If no precomputed image, fall back to tool generation ---
+        if not pattern_image_b64:
+            print("No precomputed pattern image found in state, generating with tool...")
+            
+            # --- System prompt setup for tool generation ---
+            prompt = ChatPromptTemplate.from_messages(
+                [
+                    (
+                        "system",
+                        "You are a trading pattern recognition assistant tasked with identifying classical high-frequency trading patterns. "
+                        "You have access to tool: generate_kline_image. "
+                        "Use it by providing appropriate arguments like `kline_data`\n\n"
+                        "Once the chart is generated, compare it to classical pattern descriptions and determine if any known pattern is present."
+                    ),
+                    MessagesPlaceholder(variable_name="messages"),
+                ]
+            ).partial(
+                kline_data=json.dumps(state["kline_data"], indent=2)
+            )
 
-        pattern_image_b64 = None
+            chain = prompt | tool_llm.bind_tools(tools)
+            
+            # --- Step 1: First LLM call to determine tool usage ---
+            ai_response = invoke_with_retry(chain.invoke, messages)
+            messages.append(ai_response)
 
-        # --- Step 3: Handle tool call (generate_kline_image) ---
-        if hasattr(ai_response, "tool_calls"):
-            for call in ai_response.tool_calls:
-                tool_name = call["name"]
-                tool_args = call["args"]
-                # Always provide kline_data
-                tool_args["kline_data"] = copy.deepcopy(state["kline_data"])
-                tool_fn = next(t for t in tools if t.name == tool_name)
-                tool_result = invoke_tool_with_retry(tool_fn, tool_args)
-                pattern_image_b64 = tool_result.get("pattern_image")
-                messages.append(
-                    ToolMessage(
-                        tool_call_id=call["id"],
-                        content=json.dumps(tool_result)
+            # --- Step 2: Handle tool call (generate_kline_image) ---
+            if hasattr(ai_response, "tool_calls"):
+                for call in ai_response.tool_calls:
+                    tool_name = call["name"]
+                    tool_args = call["args"]
+                    # Always provide kline_data
+                    tool_args["kline_data"] = copy.deepcopy(state["kline_data"])
+                    tool_fn = next(t for t in tools if t.name == tool_name)
+                    tool_result = invoke_tool_with_retry(tool_fn, tool_args)
+                    pattern_image_b64 = tool_result.get("pattern_image")
+                    messages.append(
+                        ToolMessage(
+                            tool_call_id=call["id"],
+                            content=json.dumps(tool_result)
+                        )
                     )
-                )
+        else:
+            print("Using precomputed pattern image from state")
 
-        # --- Step 4: Second call with image (Vision LLM expects image_url + context) ---
+        # --- Step 3: Vision analysis with image (precomputed or generated) ---
         if pattern_image_b64:
             image_prompt = [
                 {
