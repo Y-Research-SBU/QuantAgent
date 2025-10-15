@@ -1,7 +1,6 @@
-from typing import Annotated, List, Sequence, TypedDict
+from typing import Annotated, List, TypedDict
 
 from langchain_core.messages import BaseMessage
-from langgraph.graph import MessagesState
 
 
 class IndicatorAgentState(TypedDict):
