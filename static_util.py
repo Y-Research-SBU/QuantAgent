@@ -1,15 +1,21 @@
-import matplotlib
-
-matplotlib.use("Agg")
 import base64
 import io
 
+import matplotlib
 import matplotlib.pyplot as plt
 import mplfinance as mpf
 import numpy as np
 import pandas as pd
 
 import color_style as color
+from graph_util import (
+    fit_trendlines_high_low,
+    fit_trendlines_single,
+    get_line_points,
+    split_line_into_segments,
+)
+
+matplotlib.use("Agg")
 
 
 def generate_kline_image(kline_data) -> dict:
@@ -67,9 +73,6 @@ def generate_kline_image(kline_data) -> dict:
         "pattern_image": img_b64,
         "pattern_image_description": "Candlestick chart saved locally and returned as base64 string.",
     }
-
-
-from graph_util import *
 
 
 def generate_trend_image(kline_data) -> dict:
