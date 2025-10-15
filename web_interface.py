@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import urllib.parse
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
@@ -8,8 +9,9 @@ from typing import Any, Dict
 import pandas as pd
 import yfinance as yf
 from flask import Flask, jsonify, render_template, request, send_file
+from openai import OpenAI
 
-# Import your existing modules
+import static_util
 from trading_graph import TradingGraph
 
 app = Flask(__name__)
@@ -286,8 +288,6 @@ class WebTradingAnalyzer:
             elif timeframe == "1mo":
                 display_timeframe = "1 month"
 
-            import static_util
-
             p_image = static_util.generate_kline_image(df_slice_dict)
             t_image = static_util.generate_trend_image(df_slice_dict)
 
@@ -476,7 +476,6 @@ class WebTradingAnalyzer:
     def validate_api_key(self) -> Dict[str, Any]:
         """Validate the current API key by making a simple test call."""
         try:
-            from openai import OpenAI
 
             client = OpenAI()
 
@@ -574,8 +573,6 @@ def output():
     if results:
         try:
             # Handle URL-encoded results
-            import urllib.parse
-
             results = urllib.parse.unquote(results)
             results_data = json.loads(results)
             return render_template("output.html", results=results_data)
@@ -677,8 +674,6 @@ def analyze():
                 url_safe_results["trend_chart"] = ""  # Remove base64 data
 
                 # Encode results for URL
-                import urllib.parse
-
                 results_json = json.dumps(url_safe_results)
                 encoded_results = urllib.parse.quote(results_json)
                 redirect_url = f"/output?results={encoded_results}"

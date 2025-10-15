@@ -3,6 +3,7 @@ Agent for technical indicator analysis in high-frequency trading (HFT) context.
 Uses LLM and toolkit to compute and interpret indicators like MACD, RSI, ROC, Stochastic, and Williams %R.
 """
 
+import copy
 import json
 
 from langchain_core.messages import ToolMessage
@@ -55,8 +56,6 @@ def create_indicator_agent(llm, toolkit):
                 tool_name = call["name"]
                 tool_args = call["args"]
                 # Always provide kline_data
-                import copy
-
                 tool_args["kline_data"] = copy.deepcopy(state["kline_data"])
                 # Lookup tool by name
                 tool_fn = next(t for t in tools if t.name == tool_name)
