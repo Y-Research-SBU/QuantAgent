@@ -2,14 +2,18 @@
 Agent for technical indicator analysis in high-frequency trading (HFT) context.
 Uses LLM and toolkit to compute and interpret indicators like MACD, RSI, ROC, Stochastic, and Williams %R.
 """
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import ToolMessage, AIMessage
+
 import json
+
+from langchain_core.messages import AIMessage, ToolMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+
 
 def create_indicator_agent(llm, toolkit):
     """
     Create an indicator analysis agent node for HFT. The agent uses LLM and indicator tools to analyze OHLCV data.
     """
+
     def indicator_agent_node(state):
         # --- Tool definitions ---
         tools = [
@@ -19,7 +23,7 @@ def create_indicator_agent(llm, toolkit):
             toolkit.compute_stoch,
             toolkit.compute_willr,
         ]
-        time_frame = state['time_frame']
+        time_frame = state["time_frame"]
         # --- System prompt for LLM ---
         prompt = ChatPromptTemplate.from_messages(
             [
@@ -32,17 +36,15 @@ def create_indicator_agent(llm, toolkit):
                     f"⚠️ The OHLC data provided is from a {time_frame} intervals, reflecting recent market behavior. "
                     "You must interpret this data quickly and accurately.\n\n"
                     "Here is the OHLC data:\n{kline_data}.\n\n"
-                    "Call necessary tools, and analyze the results.\n"
+                    "Call necessary tools, and analyze the results.\n",
                 ),
                 MessagesPlaceholder(variable_name="messages"),
             ]
-        ).partial(
-            kline_data=json.dumps(state["kline_data"], indent=2)
-        )
+        ).partial(kline_data=json.dumps(state["kline_data"], indent=2))
 
         chain = prompt | llm.bind_tools(tools)
         messages = state["messages"]
-        
+
         # --- Step 1: Ask for tool calls ---
         ai_response = chain.invoke(messages)
         messages.append(ai_response)
@@ -54,6 +56,7 @@ def create_indicator_agent(llm, toolkit):
                 tool_args = call["args"]
                 # Always provide kline_data
                 import copy
+
                 tool_args["kline_data"] = copy.deepcopy(state["kline_data"])
                 # Lookup tool by name
                 tool_fn = next(t for t in tools if t.name == tool_name)
@@ -61,8 +64,7 @@ def create_indicator_agent(llm, toolkit):
                 # Append result as ToolMessage
                 messages.append(
                     ToolMessage(
-                        tool_call_id=call["id"],
-                        content=json.dumps(tool_result)
+                        tool_call_id=call["id"], content=json.dumps(tool_result)
                     )
                 )
 

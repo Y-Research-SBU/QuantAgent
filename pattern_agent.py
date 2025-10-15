@@ -1,9 +1,11 @@
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import ToolMessage, HumanMessage, SystemMessage
+import copy
 import json
 import time
-import copy
+
+from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from openai import RateLimitError
+
 
 def invoke_tool_with_retry(tool_fn, tool_args, retries=3, wait_sec=4):
     """
@@ -14,7 +16,9 @@ def invoke_tool_with_retry(tool_fn, tool_args, retries=3, wait_sec=4):
         img_b64 = result.get("pattern_image")
         if img_b64:
             return result
-        print(f"Tool returned no image, retrying in {wait_sec}s (attempt {attempt + 1}/{retries})...")
+        print(
+            f"Tool returned no image, retrying in {wait_sec}s (attempt {attempt + 1}/{retries})..."
+        )
         time.sleep(wait_sec)
     raise RuntimeError("Tool failed to generate image after multiple retries")
 
@@ -24,10 +28,11 @@ def create_pattern_agent(tool_llm, graph_llm, toolkit):
     Create a pattern recognition agent node for candlestick pattern analysis.
     The agent uses precomputed images from state or falls back to tool generation.
     """
+
     def pattern_agent_node(state):
         # --- Tool and pattern definitions ---
         tools = [toolkit.generate_kline_image]
-        time_frame = state['time_frame']
+        time_frame = state["time_frame"]
         pattern_text = """
         Please refer to the following classic candlestick patterns:
 
@@ -51,26 +56,32 @@ def create_pattern_agent(tool_llm, graph_llm, toolkit):
 
         # --- Check for precomputed image in state ---
         pattern_image_b64 = state.get("pattern_image")
-        
+
         # --- Retry wrapper for LLM invocation ---
         def invoke_with_retry(call_fn, *args, retries=3, wait_sec=8):
             for attempt in range(retries):
                 try:
                     return call_fn(*args)
                 except RateLimitError as e:
-                    print(f"Rate limit hit, retrying in {wait_sec}s (attempt {attempt + 1}/{retries})...")
+                    print(
+                        f"Rate limit hit, retrying in {wait_sec}s (attempt {attempt + 1}/{retries})..."
+                    )
                     time.sleep(wait_sec)
                 except Exception as e:
-                    print(f"Other error: {e}, retrying in {wait_sec}s (attempt {attempt + 1}/{retries})...")
+                    print(
+                        f"Other error: {e}, retrying in {wait_sec}s (attempt {attempt + 1}/{retries})..."
+                    )
                     time.sleep(wait_sec)
             raise RuntimeError("Max retries exceeded")
 
         messages = state.get("messages", [])
-        
+
         # --- If no precomputed image, fall back to tool generation ---
         if not pattern_image_b64:
-            print("No precomputed pattern image found in state, generating with tool...")
-            
+            print(
+                "No precomputed pattern image found in state, generating with tool..."
+            )
+
             # --- System prompt setup for tool generation ---
             prompt = ChatPromptTemplate.from_messages(
                 [
@@ -79,16 +90,14 @@ def create_pattern_agent(tool_llm, graph_llm, toolkit):
                         "You are a trading pattern recognition assistant tasked with identifying classical high-frequency trading patterns. "
                         "You have access to tool: generate_kline_image. "
                         "Use it by providing appropriate arguments like `kline_data`\n\n"
-                        "Once the chart is generated, compare it to classical pattern descriptions and determine if any known pattern is present."
+                        "Once the chart is generated, compare it to classical pattern descriptions and determine if any known pattern is present.",
                     ),
                     MessagesPlaceholder(variable_name="messages"),
                 ]
-            ).partial(
-                kline_data=json.dumps(state["kline_data"], indent=2)
-            )
+            ).partial(kline_data=json.dumps(state["kline_data"], indent=2))
 
             chain = prompt | tool_llm.bind_tools(tools)
-            
+
             # --- Step 1: First LLM call to determine tool usage ---
             ai_response = invoke_with_retry(chain.invoke, messages)
             messages.append(ai_response)
@@ -105,8 +114,7 @@ def create_pattern_agent(tool_llm, graph_llm, toolkit):
                     pattern_image_b64 = tool_result.get("pattern_image")
                     messages.append(
                         ToolMessage(
-                            tool_call_id=call["id"],
-                            content=json.dumps(tool_result)
+                            tool_call_id=call["id"], content=json.dumps(tool_result)
                         )
                     )
         else:
@@ -122,20 +130,23 @@ def create_pattern_agent(tool_llm, graph_llm, toolkit):
                         f"{pattern_text}\n\n"
                         "Determine whether the chart matches any of the patterns listed. "
                         "Clearly name the matched pattern(s), and explain your reasoning based on structure, trend, and symmetry."
-                    )
+                    ),
                 },
                 {
                     "type": "image_url",
-                    "image_url": {
-                        "url": f"data:image/png;base64,{pattern_image_b64}"
-                    }
-                }
+                    "image_url": {"url": f"data:image/png;base64,{pattern_image_b64}"},
+                },
             ]
 
-            final_response = invoke_with_retry(graph_llm.invoke, [
-                SystemMessage(content="You are a trading pattern recognition assistant tasked with analyzing candlestick charts."),
-                HumanMessage(content=image_prompt)
-            ])
+            final_response = invoke_with_retry(
+                graph_llm.invoke,
+                [
+                    SystemMessage(
+                        content="You are a trading pattern recognition assistant tasked with analyzing candlestick charts."
+                    ),
+                    HumanMessage(content=image_prompt),
+                ],
+            )
         else:
             # If no image was generated, fall back to reasoning with messages
             final_response = invoke_with_retry(chain.invoke, messages)
