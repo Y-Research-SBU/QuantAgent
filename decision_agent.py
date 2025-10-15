@@ -9,12 +9,13 @@ def create_final_trade_decider(llm):
     Create a trade decision agent node. The agent uses LLM to synthesize indicator, pattern, and trend reports
     and outputs a final trade decision (LONG or SHORT) with justification and risk-reward ratio.
     """
+
     def trade_decision_node(state) -> dict:
         indicator_report = state["indicator_report"]
-        pattern_report = state['pattern_report']
-        trend_report = state['trend_report']
-        time_frame = state['time_frame']
-        stock_name = state['stock_name']
+        pattern_report = state["pattern_report"]
+        trend_report = state["trend_report"]
+        time_frame = state["time_frame"]
+        stock_name = state["stock_name"]
 
         # --- System prompt for LLM ---
         prompt = f"""You are a high-frequency quantitative trading (HFT) analyst operating on the current {time_frame} K-line chart for {stock_name}. Your task is to issue an **immediate execution order**: **LONG** or **SHORT**. ⚠️ HOLD is prohibited due to HFT constraints.
