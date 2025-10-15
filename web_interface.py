@@ -1,16 +1,13 @@
-import base64
-import io
 import json
 import os
 import re
-from datetime import date, datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import pandas as pd
 import yfinance as yf
 from flask import Flask, jsonify, render_template, request, send_file
-from PIL import Image
 
 # Import your existing modules
 from trading_graph import TradingGraph
@@ -484,7 +481,7 @@ class WebTradingAnalyzer:
             client = OpenAI()
 
             # Make a simple test call
-            response = client.chat.completions.create(
+            _ = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[{"role": "user", "content": "Hello"}],
                 max_tokens=5,

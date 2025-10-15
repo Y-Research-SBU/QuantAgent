@@ -3,14 +3,11 @@ import matplotlib
 matplotlib.use("Agg")
 import base64
 import io
-from typing import Annotated
 
 import matplotlib.pyplot as plt
 import mplfinance as mpf
 import numpy as np
 import pandas as pd
-import talib
-from langchain_core.tools import tool
 
 import color_style as color
 

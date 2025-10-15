@@ -5,7 +5,7 @@ Uses LLM and toolkit to compute and interpret indicators like MACD, RSI, ROC, St
 
 import json
 
-from langchain_core.messages import AIMessage, ToolMessage
+from langchain_core.messages import ToolMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 

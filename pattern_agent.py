@@ -62,7 +62,7 @@ def create_pattern_agent(tool_llm, graph_llm, toolkit):
             for attempt in range(retries):
                 try:
                     return call_fn(*args)
-                except RateLimitError as e:
+                except RateLimitError:
                     print(
                         f"Rate limit hit, retrying in {wait_sec}s (attempt {attempt + 1}/{retries})..."
                     )
