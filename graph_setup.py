@@ -1,27 +1,15 @@
-import os
-import random
-from typing import Any, Dict, List, TypedDict
+from typing import Dict
 
-import pandas as pd
-from IPython.display import Image, display
-from langchain.chat_models import init_chat_model
-from langchain_core.messages import AnyMessage
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnableConfig
-# from langchain_community.chat_models import ChatOpenAI
 from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
-from langgraph.prebuilt import ToolNode, create_react_agent
-from langgraph.prebuilt.chat_agent_executor import AgentState
+from langgraph.prebuilt import ToolNode
 
-import default_config
 from agent_state import IndicatorAgentState
-from decision_agent import *
-from graph_util import *
+from decision_agent import create_final_trade_decider
 from graph_util import TechnicalTools
-from indicator_agent import *
-from pattern_agent import *
-from trend_agent import *
+from indicator_agent import create_indicator_agent
+from pattern_agent import create_pattern_agent
+from trend_agent import create_trend_agent
 
 
 class SetGraph:
@@ -60,7 +48,6 @@ class SetGraph:
         tool_nodes["trend"] = self.tool_nodes["trend"]
 
         # create nodes for decision agent
-        # decision_agent_node = create_final_trade_decider(self.agent_llm)
         decision_agent_node = create_final_trade_decider(self.graph_llm)
 
         # create graph
@@ -80,7 +67,6 @@ class SetGraph:
         # add edges to graph
         for i, agent_type in enumerate(all_agents):
             current_agent = f"{agent_type.capitalize()} Agent"
-            current_tools = f"{agent_type}_tools"
 
             if i == len(all_agents) - 1:
                 graph.add_edge(current_agent, "Decision Maker")
