@@ -3,6 +3,7 @@ TradingGraph: Orchestrates the multi-agent trading system using LangChain and La
 Initializes LLMs, toolkits, and agent nodes for indicator, pattern, and trend analysis.
 """
 
+import os
 from typing import Dict
 
 from langchain_openai import ChatOpenAI
@@ -23,14 +24,19 @@ class TradingGraph:
         # --- Configuration and LLMs ---
         self.config = config if config is not None else DEFAULT_CONFIG.copy()
 
-        # Initialize LLMs with config values
+        # Get API key with proper validation
+        api_key = self._get_api_key()
+
+        # Initialize LLMs with explicit API key
         self.agent_llm = ChatOpenAI(
             model=self.config.get("agent_llm_model", "gpt-4o-mini"),
             temperature=self.config.get("agent_llm_temperature", 0.1),
+            api_key=api_key,
         )
         self.graph_llm = ChatOpenAI(
             model=self.config.get("graph_llm_model", "gpt-4o"),
             temperature=self.config.get("graph_llm_temperature", 0.1),
+            api_key=api_key,
         )
         self.toolkit = TechnicalTools()
 
@@ -47,6 +53,40 @@ class TradingGraph:
 
         # --- The main LangGraph graph object ---
         self.graph = self.graph_setup.set_graph()
+
+    def _get_api_key(self):
+        """
+        Get API key with proper validation and error handling.
+        
+        Returns:
+            str: The OpenAI API key
+            
+        Raises:
+            ValueError: If API key is missing or invalid
+        """
+        # First check if API key is provided in config
+        api_key = self.config.get("api_key")
+        
+        # If not in config, check environment variable
+        if not api_key:
+            api_key = os.environ.get("OPENAI_API_KEY")
+        
+        # Validate the API key
+        if not api_key:
+            raise ValueError(
+                "OpenAI API key not found. Please set it using one of these methods:\n"
+                "1. Set environment variable: export OPENAI_API_KEY='your-key-here'\n"
+                "2. Update the config with: config['api_key'] = 'your-key-here'\n"
+                "3. Use the web interface to update the API key"
+            )
+        
+        if api_key == "your-openai-api-key-here" or api_key == "":
+            raise ValueError(
+                "Please replace the placeholder API key with your actual OpenAI API key. "
+                "You can get one from: https://platform.openai.com/api-keys"
+            )
+        
+        return api_key
 
     def _set_tool_nodes(self) -> Dict[str, ToolNode]:
         """
@@ -75,14 +115,19 @@ class TradingGraph:
         Refresh the LLM objects with the current API key from environment.
         This is called when the API key is updated.
         """
-        # Recreate LLM objects with current environment API key and config values
+        # Get the current API key with validation
+        api_key = self._get_api_key()
+        
+        # Recreate LLM objects with explicit API key and config values
         self.agent_llm = ChatOpenAI(
             model=self.config.get("agent_llm_model", "gpt-4o-mini"),
             temperature=self.config.get("agent_llm_temperature", 0.1),
+            api_key=api_key,
         )
         self.graph_llm = ChatOpenAI(
             model=self.config.get("graph_llm_model", "gpt-4o"),
             temperature=self.config.get("graph_llm_temperature", 0.1),
+            api_key=api_key,
         )
 
         # Recreate the graph setup with new LLMs
@@ -95,3 +140,20 @@ class TradingGraph:
 
         # Recreate the main graph
         self.graph = self.graph_setup.set_graph()
+
+    def update_api_key(self, api_key: str):
+        """
+        Update the API key in the config and refresh LLMs.
+        This method is called by the web interface when API key is updated.
+        
+        Args:
+            api_key (str): The new OpenAI API key
+        """
+        # Update the config with the new API key
+        self.config["api_key"] = api_key
+        
+        # Also update the environment variable for consistency
+        os.environ["OPENAI_API_KEY"] = api_key
+        
+        # Refresh the LLMs with the new API key
+        self.refresh_llms()
