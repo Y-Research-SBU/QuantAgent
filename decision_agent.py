@@ -1,125 +1,97 @@
-# -*- coding: utf-8 -*-
 """
-用于在高频交易（HFT）环境中做出最终交易决策的代理。
-该代理结合指标、模式和趋势报告，发布LONG（做多）或SHORT（做空）订单。
+Agent for making final trade decisions in high-frequency trading (HFT) context.
+Combines indicator, pattern, and trend reports to issue a LONG or SHORT order.
 """
 
 
 def create_final_trade_decider(llm):
     """
-    创建一个交易决策代理节点。
-
-    该代理使用大语言模型（LLM）综合分析指标、模式和趋势报告，
-    并输出最终的交易决策（LONG或SHORT），包括决策理由和风险回报率。
-
-    Args:
-        llm: 用于生成决策的大语言模型实例。
-
-    Returns:
-        一个可执行的交易决策节点函数。
+    Create a trade decision agent node. The agent uses LLM to synthesize indicator, pattern, and trend reports
+    and outputs a final trade decision (LONG or SHORT) with justification and risk-reward ratio.
     """
 
     def trade_decision_node(state) -> dict:
-        """
-        根据当前状态生成最终交易决策。
-
-        Args:
-            state (dict): 当前代理状态，包含以下键：
-                - indicator_report (str): 技术指标分析报告。
-                - pattern_report (str): 图表模式分析报告。
-                - trend_report (str): 市场趋势分析报告。
-                - time_frame (str): 当前K线图的时间周期。
-                - stock_name (str): 正在分析的股票名称。
-
-        Returns:
-            dict: 一个包含最终交易决策和相关信息的字典，格式如下：
-                {
-                    "final_trade_decision": str,  # LLM生成的最终决策内容
-                    "messages": list,             # LLM的响应消息列表
-                    "decision_prompt": str,       # 用于生成决策的完整提示
-                }
-        """
         indicator_report = state["indicator_report"]
         pattern_report = state["pattern_report"]
         trend_report = state["trend_report"]
         time_frame = state["time_frame"]
         stock_name = state["stock_name"]
 
-        # --- 为LLM设计的系统提示 ---
-        prompt = f"""你是一名高频量化交易（HFT）分析师，正在为 {stock_name} 的当前 {time_frame} K线图进行分析。你的任务是发布一个**立即执行的订单**：**LONG** 或 **SHORT**。⚠️ 由于高频交易的限制，禁止使用HOLD（持有）指令。
+        # --- System prompt for LLM ---
+        prompt = f"""You are a high-frequency quantitative trading (HFT) analyst operating on the current {time_frame} K-line chart for {stock_name}. Your task is to issue an **immediate execution order**: **LONG** or **SHORT**. ⚠️ HOLD is prohibited due to HFT constraints.
 
-            你的决策应预测未来 **N根K线** 的市场走势，其中：
-            - 例如：TIME_FRAME = 15分钟，N = 1 → 预测未来15分钟。
-            - TIME_FRAME = 4小时，N = 1 → 预测未来4小时。
+            Your decision should forecast the market move over the **next N candlesticks**, where:
+            - For example: TIME_FRAME = 15min, N = 1 → Predict the next 15 minutes.
+            - TIME_FRAME = 4hour, N = 1 → Predict the next 4 hours.
 
-            你的决策必须基于以下三份报告的综合强度、一致性和时机：
-
-            ---
-
-            ### 1. 技术指标报告:
-            - 评估动量指标（如MACD、ROC）和振荡器（如RSI、随机指标、威廉姆斯%R）。
-            - **优先考虑强烈的方向性信号**，如MACD金叉/死叉、RSI背离、极端超买/超卖水平。
-            - **忽略或降低中性或混合信号的权重**，除非多个指标信号一致。
+            Base your decision on the combined strength, alignment, and timing of the following three reports:
 
             ---
 
-            ### 2. 形态报告:
-            - 仅在以下情况下根据看涨或看跌形态行动：
-            - 形态**清晰可辨且基本完成**，并且
-            - 根据价格和动量（如长影线、成交量激增、吞没形态），**突破或跌破已经发生**或极有可能发生。
-            - **不要**基于早期或投机性形态行动。不要将盘整形态视为可交易机会，除非有其他报告的**突破确认**。
+            ### 1. Technical Indicator Report:
+            - Evaluate momentum (e.g., MACD, ROC) and oscillators (e.g., RSI, Stochastic, Williams %R).
+            - Give **higher weight to strong directional signals** such as MACD crossovers, RSI divergence, extreme overbought/oversold levels.
+            - **Ignore or down-weight neutral or mixed signals** unless they align across multiple indicators.
 
             ---
 
-            ### 3. 趋势报告:
-            - 分析价格与支撑位和阻力位的相互作用：
-            - **向上倾斜的支撑线**表明买方兴趣。
-            - **向下倾斜的阻力线**表明卖方压力。
-            - 如果价格在趋势线之间压缩：
-            - **仅在有强劲K线或指标确认的共识时**预测突破。
-            - **不要**仅凭几何形状猜测突破方向。
+            ### 2. Pattern Report:
+            - Only act on bullish or bearish patterns if:
+            - The pattern is **clearly recognizable and mostly complete**, and
+            - A **breakout or breakdown is already underway** or highly probable based on price and momentum (e.g., strong wick, volume spike, engulfing candle).
+            - **Do NOT act** on early-stage or speculative patterns. Do not treat consolidating setups as tradable unless there is **breakout confirmation** from other reports.
 
             ---
 
-            ### ✅ 决策策略
-
-            1. 只对**已确认**的信号采取行动——避免新兴、投机或冲突的信号。
-            2. 优先处理**三份报告（指标、形态和趋势）方向一致**的决策。
-            3. 给予更高权重：
-            - 近期的强劲动量（如MACD金叉、RSI突破）
-            - 决定性的价格行为（如突破K线、拒绝长影线、支撑位反弹）
-            4. 如果报告不一致：
-            - 选择具有**更强和更近期确认**的方向。
-            - 倾向于**有动量支持的信号**，而不是弱振荡器信号。
-            5. ⚖️ 如果市场处于盘整或报告混合：
-            - 默认遵循**主趋势线的斜率**（例如，在下降通道中选择SHORT）。
-            - 不要猜测方向——选择**更具防御性**的一方。
-            6. 根据当前波动性和趋势强度，建议一个介于**1.2至1.8之间**的合理**风险回报比**。
+            ### 3. Trend Report:
+            - Analyze how price interacts with support and resistance:
+            - An **upward sloping support line** suggests buying interest.
+            - A **downward sloping resistance line** suggests selling pressure.
+            - If price is compressing between trendlines:
+            - Predict breakout **only when confluence exists with strong candles or indicator confirmation**.
+            - **Do NOT assume breakout direction** from geometry alone.
 
             ---
-            ### 🧠 输出格式（JSON格式，供系统解析）:
+
+            ### ✅ Decision Strategy
+
+            1. Only act on **confirmed** signals — avoid emerging, speculative, or conflicting signals.
+            2. Prioritize decisions where **all three reports** (Indicator, Pattern, and Trend) **align in the same direction**.
+            3. Give more weight to:
+            - Recent strong momentum (e.g., MACD crossover, RSI breakout)
+            - Decisive price action (e.g., breakout candle, rejection wicks, support bounce)
+            4. If reports disagree:
+            - Choose the direction with **stronger and more recent confirmation**
+            - Prefer **momentum-backed signals** over weak oscillator hints.
+            5. ⚖️ If the market is in consolidation or reports are mixed:
+            - Default to the **dominant trendline slope** (e.g., SHORT in descending channel).
+            - Do not guess direction — choose the **more defensible** side.
+            6. Suggest a reasonable **risk-reward ratio** between **1.2 and 1.8**, based on current volatility and trend strength.
+
+            ---
+            ### 🧠 Output Format in json(for system parsing):
 
             ```
             {{
-            "forecast_horizon": "预测未来N根K线（例如：15分钟、1小时等）",
-            "decision": "<LONG 或 SHORT>",
-            "justification": "<基于报告的简洁、已确认的推理>",
-            "risk_reward_ratio": "<介于1.2和1.8之间的浮点数>",
+            "forecast_horizon": "Predicting next 3 candlestick (15 minutes, 1 hour, etc.)",
+            "decision": "<LONG or SHORT>",
+            "justification": "<Concise, confirmed reasoning based on reports>",
+            "risk_reward_ratio": "<float between 1.2 and 1.8>",
             }}
 
             --------
-            **技术指标报告**
+            **Technical Indicator Report**
             {indicator_report}
 
-            **形态报告**
+            **Pattern Report**
             {pattern_report}
 
-            **趋势报告**
+            **Trend Report**
             {trend_report}
 
         """
 
-        # --- 调用LLM进行决策 ---
+        # --- LLM call for decision ---
         response = llm.invoke(prompt)
 
         return {

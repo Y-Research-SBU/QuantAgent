@@ -1089,12 +1089,25 @@
                                     <label class="form-label">OpenAI API Key</label>
                                     <div class="input-group">
                                         <input type="password" class="form-control" id="apiKeyInput" placeholder="Enter your OpenAI API key">
-                                        <button class="btn btn-outline-primary" type="button" onclick="updateApiKey()">
-                                            <i class="fas fa-save"></i> Update
-                                        </button>
                                     </div>
+                                </div>
+
+                                <!-- API Base URL Input -->
+                                <div class="form-group">
+                                    <label class="form-label">API Base URL (Optional)</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="baseUrlInput" placeholder="e.g., https://api.openrouter.ai/api/v1">
+                                    </div>
+                                     <small class="form-text text-muted">For OpenAI-compatible APIs like OpenRouter.</small>
+                                </div>
+
+                                <div class="form-group text-center">
+                                    <button class="btn btn-outline-primary" type="button" onclick="updateLLMSettings()">
+                                        <i class="fas fa-save"></i> Update LLM Settings
+                                    </button>
+                                </div>
                                     
-                                    <!-- API Key Status Messages -->
+                                <!-- API Key Status Messages -->
                                     <div id="apiKeyStatus" class="alert alert-info mt-2" style="display: none;">
                                         <i class="fas fa-info-circle"></i>
                                         <span id="apiKeyStatusText"></span>
@@ -1439,23 +1452,31 @@
                 }
             });
             
-            // Check API key status on page load
-            checkApiKeyStatus();
+            // Check LLM settings on page load
+            checkLLMSettings();
         });
         
-        function checkApiKeyStatus() {
-            fetch('/api/get-api-key-status')
+        function checkLLMSettings() {
+            fetch('/api/get-llm-settings')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.has_key) {
-                        showApiKeyStatus(`API key is set: ${data.masked_key}`);
+                    let statusMessages = [];
+                    if (data.has_api_key) {
+                        statusMessages.push(`API key is set: ${data.masked_key}`);
                     } else {
                         showApiKeyError('No API key found. Please enter your OpenAI API key.');
                     }
+                    if (data.base_url) {
+                        statusMessages.push(`Base URL is set: ${data.base_url}`);
+                        document.getElementById('baseUrlInput').value = data.base_url;
+                    }
+                    if (statusMessages.length > 0) {
+                        showApiKeyStatus(statusMessages.join('<br>'));
+                    }
                 })
                 .catch(error => {
-                    console.error('Error checking API key status:', error);
-                    showApiKeyError('Unable to check API key status');
+                    console.error('Error checking LLM settings:', error);
+                    showApiKeyError('Unable to check LLM settings');
                 });
         }
         
@@ -1716,44 +1737,51 @@
              console.log('Timeframe limits updated');
          }
          
-         // API Key Management Functions
-         function updateApiKey() {
+         // LLM Settings Management Functions
+         function updateLLMSettings() {
              const apiKey = document.getElementById('apiKeyInput').value.trim();
+             const baseUrl = document.getElementById('baseUrlInput').value.trim();
              
-             if (!apiKey) {
-                 showApiKeyError('Please enter an API key');
-                 return;
-             }
-             
+             // We don't require API key to be present, as user might only want to update the base_url
+             // or clear the key. The backend will handle validation.
+
              // Hide previous messages
              hideApiKeyMessages();
              
              // Show loading state
-             const updateBtn = document.querySelector('button[onclick="updateApiKey()"]');
+             const updateBtn = document.querySelector('button[onclick="updateLLMSettings()"]');
              const originalText = updateBtn.innerHTML;
              updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
              updateBtn.disabled = true;
              
-             // Make API call to update the key
-             fetch('/api/update-api-key', {
+             // Prepare payload
+             const payload = {};
+             if (apiKey) {
+                 payload.api_key = apiKey;
+             }
+             payload.base_url = baseUrl; // Send even if empty to allow clearing
+
+             // Make API call to update settings
+             fetch('/api/update-llm-settings', {
                  method: 'POST',
                  headers: {
                      'Content-Type': 'application/json',
                  },
-                 body: JSON.stringify({ api_key: apiKey })
+                 body: JSON.stringify(payload)
              })
              .then(response => response.json())
              .then(data => {
                  if (data.success) {
-                     showApiKeySuccess('API key updated successfully!');
-                     document.getElementById('apiKeyInput').value = '';
+                     showApiKeySuccess('LLM settings updated successfully!');
+                     document.getElementById('apiKeyInput').value = ''; // Clear password field for security
+                     checkLLMSettings(); // Refresh status
                  } else {
-                     showApiKeyError(data.error || 'Failed to update API key');
+                     showApiKeyError(data.error || 'Failed to update LLM settings');
                  }
              })
              .catch(error => {
                  console.error('Error:', error);
-                 showApiKeyError('An error occurred while updating the API key');
+                 showApiKeyError('An error occurred while updating the settings');
              })
              .finally(() => {
                  // Reset button

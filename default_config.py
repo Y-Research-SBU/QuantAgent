@@ -18,4 +18,7 @@ DEFAULT_CONFIG = {
 
     # OpenAI API密钥（留空则从环境变量或Web界面读取）
     "api_key": "",
+
+    # OpenAI 兼容的 API base_url（例如 OpenRouter）
+    "base_url": None,
 }
