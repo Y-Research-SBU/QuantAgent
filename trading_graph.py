@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 """
-TradingGraph: Orchestrates the multi-agent trading system using LangChain and LangGraph.
-Initializes LLMs, toolkits, and agent nodes for indicator, pattern, and trend analysis.
+TradingGraph: 使用LangChain和LangGraph协调多智能体交易系统。
+
+该模块负责初始化大语言模型（LLM）、工具包以及用于指标、形态和趋势分析的代理节点。
 """
 
 import os
@@ -16,18 +18,26 @@ from graph_util import TechnicalTools
 
 class TradingGraph:
     """
-    Main orchestrator for the multi-agent trading system.
-    Sets up LLMs, toolkits, and agent nodes for indicator, pattern, and trend analysis.
+    多智能体交易系统的主要协调器。
+
+    该类负责设置LLM、工具包以及用于指标、形态和趋势分析的代理节点，
+    并最终构建可执行的分析图。
     """
 
     def __init__(self, config=None):
-        # --- Configuration and LLMs ---
+        """
+        初始化TradingGraph。
+
+        Args:
+            config (dict, optional): 自定义配置字典。如果未提供，则使用默认配置。
+        """
+        # --- 配置和LLM ---
         self.config = config if config is not None else DEFAULT_CONFIG.copy()
 
-        # Get API key with proper validation
+        # 获取并验证API密钥
         api_key = self._get_api_key()
 
-        # Initialize LLMs with explicit API key
+        # 使用明确的API密钥初始化LLM
         self.agent_llm = ChatOpenAI(
             model=self.config.get("agent_llm_model", "gpt-4o-mini"),
             temperature=self.config.get("agent_llm_temperature", 0.1),
@@ -40,10 +50,10 @@ class TradingGraph:
         )
         self.toolkit = TechnicalTools()
 
-        # --- Create tool nodes for each agent ---
+        # --- 为每个代理创建工具节点 ---
         self.tool_nodes = self._set_tool_nodes()
 
-        # --- Graph logic and setup ---
+        # --- 图逻辑和设置 ---
         self.graph_setup = SetGraph(
             self.agent_llm,
             self.graph_llm,
@@ -51,46 +61,49 @@ class TradingGraph:
             self.tool_nodes,
         )
 
-        # --- The main LangGraph graph object ---
+        # --- 主要的LangGraph图对象 ---
         self.graph = self.graph_setup.set_graph()
 
     def _get_api_key(self):
         """
-        Get API key with proper validation and error handling.
-        
+        获取并验证API密钥。
+
         Returns:
-            str: The OpenAI API key
-            
+            str: OpenAI API密钥。
+
         Raises:
-            ValueError: If API key is missing or invalid
+            ValueError: 如果API密钥缺失或无效。
         """
-        # First check if API key is provided in config
+        # 首先检查配置中是否提供了API密钥
         api_key = self.config.get("api_key")
-        
-        # If not in config, check environment variable
+
+        # 如果配置中没有，则检查环境变量
         if not api_key:
             api_key = os.environ.get("OPENAI_API_KEY")
-        
-        # Validate the API key
+
+        # 验证API密钥
         if not api_key:
             raise ValueError(
-                "OpenAI API key not found. Please set it using one of these methods:\n"
-                "1. Set environment variable: export OPENAI_API_KEY='your-key-here'\n"
-                "2. Update the config with: config['api_key'] = 'your-key-here'\n"
-                "3. Use the web interface to update the API key"
+                "未找到OpenAI API密钥。请使用以下方法之一设置：\n"
+                "1. 设置环境变量: export OPENAI_API_KEY='your-key-here'\n"
+                "2. 更新配置: config['api_key'] = 'your-key-here'\n"
+                "3. 使用Web界面更新API密钥"
             )
-        
+
         if api_key == "your-openai-api-key-here" or api_key == "":
             raise ValueError(
-                "Please replace the placeholder API key with your actual OpenAI API key. "
-                "You can get one from: https://platform.openai.com/api-keys"
+                "请将占位符API密钥替换为您的实际OpenAI API密钥。"
+                "您可以从以下地址获取：https://platform.openai.com/api-keys"
             )
-        
+
         return api_key
 
     def _set_tool_nodes(self) -> Dict[str, ToolNode]:
         """
-        Define tool nodes for each agent type (indicator, pattern, trend).
+        为每种类型的代理（指标、形态、趋势）定义工具节点。
+
+        Returns:
+            dict: 包含为每个代理配置的ToolNode的字典。
         """
         return {
             "indicator": ToolNode(
@@ -112,13 +125,14 @@ class TradingGraph:
 
     def refresh_llms(self):
         """
-        Refresh the LLM objects with the current API key from environment.
-        This is called when the API key is updated.
+        使用当前环境中的API密钥刷新LLM对象。
+
+        当API密钥更新时调用此方法。
         """
-        # Get the current API key with validation
+        # 获取并验证当前API密钥
         api_key = self._get_api_key()
-        
-        # Recreate LLM objects with explicit API key and config values
+
+        # 使用明确的API密钥和配置值重新创建LLM对象
         self.agent_llm = ChatOpenAI(
             model=self.config.get("agent_llm_model", "gpt-4o-mini"),
             temperature=self.config.get("agent_llm_temperature", 0.1),
@@ -130,7 +144,7 @@ class TradingGraph:
             api_key=api_key,
         )
 
-        # Recreate the graph setup with new LLMs
+        # 使用新的LLM重新创建图设置
         self.graph_setup = SetGraph(
             self.agent_llm,
             self.graph_llm,
@@ -138,22 +152,23 @@ class TradingGraph:
             self.tool_nodes,
         )
 
-        # Recreate the main graph
+        # 重新创建主图
         self.graph = self.graph_setup.set_graph()
 
     def update_api_key(self, api_key: str):
         """
-        Update the API key in the config and refresh LLMs.
-        This method is called by the web interface when API key is updated.
-        
+        更新配置中的API密钥并刷新LLM。
+
+        当通过Web界面更新API密钥时，会调用此方法。
+
         Args:
-            api_key (str): The new OpenAI API key
+            api_key (str): 新的OpenAI API密钥。
         """
-        # Update the config with the new API key
+        # 更新配置中的API密钥
         self.config["api_key"] = api_key
-        
-        # Also update the environment variable for consistency
+
+        # 同时更新环境变量以保持一致性
         os.environ["OPENAI_API_KEY"] = api_key
-        
-        # Refresh the LLMs with the new API key
+
+        # 使用新的API密钥刷新LLM
         self.refresh_llms()

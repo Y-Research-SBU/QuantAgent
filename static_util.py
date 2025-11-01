@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+静态图表生成工具模块。
+
+该模块提供了用于生成K线图和带趋势线的K线图的函数。
+这些函数是独立的，不属于任何类，主要用于数据可视化。
+"""
 import base64
 import io
 
@@ -15,34 +22,33 @@ from graph_util import (
     split_line_into_segments,
 )
 
+# 设置matplotlib后端为'Agg'，避免在无GUI环境下出错
 matplotlib.use("Agg")
 
 
 def generate_kline_image(kline_data) -> dict:
     """
-    Generate a candlestick (K-line) chart from OHLCV data, save it locally, and return a base64-encoded image.
+    根据OHLCV数据生成K线图，将其保存到本地，并返回Base64编码的图像。
 
     Args:
-        kline_data (dict): Dictionary with keys including 'Datetime', 'Open', 'High', 'Low', 'Close'.
-        filename (str): Name of the file to save the image locally (default: 'kline_chart.png').
+        kline_data (dict): 包含'Datetime', 'Open', 'High', 'Low', 'Close'键的字典。
 
     Returns:
-        dict: Dictionary containing base64-encoded image string and local file path.
+        dict: 包含Base64编码图像字符串和图像描述的字典。
+              例如：{'pattern_image': 'base64_string', 'pattern_image_description': '...'}
     """
 
     df = pd.DataFrame(kline_data)
-    # take recent 40
+    # 截取最近的40条数据
     df = df.tail(40)
 
     df.to_csv("record.csv", index=False, date_format="%Y-%m-%d %H:%M:%S")
     try:
-        # df.index = pd.to_datetime(df["Datetime"])
         df.index = pd.to_datetime(df["Datetime"], format="%Y-%m-%d %H:%M:%S")
-
     except ValueError:
-        print("ValueError at graph_util.py\n")
+        print("在 static_util.py 中处理时间戳时出现 ValueError\n")
 
-    # Save image locally
+    # 将图像保存到本地
     fig, axlist = mpf.plot(
         df[["Open", "High", "Low", "Close"]],
         type="candle",
@@ -51,8 +57,8 @@ def generate_kline_image(kline_data) -> dict:
         returnfig=True,
         block=False,
     )
-    axlist[0].set_ylabel("Price", fontweight="normal")
-    axlist[0].set_xlabel("Datetime", fontweight="normal")
+    axlist[0].set_ylabel("价格", fontweight="normal")
+    axlist[0].set_xlabel("日期时间", fontweight="normal")
 
     fig.savefig(
         fname="kline_chart.png",
@@ -61,27 +67,32 @@ def generate_kline_image(kline_data) -> dict:
         pad_inches=0.1,
     )
     plt.close(fig)
-    # ---------- Encode to base64 -----------------
+
+    # ---------- 编码为 Base64 -----------------
     buf = io.BytesIO()
     fig.savefig(buf, format="png", dpi=600, bbox_inches="tight", pad_inches=0.1)
-    plt.close(fig)  # release memory
+    plt.close(fig)  # 释放内存
 
     buf.seek(0)
     img_b64 = base64.b64encode(buf.read()).decode("utf-8")
 
     return {
         "pattern_image": img_b64,
-        "pattern_image_description": "Candlestick chart saved locally and returned as base64 string.",
+        "pattern_image_description": "K线图已保存到本地并以Base64字符串形式返回。",
     }
 
 
 def generate_trend_image(kline_data) -> dict:
     """
-    Generate a candlestick chart with trendlines from OHLCV data,
-    save it locally as 'trend_graph.png', and return a base64-encoded image.
+    根据OHLCV数据生成带趋势线的K线图，
+    将其保存为本地文件'trend_graph.png'，并返回Base64编码的图像。
+
+    Args:
+        kline_data (dict): 包含'Datetime', 'Open', 'High', 'Low', 'Close'键的字典。
 
     Returns:
-        dict: base64 image and description
+        dict: 包含Base64图像和描述的字典。
+              例如：{'trend_image': 'base64_string', 'trend_image_description': '...'}
     """
     data = pd.DataFrame(kline_data)
     candles = data.iloc[-50:].copy()
@@ -89,19 +100,19 @@ def generate_trend_image(kline_data) -> dict:
     candles["Datetime"] = pd.to_datetime(candles["Datetime"])
     candles.set_index("Datetime", inplace=True)
 
-    # Trendline fit functions assumed to be defined outside this scope
+    # 假设趋势线拟合函数在此作用域之外定义
     support_coefs_c, resist_coefs_c = fit_trendlines_single(candles["Close"])
     support_coefs, resist_coefs = fit_trendlines_high_low(
         candles["High"], candles["Low"], candles["Close"]
     )
 
-    # Trendline values
+    # 趋势线值
     support_line_c = support_coefs_c[0] * np.arange(len(candles)) + support_coefs_c[1]
     resist_line_c = resist_coefs_c[0] * np.arange(len(candles)) + resist_coefs_c[1]
     support_line = support_coefs[0] * np.arange(len(candles)) + support_coefs[1]
     resist_line = resist_coefs[0] * np.arange(len(candles)) + resist_coefs[1]
 
-    # Convert to time-anchored coordinates
+    # 转换为时间锚定的坐标
     s_seq = get_line_points(candles, support_line)
     r_seq = get_line_points(candles, resist_line)
     s_seq2 = get_line_points(candles, support_line_c)
@@ -120,13 +131,13 @@ def generate_trend_image(kline_data) -> dict:
         + ["red"] * len(r2_segments)
     )
 
-    # Create addplot lines for close-based support/resistance
+    # 为基于收盘价的支撑/阻力线创建addplot
     apds = [
-        mpf.make_addplot(support_line_c, color="blue", width=1, label="Close Support"),
-        mpf.make_addplot(resist_line_c, color="red", width=1, label="Close Resistance"),
+        mpf.make_addplot(support_line_c, color="blue", width=1, label="收盘价支撑线"),
+        mpf.make_addplot(resist_line_c, color="red", width=1, label="收盘价阻力线"),
     ]
 
-    # Generate figure with legend and save locally
+    # 生成带图例的图表并保存到本地
     fig, axlist = mpf.plot(
         candles,
         type="candle",
@@ -138,19 +149,19 @@ def generate_trend_image(kline_data) -> dict:
         block=False,
     )
 
-    axlist[0].set_ylabel("Price", fontweight="normal")
-    axlist[0].set_xlabel("Datetime", fontweight="normal")
+    axlist[0].set_ylabel("价格", fontweight="normal")
+    axlist[0].set_xlabel("日期时间", fontweight="normal")
 
-    # save fig locally
+    # 保存图表到本地
     fig.savefig(
         "trend_graph.png", format="png", dpi=600, bbox_inches="tight", pad_inches=0.1
     )
     plt.close(fig)
 
-    # Add legend manually
+    # 手动添加图例
     axlist[0].legend(loc="upper left")
 
-    # Save to base64
+    # 保存为Base64
     buf = io.BytesIO()
     fig.savefig(buf, format="png")
     buf.seek(0)
@@ -159,5 +170,5 @@ def generate_trend_image(kline_data) -> dict:
 
     return {
         "trend_image": img_b64,
-        "trend_image_description": "Trend-enhanced candlestick chart with support/resistance lines.",
+        "trend_image_description": "带支撑/阻力线的趋势增强K线图。",
     }
