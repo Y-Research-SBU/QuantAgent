@@ -8,9 +8,11 @@ scipy
 TA-Lib
 langchain
 langchain-openai
+langchain-anthropic
 langchain-core
 langgraph
 openai
+anthropic
 ipython
 Pillow
 requests

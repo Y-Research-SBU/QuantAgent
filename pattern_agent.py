@@ -138,15 +138,41 @@ def create_pattern_agent(tool_llm, graph_llm, toolkit):
                 },
             ]
 
-            final_response = invoke_with_retry(
-                graph_llm.invoke,
-                [
-                    SystemMessage(
-                        content="You are a trading pattern recognition assistant tasked with analyzing candlestick charts."
-                    ),
-                    HumanMessage(content=image_prompt),
-                ],
-            )
+            # Create messages - ensure HumanMessage has valid content
+            # For Anthropic, SystemMessage is extracted separately, but messages array must have at least one message
+            human_msg = HumanMessage(content=image_prompt)
+            
+            # Verify HumanMessage content is valid
+            if not human_msg.content:
+                raise ValueError("HumanMessage content is empty")
+            if isinstance(human_msg.content, list) and len(human_msg.content) == 0:
+                raise ValueError("HumanMessage content list is empty")
+            
+            messages = [
+                SystemMessage(
+                    content="You are a trading pattern recognition assistant tasked with analyzing candlestick charts."
+                ),
+                human_msg,
+            ]
+            
+            try:
+                final_response = invoke_with_retry(
+                    graph_llm.invoke,
+                    messages,
+                )
+            except Exception as e:
+                error_str = str(e)
+                # Handle Anthropic's "at least one message is required" error
+                # This can happen when SystemMessage extraction leaves empty messages array
+                if "at least one message" in error_str.lower():
+                    # Retry with only HumanMessage (SystemMessage will be lost but Anthropic should work)
+                    print("Retrying with HumanMessage only due to Anthropic message conversion issue...")
+                    final_response = invoke_with_retry(
+                        graph_llm.invoke,
+                        [human_msg],
+                    )
+                else:
+                    raise
         else:
             # If no image was generated, fall back to reasoning with messages
             final_response = invoke_with_retry(chain.invoke, messages)

@@ -3,5 +3,5 @@ DEFAULT_CONFIG = {
     "graph_llm_model": "gpt-4o",
     "agent_llm_temperature": 0.1,
     "graph_llm_temperature": 0.1,
-    "api_key": "",
+    "api_key": "sk-",
 }

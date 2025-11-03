@@ -20,7 +20,10 @@ app = Flask(__name__)
 class WebTradingAnalyzer:
     def __init__(self):
         """Initialize the web trading analyzer."""
-        self.trading_graph = TradingGraph()
+        from default_config import DEFAULT_CONFIG
+        # Start with default config (OpenAI)
+        self.config = DEFAULT_CONFIG.copy()
+        self.trading_graph = TradingGraph(config=self.config)
         self.data_dir = Path("data")
 
         # Ensure data dir exists
@@ -315,31 +318,36 @@ class WebTradingAnalyzer:
 
         except Exception as e:
             error_msg = str(e)
+            
+            # Get current provider from config
+            provider = self.config.get("agent_llm_provider", "openai")
+            provider_name = "OpenAI" if provider == "openai" else "Anthropic"
 
             # Check for specific API key authentication errors
             if (
                 "authentication" in error_msg.lower()
                 or "invalid api key" in error_msg.lower()
                 or "401" in error_msg
+                or "invalid_api_key" in error_msg.lower()
             ):
                 return {
                     "success": False,
-                    "error": "❌ Invalid API Key: The OpenAI API key you provided is invalid or has expired. Please check your API key in the Settings section and try again.",
+                    "error": f"❌ Invalid API Key: The {provider_name} API key you provided is invalid or has expired. Please check your API key in the Settings section and try again.",
                 }
             elif "rate limit" in error_msg.lower() or "429" in error_msg:
                 return {
                     "success": False,
-                    "error": "⚠️ Rate Limit Exceeded: You've hit the OpenAI API rate limit. Please wait a moment and try again.",
+                    "error": f"⚠️ Rate Limit Exceeded: You've hit the {provider_name} API rate limit. Please wait a moment and try again.",
                 }
             elif "quota" in error_msg.lower() or "billing" in error_msg.lower():
                 return {
                     "success": False,
-                    "error": "💳 Billing Issue: Your OpenAI account has insufficient credits or billing issues. Please check your OpenAI account.",
+                    "error": f"💳 Billing Issue: Your {provider_name} account has insufficient credits or billing issues. Please check your {provider_name} account.",
                 }
             elif "network" in error_msg.lower() or "connection" in error_msg.lower():
                 return {
                     "success": False,
-                    "error": "🌐 Network Error: Unable to connect to OpenAI servers. Please check your internet connection and try again.",
+                    "error": f"🌐 Network Error: Unable to connect to {provider_name} servers. Please check your internet connection and try again.",
                 }
             else:
                 return {"success": False, "error": f"❌ Analysis Error: {error_msg}"}
@@ -473,47 +481,79 @@ class WebTradingAnalyzer:
         except ValueError as e:
             return {"valid": False, "error": f"Invalid date/time format: {str(e)}"}
 
-    def validate_api_key(self) -> Dict[str, Any]:
+    def validate_api_key(self, provider: str = None) -> Dict[str, Any]:
         """Validate the current API key by making a simple test call."""
         try:
-
-            client = OpenAI()
-
-            # Make a simple test call
-            _ = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": "Hello"}],
-                max_tokens=5,
-            )
-
-            return {"valid": True, "message": "API key is valid"}
+            # Get provider from config if not provided
+            if provider is None:
+                provider = self.config.get("agent_llm_provider", "openai")
+            
+            if provider == "openai":
+                from openai import OpenAI
+                client = OpenAI()
+                
+                # Make a simple test call
+                _ = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": "Hello"}],
+                    max_tokens=5,
+                )
+                
+                provider_name = "OpenAI"
+            else:  # anthropic
+                from anthropic import Anthropic
+                api_key = os.environ.get("ANTHROPIC_API_KEY") or self.config.get("anthropic_api_key", "")
+                if not api_key:
+                    return {
+                        "valid": False,
+                        "error": "❌ Invalid API Key: The Anthropic API key is not set. Please update it in the Settings section.",
+                    }
+                
+                client = Anthropic(api_key=api_key)
+                
+                # Make a simple test call
+                _ = client.messages.create(
+                    model="claude-haiku-4-5-20251001",
+                    max_tokens=5,
+                    messages=[{"role": "user", "content": "Hello"}],
+                )
+                
+                provider_name = "Anthropic"
+            
+            return {"valid": True, "message": f"{provider_name} API key is valid"}
 
         except Exception as e:
             error_msg = str(e)
+            
+            # Determine provider name for error messages
+            if provider is None:
+                provider = self.config.get("agent_llm_provider", "openai")
+            provider_name = "OpenAI" if provider == "openai" else "Anthropic"
 
             if (
                 "authentication" in error_msg.lower()
                 or "invalid api key" in error_msg.lower()
                 or "401" in error_msg
+                or "invalid_api_key" in error_msg.lower()
             ):
                 return {
                     "valid": False,
-                    "error": "❌ Invalid API Key: The OpenAI API key is invalid or has expired. Please update it in the Settings section.",
+                    "error": f"❌ Invalid API Key: The {provider_name} API key is invalid or has expired. Please update it in the Settings section.",
                 }
             elif "rate limit" in error_msg.lower() or "429" in error_msg:
                 return {
                     "valid": False,
-                    "error": "⚠️ Rate Limit Exceeded: You've hit the OpenAI API rate limit. Please wait a moment and try again.",
+                    "error": f"⚠️ Rate Limit Exceeded: You've hit the {provider_name} API rate limit. Please wait a moment and try again.",
                 }
             elif "quota" in error_msg.lower() or "billing" in error_msg.lower():
                 return {
                     "valid": False,
-                    "error": "💳 Billing Issue: Your OpenAI account has insufficient credits or billing issues. Please check your OpenAI account.",
+                    "error": f"💳 Billing Issue: Your {provider_name} account has insufficient credits or billing issues. Please check your {provider_name} account.",
                 }
             elif "network" in error_msg.lower() or "connection" in error_msg.lower():
                 return {
                     "valid": False,
-                    "error": "🌐 Network Error: Unable to connect to OpenAI servers. Please check your internet connection.",
+                    "error": f"🌐 Network Error: Unable to connect to {provider_name} servers. Please check your internet connection.",
                 }
             else:
                 return {"valid": False, "error": f"❌ API Key Error: {error_msg}"}
@@ -798,26 +838,78 @@ def validate_date_range():
         return jsonify({"error": str(e)})
 
 
+@app.route("/api/update-provider", methods=["POST"])
+def update_provider():
+    """API endpoint to update LLM provider."""
+    try:
+        data = request.get_json()
+        provider = data.get("provider", "openai")
+
+        if provider not in ["openai", "anthropic"]:
+            return jsonify({"error": "Provider must be 'openai' or 'anthropic'"})
+
+        print(f"Updating provider to: {provider}")
+
+        # Update config in both analyzer and trading_graph
+        analyzer.config["agent_llm_provider"] = provider
+        analyzer.config["graph_llm_provider"] = provider
+        analyzer.trading_graph.config["agent_llm_provider"] = provider
+        analyzer.trading_graph.config["graph_llm_provider"] = provider
+        
+        # Update model names if switching providers
+        if provider == "anthropic":
+            # Set default Claude models if not already set to Anthropic models
+            if not analyzer.config["agent_llm_model"].startswith("claude"):
+                analyzer.config["agent_llm_model"] = "claude-haiku-4-5-20251001"
+            if not analyzer.config["graph_llm_model"].startswith("claude"):
+                analyzer.config["graph_llm_model"] = "claude-haiku-4-5-20251001"
+        else:
+            # Set default OpenAI models if not already set to OpenAI models
+            if analyzer.config["agent_llm_model"].startswith("claude"):
+                analyzer.config["agent_llm_model"] = "gpt-4o-mini"
+            if analyzer.config["graph_llm_model"].startswith("claude"):
+                analyzer.config["graph_llm_model"] = "gpt-4o"
+        
+        analyzer.trading_graph.config.update(analyzer.config)
+
+        # Refresh the trading graph with new provider
+        analyzer.trading_graph.refresh_llms()
+
+        print(f"Provider updated to {provider} successfully")
+        return jsonify({"success": True, "message": f"Provider updated to {provider}"})
+
+    except Exception as e:
+        print(f"Error in update_provider: {str(e)}")
+        return jsonify({"error": str(e)})
+
+
 @app.route("/api/update-api-key", methods=["POST"])
 def update_api_key():
-    """API endpoint to update OpenAI API key."""
+    """API endpoint to update API key for OpenAI or Anthropic."""
     try:
         data = request.get_json()
         new_api_key = data.get("api_key")
+        provider = data.get("provider", "openai")  # Default to "openai" for backward compatibility
 
         if not new_api_key:
             return jsonify({"error": "API key is required"})
 
-        print(f"Updating API key to: {new_api_key[:8]}...{new_api_key[-4:]}")
+        if provider not in ["openai", "anthropic"]:
+            return jsonify({"error": "Provider must be 'openai' or 'anthropic'"})
+
+        print(f"Updating {provider} API key to: {new_api_key[:8]}...{new_api_key[-4:]}")
 
         # Update the environment variable
-        os.environ["OPENAI_API_KEY"] = new_api_key
+        if provider == "openai":
+            os.environ["OPENAI_API_KEY"] = new_api_key
+        else:
+            os.environ["ANTHROPIC_API_KEY"] = new_api_key
 
-        # Refresh the trading graph LLMs with the new API key
-        analyzer.trading_graph.refresh_llms()
+        # Update the API key in the trading graph
+        analyzer.trading_graph.update_api_key(new_api_key, provider=provider)
 
-        print("API key updated successfully")
-        return jsonify({"success": True, "message": "API key updated successfully"})
+        print(f"{provider} API key updated successfully")
+        return jsonify({"success": True, "message": f"{provider.capitalize()} API key updated successfully"})
 
     except Exception as e:
         print(f"Error in update_api_key: {str(e)}")
@@ -826,10 +918,23 @@ def update_api_key():
 
 @app.route("/api/get-api-key-status")
 def get_api_key_status():
-    """API endpoint to check if API key is set."""
+    """API endpoint to check if API key is set for a provider."""
     try:
-        api_key = os.environ.get("OPENAI_API_KEY")
-        if api_key and api_key != "your-openai-api-key-here":
+        provider = request.args.get("provider", "openai")
+        
+        # First check environment variables
+        if provider == "openai":
+            api_key = os.environ.get("OPENAI_API_KEY", "")
+            # Fallback to config if not in environment
+            if not api_key and hasattr(analyzer, 'config'):
+                api_key = analyzer.config.get("api_key", "")
+        else:
+            api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+            # Fallback to config if not in environment
+            if not api_key and hasattr(analyzer, 'config'):
+                api_key = analyzer.config.get("anthropic_api_key", "")
+        
+        if api_key and api_key != "your-openai-api-key-here" and api_key != "":
             # Return masked version for security
             masked_key = (
                 api_key[:3] + "..." + api_key[-3:] if len(api_key) > 12 else "***"
@@ -838,7 +943,10 @@ def get_api_key_status():
         else:
             return jsonify({"has_key": False})
     except Exception as e:
-        return jsonify({"error": str(e)})
+        print(f"Error in get_api_key_status: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e), "has_key": False})
 
 
 @app.route("/api/images/<image_type>")
@@ -869,7 +977,9 @@ def get_image(image_type):
 def validate_api_key():
     """API endpoint to validate the current API key."""
     try:
-        validation = analyzer.validate_api_key()
+        data = request.get_json() or {}
+        provider = data.get("provider") or analyzer.config.get("agent_llm_provider", "openai")
+        validation = analyzer.validate_api_key(provider=provider)
         return jsonify(validation)
     except Exception as e:
         return jsonify({"valid": False, "error": str(e)})

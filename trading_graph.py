@@ -6,6 +6,8 @@ Initializes LLMs, toolkits, and agent nodes for indicator, pattern, and trend an
 import os
 from typing import Dict
 
+from langchain_anthropic import ChatAnthropic
+from langchain_core.language_models import BaseChatModel
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import ToolNode
 
@@ -24,19 +26,16 @@ class TradingGraph:
         # --- Configuration and LLMs ---
         self.config = config if config is not None else DEFAULT_CONFIG.copy()
 
-        # Get API key with proper validation
-        api_key = self._get_api_key()
-
-        # Initialize LLMs with explicit API key
-        self.agent_llm = ChatOpenAI(
+        # Initialize LLMs with provider support
+        self.agent_llm = self._create_llm(
+            provider=self.config.get("agent_llm_provider", "openai"),
             model=self.config.get("agent_llm_model", "gpt-4o-mini"),
             temperature=self.config.get("agent_llm_temperature", 0.1),
-            api_key=api_key,
         )
-        self.graph_llm = ChatOpenAI(
+        self.graph_llm = self._create_llm(
+            provider=self.config.get("graph_llm_provider", "openai"),
             model=self.config.get("graph_llm_model", "gpt-4o"),
             temperature=self.config.get("graph_llm_temperature", 0.1),
-            api_key=api_key,
         )
         self.toolkit = TechnicalTools()
 
@@ -54,39 +53,100 @@ class TradingGraph:
         # --- The main LangGraph graph object ---
         self.graph = self.graph_setup.set_graph()
 
-    def _get_api_key(self):
+    def _get_api_key(self, provider: str = "openai") -> str:
         """
         Get API key with proper validation and error handling.
         
+        Args:
+            provider: The provider name ("openai" or "anthropic")
+        
         Returns:
-            str: The OpenAI API key
+            str: The API key for the specified provider
             
         Raises:
             ValueError: If API key is missing or invalid
         """
-        # First check if API key is provided in config
-        api_key = self.config.get("api_key")
-        
-        # If not in config, check environment variable
-        if not api_key:
-            api_key = os.environ.get("OPENAI_API_KEY")
-        
-        # Validate the API key
-        if not api_key:
-            raise ValueError(
-                "OpenAI API key not found. Please set it using one of these methods:\n"
-                "1. Set environment variable: export OPENAI_API_KEY='your-key-here'\n"
-                "2. Update the config with: config['api_key'] = 'your-key-here'\n"
-                "3. Use the web interface to update the API key"
-            )
-        
-        if api_key == "your-openai-api-key-here" or api_key == "":
-            raise ValueError(
-                "Please replace the placeholder API key with your actual OpenAI API key. "
-                "You can get one from: https://platform.openai.com/api-keys"
-            )
+        if provider == "openai":
+            # First check if API key is provided in config
+            api_key = self.config.get("api_key")
+            
+            # If not in config, check environment variable
+            if not api_key:
+                api_key = os.environ.get("OPENAI_API_KEY")
+            
+            # Validate the API key
+            if not api_key:
+                raise ValueError(
+                    "OpenAI API key not found. Please set it using one of these methods:\n"
+                    "1. Set environment variable: export OPENAI_API_KEY='your-key-here'\n"
+                    "2. Update the config with: config['api_key'] = 'your-key-here'\n"
+                    "3. Use the web interface to update the API key"
+                )
+            
+            if api_key == "your-openai-api-key-here" or api_key == "":
+                raise ValueError(
+                    "Please replace the placeholder API key with your actual OpenAI API key. "
+                    "You can get one from: https://platform.openai.com/api-keys"
+                )
+        elif provider == "anthropic":
+            # First check if API key is provided in config
+            api_key = self.config.get("anthropic_api_key")
+            
+            # If not in config, check environment variable
+            if not api_key:
+                api_key = os.environ.get("ANTHROPIC_API_KEY")
+            
+            # Validate the API key
+            if not api_key:
+                raise ValueError(
+                    "Anthropic API key not found. Please set it using one of these methods:\n"
+                    "1. Set environment variable: export ANTHROPIC_API_KEY='your-key-here'\n"
+                    "2. Update the config with: config['anthropic_api_key'] = 'your-key-here'\n"
+                )
+            
+            if api_key == "":
+                raise ValueError(
+                    "Please provide your actual Anthropic API key. "
+                    "You can get one from: https://console.anthropic.com/"
+                )
+        else:
+            raise ValueError(f"Unsupported provider: {provider}. Must be 'openai' or 'anthropic'")
         
         return api_key
+
+    def _create_llm(
+        self, provider: str, model: str, temperature: float
+    ) -> BaseChatModel:
+        """
+        Create an LLM instance based on the provider.
+        
+        Args:
+            provider: The provider name ("openai" or "anthropic")
+            model: The model name (e.g., "gpt-4o", "claude-3-5-sonnet-20241022")
+            temperature: The temperature setting for the model
+            
+        Returns:
+            BaseChatModel: An instance of the appropriate LLM class
+        """
+        api_key = self._get_api_key(provider)
+        
+        if provider == "openai":
+            return ChatOpenAI(
+                model=model,
+                temperature=temperature,
+                api_key=api_key,
+            )
+        elif provider == "anthropic":
+            # ChatAnthropic handles SystemMessage extraction automatically
+            # It extracts SystemMessage from the message list and passes it as 'system' parameter
+            # The messages array should contain at least one non-SystemMessage
+            return ChatAnthropic(
+                model=model,
+                temperature=temperature,
+                api_key=api_key,
+            )
+        else:
+            raise ValueError(f"Unsupported provider: {provider}. Must be 'openai' or 'anthropic'")
 
     def _set_tool_nodes(self) -> Dict[str, ToolNode]:
         """
@@ -115,19 +175,16 @@ class TradingGraph:
         Refresh the LLM objects with the current API key from environment.
         This is called when the API key is updated.
         """
-        # Get the current API key with validation
-        api_key = self._get_api_key()
-        
-        # Recreate LLM objects with explicit API key and config values
-        self.agent_llm = ChatOpenAI(
+        # Recreate LLM objects with current config values
+        self.agent_llm = self._create_llm(
+            provider=self.config.get("agent_llm_provider", "openai"),
             model=self.config.get("agent_llm_model", "gpt-4o-mini"),
             temperature=self.config.get("agent_llm_temperature", 0.1),
-            api_key=api_key,
         )
-        self.graph_llm = ChatOpenAI(
+        self.graph_llm = self._create_llm(
+            provider=self.config.get("graph_llm_provider", "openai"),
             model=self.config.get("graph_llm_model", "gpt-4o"),
             temperature=self.config.get("graph_llm_temperature", 0.1),
-            api_key=api_key,
         )
 
         # Recreate the graph setup with new LLMs
@@ -141,19 +198,29 @@ class TradingGraph:
         # Recreate the main graph
         self.graph = self.graph_setup.set_graph()
 
-    def update_api_key(self, api_key: str):
+    def update_api_key(self, api_key: str, provider: str = "openai"):
         """
         Update the API key in the config and refresh LLMs.
         This method is called by the web interface when API key is updated.
         
         Args:
-            api_key (str): The new OpenAI API key
+            api_key (str): The new API key
+            provider (str): The provider name ("openai" or "anthropic"), defaults to "openai"
         """
-        # Update the config with the new API key
-        self.config["api_key"] = api_key
-        
-        # Also update the environment variable for consistency
-        os.environ["OPENAI_API_KEY"] = api_key
+        if provider == "openai":
+            # Update the config with the new API key
+            self.config["api_key"] = api_key
+            
+            # Also update the environment variable for consistency
+            os.environ["OPENAI_API_KEY"] = api_key
+        elif provider == "anthropic":
+            # Update the config with the new API key
+            self.config["anthropic_api_key"] = api_key
+            
+            # Also update the environment variable for consistency
+            os.environ["ANTHROPIC_API_KEY"] = api_key
+        else:
+            raise ValueError(f"Unsupported provider: {provider}. Must be 'openai' or 'anthropic'")
         
         # Refresh the LLMs with the new API key
         self.refresh_llms()

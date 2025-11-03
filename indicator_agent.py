@@ -6,7 +6,7 @@ Uses LLM and toolkit to compute and interpret indicators like MACD, RSI, ROC, St
 import copy
 import json
 
-from langchain_core.messages import ToolMessage
+from langchain_core.messages import ToolMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 
@@ -44,12 +44,16 @@ def create_indicator_agent(llm, toolkit):
         ).partial(kline_data=json.dumps(state["kline_data"], indent=2))
 
         chain = prompt | llm.bind_tools(tools)
-        messages = state["messages"]
+        # messages = state["messages"]
+        messages = state.get("messages", [])
+        if not messages:
+            messages = [HumanMessage(content="Begin indicator analysis.")]
+
 
         # --- Step 1: Ask for tool calls ---
         ai_response = chain.invoke(messages)
         messages.append(ai_response)
-
+        
         # --- Step 2: Collect tool results ---
         if hasattr(ai_response, "tool_calls"):
             for call in ai_response.tool_calls:

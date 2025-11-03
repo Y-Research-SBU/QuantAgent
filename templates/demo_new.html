@@ -1084,15 +1084,36 @@
                                     <i class="fas fa-cog"></i> Settings
                                 </h4>
                                 
-                                <!-- OpenAI API Key Input -->
+                                <!-- LLM Provider Selection -->
                                 <div class="form-group">
+                                    <label class="form-label">LLM Provider</label>
+                                    <select class="form-control" id="llmProviderSelect" onchange="handleProviderChange()">
+                                        <option value="openai" selected>OpenAI</option>
+                                        <option value="anthropic">Claude (Anthropic)</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- OpenAI API Key Input -->
+                                <div class="form-group" id="openaiApiKeyGroup">
                                     <label class="form-label">OpenAI API Key</label>
                                     <div class="input-group">
-                                        <input type="password" class="form-control" id="apiKeyInput" placeholder="Enter your OpenAI API key">
-                                        <button class="btn btn-outline-primary" type="button" onclick="updateApiKey()">
+                                        <input type="password" class="form-control" id="openaiApiKeyInput" placeholder="Enter your OpenAI API key">
+                                        <button class="btn btn-outline-primary" type="button" onclick="updateApiKey('openai')">
                                             <i class="fas fa-save"></i> Update
                                         </button>
                                     </div>
+                                </div>
+                                
+                                <!-- Anthropic API Key Input -->
+                                <div class="form-group" id="anthropicApiKeyGroup" style="display: none;">
+                                    <label class="form-label">Anthropic API Key</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="anthropicApiKeyInput" placeholder="Enter your Anthropic API key">
+                                        <button class="btn btn-outline-primary" type="button" onclick="updateApiKey('anthropic')">
+                                            <i class="fas fa-save"></i> Update
+                                        </button>
+                                    </div>
+                                </div>
                                     
                                     <!-- API Key Status Messages -->
                                     <div id="apiKeyStatus" class="alert alert-info mt-2" style="display: none;">
@@ -1107,7 +1128,6 @@
                                         <i class="fas fa-check-circle"></i>
                                         <span id="apiKeySuccessText"></span>
                                     </div>
-                                </div>
                             </div>
                             
                             <!-- Security Information Panel -->
@@ -1441,21 +1461,45 @@
             
             // Check API key status on page load
             checkApiKeyStatus();
+            
+            // Set initial provider dropdown state
+            const savedProvider = localStorage.getItem('quantagent_provider') || 'openai';
+            if (savedProvider) {
+                document.getElementById('llmProviderSelect').value = savedProvider;
+                handleProviderChange();
+            }
         });
         
         function checkApiKeyStatus() {
-            fetch('/api/get-api-key-status')
-                .then(response => response.json())
+            const provider = document.getElementById('llmProviderSelect')?.value || 'openai';
+            fetch(`/api/get-api-key-status?provider=${provider}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    if (data.has_key) {
-                        showApiKeyStatus(`API key is set: ${data.masked_key}`);
+                    if (data.error) {
+                        console.error('API key status error:', data.error);
+                        // Don't show error if it's just that no key is set
+                        if (data.has_key === false) {
+                            const providerName = provider === 'openai' ? 'OpenAI' : 'Anthropic';
+                            showApiKeyError(`No ${providerName} API key found. Please enter your ${providerName} API key.`);
+                        } else {
+                            showApiKeyError(`Error checking API key: ${data.error}`);
+                        }
+                    } else if (data.has_key) {
+                        const providerName = provider === 'openai' ? 'OpenAI' : 'Anthropic';
+                        showApiKeyStatus(`${providerName} API key is set: ${data.masked_key}`);
                     } else {
-                        showApiKeyError('No API key found. Please enter your OpenAI API key.');
+                        const providerName = provider === 'openai' ? 'OpenAI' : 'Anthropic';
+                        showApiKeyError(`No ${providerName} API key found. Please enter your ${providerName} API key.`);
                     }
                 })
                 .catch(error => {
                     console.error('Error checking API key status:', error);
-                    showApiKeyError('Unable to check API key status');
+                    // Silently fail - don't show error to user
                 });
         }
         
@@ -1716,9 +1760,61 @@
              console.log('Timeframe limits updated');
          }
          
-         // API Key Management Functions
-         function updateApiKey() {
-             const apiKey = document.getElementById('apiKeyInput').value.trim();
+         // Provider and API Key Management Functions
+         function handleProviderChange() {
+             const provider = document.getElementById('llmProviderSelect').value;
+             const openaiGroup = document.getElementById('openaiApiKeyGroup');
+             const anthropicGroup = document.getElementById('anthropicApiKeyGroup');
+             
+             if (provider === 'openai') {
+                 openaiGroup.style.display = 'block';
+                 anthropicGroup.style.display = 'none';
+             } else {
+                 openaiGroup.style.display = 'none';
+                 anthropicGroup.style.display = 'block';
+             }
+             
+             // Update provider on backend
+             updateProvider(provider);
+             
+             // Check API key status for the selected provider
+             checkApiKeyStatus();
+         }
+         
+         function updateProvider(provider) {
+             // Save provider preference
+             localStorage.setItem('quantagent_provider', provider);
+             
+             fetch('/api/update-provider', {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json',
+                 },
+                 body: JSON.stringify({ provider: provider })
+             })
+             .then(response => response.json())
+             .then(data => {
+                 if (data.success) {
+                     console.log(`Provider switched to ${provider}`);
+                 } else {
+                     console.error('Failed to update provider:', data.error);
+                 }
+             })
+             .catch(error => {
+                 console.error('Error updating provider:', error);
+             });
+         }
+         
+         function updateApiKey(provider) {
+             const providerSelect = document.getElementById('llmProviderSelect');
+             const actualProvider = provider || providerSelect.value;
+             
+             let apiKey;
+             if (actualProvider === 'openai') {
+                 apiKey = document.getElementById('openaiApiKeyInput').value.trim();
+             } else {
+                 apiKey = document.getElementById('anthropicApiKeyInput').value.trim();
+             }
              
              if (!apiKey) {
                  showApiKeyError('Please enter an API key');
@@ -1729,7 +1825,7 @@
              hideApiKeyMessages();
              
              // Show loading state
-             const updateBtn = document.querySelector('button[onclick="updateApiKey()"]');
+             const updateBtn = event.target.closest('button');
              const originalText = updateBtn.innerHTML;
              updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
              updateBtn.disabled = true;
@@ -1740,13 +1836,21 @@
                  headers: {
                      'Content-Type': 'application/json',
                  },
-                 body: JSON.stringify({ api_key: apiKey })
+                 body: JSON.stringify({ 
+                     api_key: apiKey,
+                     provider: actualProvider
+                 })
              })
              .then(response => response.json())
              .then(data => {
                  if (data.success) {
-                     showApiKeySuccess('API key updated successfully!');
-                     document.getElementById('apiKeyInput').value = '';
+                     showApiKeySuccess(`${actualProvider === 'openai' ? 'OpenAI' : 'Anthropic'} API key updated successfully!`);
+                     if (actualProvider === 'openai') {
+                         document.getElementById('openaiApiKeyInput').value = '';
+                     } else {
+                         document.getElementById('anthropicApiKeyInput').value = '';
+                     }
+                     checkApiKeyStatus();
                  } else {
                      showApiKeyError(data.error || 'Failed to update API key');
                  }
