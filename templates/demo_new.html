@@ -1090,6 +1090,7 @@
                                     <select class="form-control" id="llmProviderSelect" onchange="handleProviderChange()">
                                         <option value="openai" selected>OpenAI</option>
                                         <option value="anthropic">Claude (Anthropic)</option>
+                                        <option value="qwen">Qwen</option>
                                     </select>
                                 </div>
                                 
@@ -1110,6 +1111,17 @@
                                     <div class="input-group">
                                         <input type="password" class="form-control" id="anthropicApiKeyInput" placeholder="Enter your Anthropic API key">
                                         <button class="btn btn-outline-primary" type="button" onclick="updateApiKey('anthropic')">
+                                            <i class="fas fa-save"></i> Update
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Qwen API Key Input -->
+                                <div class="form-group" id="qwenApiKeyGroup" style="display: none;">
+                                    <label class="form-label">Qwen API Key (Dashscope)</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="qwenApiKeyInput" placeholder="Enter your Qwen API key">
+                                        <button class="btn btn-outline-primary" type="button" onclick="updateApiKey('qwen')">
                                             <i class="fas fa-save"></i> Update
                                         </button>
                                     </div>
@@ -1480,20 +1492,24 @@
                     return response.json();
                 })
                 .then(data => {
+                    const providerNames = {
+                        'openai': 'OpenAI',
+                        'anthropic': 'Anthropic',
+                        'qwen': 'Qwen'
+                    };
+                    const providerName = providerNames[provider] || provider;
+                    
                     if (data.error) {
                         console.error('API key status error:', data.error);
                         // Don't show error if it's just that no key is set
                         if (data.has_key === false) {
-                            const providerName = provider === 'openai' ? 'OpenAI' : 'Anthropic';
                             showApiKeyError(`No ${providerName} API key found. Please enter your ${providerName} API key.`);
                         } else {
                             showApiKeyError(`Error checking API key: ${data.error}`);
                         }
                     } else if (data.has_key) {
-                        const providerName = provider === 'openai' ? 'OpenAI' : 'Anthropic';
                         showApiKeyStatus(`${providerName} API key is set: ${data.masked_key}`);
                     } else {
-                        const providerName = provider === 'openai' ? 'OpenAI' : 'Anthropic';
                         showApiKeyError(`No ${providerName} API key found. Please enter your ${providerName} API key.`);
                     }
                 })
@@ -1765,13 +1781,20 @@
              const provider = document.getElementById('llmProviderSelect').value;
              const openaiGroup = document.getElementById('openaiApiKeyGroup');
              const anthropicGroup = document.getElementById('anthropicApiKeyGroup');
+             const qwenGroup = document.getElementById('qwenApiKeyGroup');
              
+             // Hide all groups first
+             openaiGroup.style.display = 'none';
+             anthropicGroup.style.display = 'none';
+             qwenGroup.style.display = 'none';
+             
+             // Show the selected provider's group
              if (provider === 'openai') {
                  openaiGroup.style.display = 'block';
-                 anthropicGroup.style.display = 'none';
-             } else {
-                 openaiGroup.style.display = 'none';
+             } else if (provider === 'anthropic') {
                  anthropicGroup.style.display = 'block';
+             } else if (provider === 'qwen') {
+                 qwenGroup.style.display = 'block';
              }
              
              // Update provider on backend
@@ -1812,8 +1835,10 @@
              let apiKey;
              if (actualProvider === 'openai') {
                  apiKey = document.getElementById('openaiApiKeyInput').value.trim();
-             } else {
+             } else if (actualProvider === 'anthropic') {
                  apiKey = document.getElementById('anthropicApiKeyInput').value.trim();
+             } else if (actualProvider === 'qwen') {
+                 apiKey = document.getElementById('qwenApiKeyInput').value.trim();
              }
              
              if (!apiKey) {
@@ -1844,11 +1869,18 @@
              .then(response => response.json())
              .then(data => {
                  if (data.success) {
-                     showApiKeySuccess(`${actualProvider === 'openai' ? 'OpenAI' : 'Anthropic'} API key updated successfully!`);
+                     const providerNames = {
+                         'openai': 'OpenAI',
+                         'anthropic': 'Anthropic',
+                         'qwen': 'Qwen'
+                     };
+                     showApiKeySuccess(`${providerNames[actualProvider] || actualProvider} API key updated successfully!`);
                      if (actualProvider === 'openai') {
                          document.getElementById('openaiApiKeyInput').value = '';
-                     } else {
+                     } else if (actualProvider === 'anthropic') {
                          document.getElementById('anthropicApiKeyInput').value = '';
+                     } else if (actualProvider === 'qwen') {
+                         document.getElementById('qwenApiKeyInput').value = '';
                      }
                      checkApiKeyStatus();
                  } else {

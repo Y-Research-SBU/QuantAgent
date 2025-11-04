@@ -9,6 +9,7 @@ from typing import Dict
 from langchain_anthropic import ChatAnthropic
 from langchain_core.language_models import BaseChatModel
 from langchain_openai import ChatOpenAI
+from langchain_qwq import ChatQwen
 from langgraph.prebuilt import ToolNode
 
 from default_config import DEFAULT_CONFIG
@@ -58,7 +59,7 @@ class TradingGraph:
         Get API key with proper validation and error handling.
         
         Args:
-            provider: The provider name ("openai" or "anthropic")
+            provider: The provider name ("openai", "anthropic", or "qwen")
         
         Returns:
             str: The API key for the specified provider
@@ -109,8 +110,29 @@ class TradingGraph:
                     "Please provide your actual Anthropic API key. "
                     "You can get one from: https://console.anthropic.com/"
                 )
+        elif provider == "qwen":
+            # First check if API key is provided in config
+            api_key = self.config.get("qwen_api_key")
+            
+            # If not in config, check environment variable
+            if not api_key:
+                api_key = os.environ.get("DASHSCOPE_API_KEY")
+            
+            # Validate the API key
+            if not api_key:
+                raise ValueError(
+                    "Qwen API key not found. Please set it using one of these methods:\n"
+                    "1. Set environment variable: export DASHSCOPE_API_KEY='your-key-here'\n"
+                    "2. Update the config with: config['qwen_api_key'] = 'your-key-here'\n"
+                )
+            
+            if api_key == "":
+                raise ValueError(
+                    "Please provide your actual Qwen API key. "
+                    "You can get one from: https://dashscope.console.aliyun.com/"
+                )
         else:
-            raise ValueError(f"Unsupported provider: {provider}. Must be 'openai' or 'anthropic'")
+            raise ValueError(f"Unsupported provider: {provider}. Must be 'openai', 'anthropic', or 'qwen'")
         
         return api_key
 
@@ -121,8 +143,8 @@ class TradingGraph:
         Create an LLM instance based on the provider.
         
         Args:
-            provider: The provider name ("openai" or "anthropic")
-            model: The model name (e.g., "gpt-4o", "claude-3-5-sonnet-20241022")
+            provider: The provider name ("openai", "anthropic", or "qwen")
+            model: The model name (e.g., "gpt-4o", "claude-3-5-sonnet-20241022", "qwen-vl-max-latest")
             temperature: The temperature setting for the model
             
         Returns:
@@ -145,8 +167,15 @@ class TradingGraph:
                 temperature=temperature,
                 api_key=api_key,
             )
+        elif provider == "qwen":
+            return ChatQwen(
+                model=model,
+                temperature=temperature,
+                api_key=api_key,
+                max_retries=4,
+            )
         else:
-            raise ValueError(f"Unsupported provider: {provider}. Must be 'openai' or 'anthropic'")
+            raise ValueError(f"Unsupported provider: {provider}. Must be 'openai', 'anthropic', or 'qwen'")
 
     def _set_tool_nodes(self) -> Dict[str, ToolNode]:
         """
@@ -219,8 +248,14 @@ class TradingGraph:
             
             # Also update the environment variable for consistency
             os.environ["ANTHROPIC_API_KEY"] = api_key
+        elif provider == "qwen":
+            # Update the config with the new API key
+            self.config["qwen_api_key"] = api_key
+            
+            # Also update the environment variable for consistency
+            os.environ["DASHSCOPE_API_KEY"] = api_key
         else:
-            raise ValueError(f"Unsupported provider: {provider}. Must be 'openai' or 'anthropic'")
+            raise ValueError(f"Unsupported provider: {provider}. Must be 'openai', 'anthropic', or 'qwen'")
         
         # Refresh the LLMs with the new API key
         self.refresh_llms()

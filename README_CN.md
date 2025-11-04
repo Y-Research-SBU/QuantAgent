@@ -99,7 +99,7 @@
 ### 1. 创建并激活 Conda 环境
 
 ```bash
-conda create -n quantagents python=3.10
+conda create -n quantagents python=3.11
 conda activate quantagents
 ```
 
@@ -117,18 +117,25 @@ conda install -c conda-forge ta-lib
 
 或访问 [TA-Lib Python 仓库](https://github.com/ta-lib/ta-lib-python) 获取详细的安装说明。
 
-### 3. 设置 OpenAI API 密钥
+### 3. 设置 LLM API 密钥
 您可以在我们的网络界面中稍后设置它，
-![API 密钥设置](assets/apibox.png)
+
+![alt text](assets/apibox.png)
 
 或将其设置为环境变量：
 ```bash
-export OPENAI_API_KEY="your_api_key_here"
+# For OpenAI
+export OPENAI_API_KEY="your_openai_api_key_here"
+
+# For Anthropic (Claude)
+export ANTHROPIC_API_KEY="your_anthropic_api_key_here"
+
+# For Qwen (DashScope, based in Singapore — delays may occur)
+export DASHSCOPE_API_KEY="your_dashscope_api_key_here"
+
 ```
 
 ## 🔧 实现细节
-
-我们使用 LangGraph 构建 QuantAgents 以确保灵活性和模块化。我们使用 gpt-4o 和 gpt-4o-mini 作为我们的深度思考和快速思考 LLM 进行实验。但是，出于测试目的，我们建议您使用 gpt-4o-mini 来节省成本，因为我们的框架会进行大量 API 调用。
 
 **重要说明**：我们的模型需要一个可以接受图像输入的 LLM，因为我们的智能体会生成和分析视觉图表以进行模式识别和趋势分析。
 
@@ -161,24 +168,30 @@ print(final_state.get("pattern_report"))
 print(final_state.get("trend_report"))
 ```
 
-您还可以调整默认配置以设置您自己的 LLM 选择、分析参数等。
+您还可以调整默认配置以在 web_interface.py 中设置您自己的 LLM 选择或分析参数。
 
 ```python
-from trading_graph import TradingGraph
-from default_config import DEFAULT_CONFIG
+if provider == "anthropic":
+    # Set default Claude models if not already set to Anthropic models
+    if not analyzer.config["agent_llm_model"].startswith("claude"):
+        analyzer.config["agent_llm_model"] = "claude-haiku-4-5-20251001"
+    if not analyzer.config["graph_llm_model"].startswith("claude"):
+        analyzer.config["graph_llm_model"] = "claude-haiku-4-5-20251001"
 
-# 创建自定义配置
-config = DEFAULT_CONFIG.copy()
-config["agent_llm_model"] = "gpt-4o-mini"  # 为智能体使用不同的模型
-config["graph_llm_model"] = "gpt-4o"       # 为图逻辑使用不同的模型
-config["agent_llm_temperature"] = 0.2      # 调整智能体的创造力水平
-config["graph_llm_temperature"] = 0.1      # 调整图逻辑的创造力水平
-
-# 使用自定义配置初始化
-trading_graph = TradingGraph(config=config)
-
-# 使用自定义配置运行分析
-final_state = trading_graph.graph.invoke(initial_state)
+elif provider == "qwen":
+    # Set default Qwen models if not already set to Qwen models
+    if not analyzer.config["agent_llm_model"].startswith("qwen"):
+        analyzer.config["agent_llm_model"] = "qwen3-max"
+    if not analyzer.config["graph_llm_model"].startswith("qwen"):
+        analyzer.config["graph_llm_model"] = "qwen3-vl-plus"
+    
+else:
+    # Set default OpenAI models if not already set to OpenAI models
+    if analyzer.config["agent_llm_model"].startswith(("claude", "qwen")):
+        analyzer.config["agent_llm_model"] = "gpt-4o-mini"
+    if analyzer.config["graph_llm_model"].startswith(("claude", "qwen")):
+        analyzer.config["graph_llm_model"] = "gpt-4o"
+        
 ```
 
 对于实时数据，我们建议使用网络界面，因为它通过 yfinance 提供对实时市场数据的访问。系统会自动获取最近 30 个蜡烛图以获得最佳的 LLM 分析准确性。
@@ -213,7 +226,7 @@ python web_interface.py
 2. **时间框架选择**：分析从 1 分钟到每日间隔的数据
 3. **日期范围**：为分析选择自定义日期范围
 4. **实时分析**：获得带有可视化的全面技术分析
-5. **API 密钥管理**：通过界面更新您的 OpenAI API 密钥
+5. **API 密钥管理**：通过界面更新您的 LLM API 密钥
 
 ## 📺 演示
 
@@ -244,7 +257,16 @@ python web_interface.py
 
 ## 🙏 致谢
 
-此仓库基于 [**LangGraph**](https://github.com/langchain-ai/langgraph)、[**OpenAI**](https://github.com/openai/openai-python)、[**yfinance**](https://github.com/ranaroussi/yfinance)、[**Flask**](https://github.com/pallets/flask)、[**TechnicalAnalysisAutomation**](https://github.com/neurotrader888/TechnicalAnalysisAutomation/tree/main) 和 [**tvdatafeed**](https://github.com/rongardF/tvdatafeed) 构建。
+此仓库基于以下库和框架构建：
+
+- [**LangGraph**](https://github.com/langchain-ai/langgraph)
+- [**OpenAI**](https://github.com/openai/openai-python)
+- [**Anthropic (Claude)**](https://github.com/anthropics/anthropic-sdk-python)
+- [**Qwen**](https://github.com/QwenLM/Qwen)
+- [**yfinance**](https://github.com/ranaroussi/yfinance)
+- [**Flask**](https://github.com/pallets/flask)
+- [**TechnicalAnalysisAutomation**](https://github.com/neurotrader888/TechnicalAnalysisAutomation/tree/main)
+- [**tvdatafeed**](https://github.com/rongardF/tvdatafeed)
 
 ## ⚠️ 免责声明
 
@@ -256,7 +278,7 @@ python web_interface.py
 
 1. **TA-Lib 安装**：如果您遇到 TA-Lib 安装问题，请参考[官方仓库](https://github.com/ta-lib/ta-lib-python)获取平台特定的说明。
 
-2. **OpenAI API 密钥**：确保您的 API 密钥在环境中或通过网络界面正确设置。
+2. **LLM API 密钥**：确保您的 API 密钥在环境中或通过网络界面正确设置。
 
 3. **数据获取**：系统使用雅虎财经获取数据。某些符号可能不可用或历史数据有限。
 
@@ -265,16 +287,18 @@ python web_interface.py
 ### 支持
 
 如果您遇到任何问题，请：
+
+0. 尝试刷新页面，重新通过页面输入LLM API 密钥
 1. 检查上面的故障排除部分
 2. 查看控制台中的错误消息
 3. 确保所有依赖项都正确安装
-4. 验证您的 OpenAI API 密钥有效且有足够的积分
+4. 验证您的 LLM API 密钥有效且有足够的积分
 
 ## 📧 联系
 
 如有问题、反馈或合作机会，请联系：
 
-**邮箱**：[chenyu.you@stonybrook.edu](mailto:chenyu.you@stonybrook.edu)
+**邮箱**：[chenyu.you@stonybrook.edu](mailto:chenyu.you@stonybrook.edu), [siqisun@fudan.edu.cn](mailto:siqisun@fudan.edu.cn)
 
 ## Star History
 
