@@ -41,14 +41,14 @@ class TradingGraph:
         self.toolkit = TechnicalTools()
 
         # --- Create tool nodes for each agent ---
-        self.tool_nodes = self._set_tool_nodes()
+        # self.tool_nodes = self._set_tool_nodes()
 
         # --- Graph logic and setup ---
         self.graph_setup = SetGraph(
             self.agent_llm,
             self.graph_llm,
             self.toolkit,
-            self.tool_nodes,
+            # self.tool_nodes,
         )
 
         # --- The main LangGraph graph object ---
@@ -177,27 +177,27 @@ class TradingGraph:
         else:
             raise ValueError(f"Unsupported provider: {provider}. Must be 'openai', 'anthropic', or 'qwen'")
 
-    def _set_tool_nodes(self) -> Dict[str, ToolNode]:
-        """
-        Define tool nodes for each agent type (indicator, pattern, trend).
-        """
-        return {
-            "indicator": ToolNode(
-                [
-                    self.toolkit.compute_macd,
-                    self.toolkit.compute_roc,
-                    self.toolkit.compute_rsi,
-                    self.toolkit.compute_stoch,
-                    self.toolkit.compute_willr,
-                ]
-            ),
-            "pattern": ToolNode(
-                [
-                    self.toolkit.generate_kline_image,
-                ]
-            ),
-            "trend": ToolNode([self.toolkit.generate_trend_image]),
-        }
+    # def _set_tool_nodes(self) -> Dict[str, ToolNode]:
+    #     """
+    #     Define tool nodes for each agent type (indicator, pattern, trend).
+    #     """
+    #     return {
+    #         "indicator": ToolNode(
+    #             [
+    #                 self.toolkit.compute_macd,
+    #                 self.toolkit.compute_roc,
+    #                 self.toolkit.compute_rsi,
+    #                 self.toolkit.compute_stoch,
+    #                 self.toolkit.compute_willr,
+    #             ]
+    #         ),
+    #         "pattern": ToolNode(
+    #             [
+    #                 self.toolkit.generate_kline_image,
+    #             ]
+    #         ),
+    #         "trend": ToolNode([self.toolkit.generate_trend_image]),
+    #     }
 
     def refresh_llms(self):
         """
@@ -221,7 +221,7 @@ class TradingGraph:
             self.agent_llm,
             self.graph_llm,
             self.toolkit,
-            self.tool_nodes,
+            # self.tool_nodes,
         )
 
         # Recreate the main graph
