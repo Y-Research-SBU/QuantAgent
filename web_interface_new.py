@@ -592,10 +592,8 @@ class WebTradingAnalyzer:
             asset_name = safe_str(asset_name)
             timeframe = safe_str(timeframe)
             
-            if len(df) > 49:
-                df_slice = df.tail(49).iloc[:-3]
-            else:
-                df_slice = df.tail(45)
+            # 使用所有数据点
+            df_slice = df.tail(100)  # 获取最近100条数据
             
             # 检查必要的列，注意Datetime可能被设置为索引
             required_price_columns = ["Open", "High", "Low", "Close"]

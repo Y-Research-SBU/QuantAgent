@@ -406,8 +406,8 @@ class TechnicalTools:
         """
 
         df = pd.DataFrame(kline_data)
-        # take recent 40
-        df = df.tail(40)
+        # take recent 100 data points
+        df = df.tail(100)
 
         try:
             df.to_csv("record.csv", index=False, date_format="%Y-%m-%d %H:%M:%S")
@@ -487,7 +487,7 @@ class TechnicalTools:
         """
         df = pd.DataFrame(kline_data)
         rsi = talib.RSI(df["Close"], timeperiod=period)
-        return {"rsi": rsi.fillna(0).round(2).tolist()[-28:]}
+        return {"rsi": rsi.fillna(0).round(2).tolist()}
 
     @staticmethod
     @tool
@@ -513,8 +513,8 @@ class TechnicalTools:
         macd, macd_signal, macd_hist = talib.MACD(df["Close"], fastperiod=fastperiod, slowperiod=slowperiod, signalperiod=signalperiod)
         return {
             "macd": macd.fillna(0).round(2).tolist(),
-            "macd_signal": macd_signal.fillna(0).round(2).tolist()[-28:],
-            "macd_hist": macd_hist.fillna(0).round(2).tolist()[-28:]
+            "macd_signal": macd_signal.fillna(0).round(2).tolist(),
+            "macd_hist": macd_hist.fillna(0).round(2).tolist()
         }
 
     @staticmethod
@@ -534,8 +534,8 @@ class TechnicalTools:
         df = pd.DataFrame(kline_data)
         stoch_k, stoch_d = talib.STOCH(df["High"], df["Low"], df["Close"], fastk_period=14, slowk_period=3, slowd_period=3)
         return {
-            "stoch_k": stoch_k.fillna(0).round(2).tolist()[-28:],
-            "stoch_d": stoch_d.fillna(0).round(2).tolist()[-28:]
+            "stoch_k": stoch_k.fillna(0).round(2).tolist(),
+            "stoch_d": stoch_d.fillna(0).round(2).tolist()
         }
 
     @staticmethod
@@ -556,7 +556,7 @@ class TechnicalTools:
 
         df = pd.DataFrame(kline_data)
         roc = talib.ROC(df["Close"], timeperiod=period)
-        return {"roc": roc.fillna(0).round(2).tolist()[-28:]}
+        return {"roc": roc.fillna(0).round(2).tolist()}
 
     @staticmethod
     @tool
@@ -577,7 +577,7 @@ class TechnicalTools:
         # print("-------------------------CALLED COMPUTE WILLR--------------------------\n")
         df = pd.DataFrame(kline_data)
         willr = talib.WILLR(df["High"], df["Low"], df["Close"], timeperiod=period)
-        return {"willr": willr.fillna(0).round(2).tolist()[-28:]}
+        return {"willr": willr.fillna(0).round(2).tolist()}
 
     def get_indicator_tools(self):
         """Get technical indicator tools"""
