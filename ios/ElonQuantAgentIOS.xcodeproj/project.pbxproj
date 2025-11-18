@@ -1,211 +1,314 @@
 // !$*UTF8*$!
 {
 	archiveVersion = 1;
-	classes = {};
+	classes = {
+	};
 	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
-	A0010001 /* ElonQuantAgentIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0001001 /* ElonQuantAgentIOSApp.swift */; };
-	A0010002 /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0002001 /* Asset.swift */; };
-	A0010003 /* Timeframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0002002 /* Timeframe.swift */; };
-	A0010004 /* OHLCV.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0002003 /* OHLCV.swift */; };
-	A0010005 /* AnalysisRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0002004 /* AnalysisRequest.swift */; };
-	A0010006 /* AnalysisResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0002005 /* AnalysisResult.swift */; };
-	A0010007 /* HistoryRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0002006 /* HistoryRecord.swift */; };
-	A0010008 /* MarketAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0003001 /* MarketAPI.swift */; };
-	A0010009 /* IndicatorEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0004001 /* IndicatorEngine.swift */; };
-	A001000A /* PatternEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0004002 /* PatternEngine.swift */; };
-	A001000B /* DecisionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0004003 /* DecisionEngine.swift */; };
-	A001000C /* HistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0005001 /* HistoryStore.swift */; };
-	A001000D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0006001 /* HomeView.swift */; };
-	A001000E /* ResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0006002 /* ResultView.swift */; };
-	A001000F /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0006003 /* HistoryView.swift */; };
-	A0010010 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0006004 /* SettingsView.swift */; };
-	A0010011 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0007001 /* Assets.xcassets */; };
+		A0010001 /* ElonQuantAgentIOS/App/ElonQuantAgentIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0001001 /* ElonQuantAgentIOS/App/ElonQuantAgentIOSApp.swift */; };
+		A0010002 /* ElonQuantAgentIOS/Models/Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0002001 /* ElonQuantAgentIOS/Models/Asset.swift */; };
+		A0010003 /* ElonQuantAgentIOS/Models/Timeframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0002002 /* ElonQuantAgentIOS/Models/Timeframe.swift */; };
+		A0010004 /* ElonQuantAgentIOS/Models/OHLCV.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0002003 /* ElonQuantAgentIOS/Models/OHLCV.swift */; };
+		A0010005 /* ElonQuantAgentIOS/Models/AnalysisRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0002004 /* ElonQuantAgentIOS/Models/AnalysisRequest.swift */; };
+		A0010006 /* ElonQuantAgentIOS/Models/AnalysisResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0002005 /* ElonQuantAgentIOS/Models/AnalysisResult.swift */; };
+		A0010007 /* ElonQuantAgentIOS/Models/HistoryRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0002006 /* ElonQuantAgentIOS/Models/HistoryRecord.swift */; };
+		A0010008 /* ElonQuantAgentIOS/Networking/MarketAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0003001 /* ElonQuantAgentIOS/Networking/MarketAPI.swift */; };
+		A0010009 /* ElonQuantAgentIOS/Engines/IndicatorEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0004001 /* ElonQuantAgentIOS/Engines/IndicatorEngine.swift */; };
+		A001000A /* ElonQuantAgentIOS/Engines/PatternEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0004002 /* ElonQuantAgentIOS/Engines/PatternEngine.swift */; };
+		A001000B /* ElonQuantAgentIOS/Engines/DecisionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0004003 /* ElonQuantAgentIOS/Engines/DecisionEngine.swift */; };
+		A001000C /* ElonQuantAgentIOS/Storage/HistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0005001 /* ElonQuantAgentIOS/Storage/HistoryStore.swift */; };
+		A001000D /* ElonQuantAgentIOS/Views/HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0006001 /* ElonQuantAgentIOS/Views/HomeView.swift */; };
+		A001000E /* ElonQuantAgentIOS/Views/ResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0006002 /* ElonQuantAgentIOS/Views/ResultView.swift */; };
+		A001000F /* ElonQuantAgentIOS/Views/HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0006003 /* ElonQuantAgentIOS/Views/HistoryView.swift */; };
+		A0010010 /* ElonQuantAgentIOS/Views/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0006004 /* ElonQuantAgentIOS/Views/SettingsView.swift */; };
+		A0010011 /* ElonQuantAgentIOS/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0007001 /* ElonQuantAgentIOS/Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-	A0000001 /* ElonQuantAgentIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = ElonQuantAgentIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-	A0001001 /* ElonQuantAgentIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/App/ElonQuantAgentIOSApp.swift; sourceTree = SOURCE_ROOT; };
-	A0002001 /* Asset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Models/Asset.swift; sourceTree = SOURCE_ROOT; };
-	A0002002 /* Timeframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Models/Timeframe.swift; sourceTree = SOURCE_ROOT; };
-	A0002003 /* OHLCV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Models/OHLCV.swift; sourceTree = SOURCE_ROOT; };
-	A0002004 /* AnalysisRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Models/AnalysisRequest.swift; sourceTree = SOURCE_ROOT; };
-	A0002005 /* AnalysisResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Models/AnalysisResult.swift; sourceTree = SOURCE_ROOT; };
-	A0002006 /* HistoryRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Models/HistoryRecord.swift; sourceTree = SOURCE_ROOT; };
-	A0003001 /* MarketAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Networking/MarketAPI.swift; sourceTree = SOURCE_ROOT; };
-	A0004001 /* IndicatorEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Engines/IndicatorEngine.swift; sourceTree = SOURCE_ROOT; };
-	A0004002 /* PatternEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Engines/PatternEngine.swift; sourceTree = SOURCE_ROOT; };
-	A0004003 /* DecisionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Engines/DecisionEngine.swift; sourceTree = SOURCE_ROOT; };
-	A0005001 /* HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Storage/HistoryStore.swift; sourceTree = SOURCE_ROOT; };
-	A0006001 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Views/HomeView.swift; sourceTree = SOURCE_ROOT; };
-	A0006002 /* ResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Views/ResultView.swift; sourceTree = SOURCE_ROOT; };
-	A0006003 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Views/HistoryView.swift; sourceTree = SOURCE_ROOT; };
-	A0006004 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Views/SettingsView.swift; sourceTree = SOURCE_ROOT; };
-	A0007001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ElonQuantAgentIOS/Assets.xcassets; sourceTree = SOURCE_ROOT; };
-	A0008001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ElonQuantAgentIOS/Info.plist; sourceTree = SOURCE_ROOT; };
+		A0000001 /* ElonQuantAgentIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = ElonQuantAgentIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A0001001 /* ElonQuantAgentIOS/App/ElonQuantAgentIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/App/ElonQuantAgentIOSApp.swift; sourceTree = SOURCE_ROOT; };
+		A0002001 /* ElonQuantAgentIOS/Models/Asset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Models/Asset.swift; sourceTree = SOURCE_ROOT; };
+		A0002002 /* ElonQuantAgentIOS/Models/Timeframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Models/Timeframe.swift; sourceTree = SOURCE_ROOT; };
+		A0002003 /* ElonQuantAgentIOS/Models/OHLCV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Models/OHLCV.swift; sourceTree = SOURCE_ROOT; };
+		A0002004 /* ElonQuantAgentIOS/Models/AnalysisRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Models/AnalysisRequest.swift; sourceTree = SOURCE_ROOT; };
+		A0002005 /* ElonQuantAgentIOS/Models/AnalysisResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Models/AnalysisResult.swift; sourceTree = SOURCE_ROOT; };
+		A0002006 /* ElonQuantAgentIOS/Models/HistoryRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Models/HistoryRecord.swift; sourceTree = SOURCE_ROOT; };
+		A0003001 /* ElonQuantAgentIOS/Networking/MarketAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Networking/MarketAPI.swift; sourceTree = SOURCE_ROOT; };
+		A0004001 /* ElonQuantAgentIOS/Engines/IndicatorEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Engines/IndicatorEngine.swift; sourceTree = SOURCE_ROOT; };
+		A0004002 /* ElonQuantAgentIOS/Engines/PatternEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Engines/PatternEngine.swift; sourceTree = SOURCE_ROOT; };
+		A0004003 /* ElonQuantAgentIOS/Engines/DecisionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Engines/DecisionEngine.swift; sourceTree = SOURCE_ROOT; };
+		A0005001 /* ElonQuantAgentIOS/Storage/HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Storage/HistoryStore.swift; sourceTree = SOURCE_ROOT; };
+		A0006001 /* ElonQuantAgentIOS/Views/HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Views/HomeView.swift; sourceTree = SOURCE_ROOT; };
+		A0006002 /* ElonQuantAgentIOS/Views/ResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Views/ResultView.swift; sourceTree = SOURCE_ROOT; };
+		A0006003 /* ElonQuantAgentIOS/Views/HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Views/HistoryView.swift; sourceTree = SOURCE_ROOT; };
+		A0006004 /* ElonQuantAgentIOS/Views/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElonQuantAgentIOS/Views/SettingsView.swift; sourceTree = SOURCE_ROOT; };
+		A0007001 /* ElonQuantAgentIOS/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ElonQuantAgentIOS/Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		A0008001 /* ElonQuantAgentIOS/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ElonQuantAgentIOS/Info.plist; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-	A0020001 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		A0020001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-	A0030001 = {
-		isa = PBXGroup;
-		children = (
-			A0040001 /* ElonQuantAgentIOS */, 
-			A0000002 /* Products */,
-		);
-		sourceTree = "<group>";
-	};
-	A0000002 /* Products */ = {
-		isa = PBXGroup;
-		children = (
-			A0000001 /* ElonQuantAgentIOS.app */,
-		);
-		name = Products;
-		sourceTree = "<group>";
-	};
-	A0040001 /* ElonQuantAgentIOS */ = {
-		isa = PBXGroup;
-		children = (
-			A0041001 /* App */,
-			A0042001 /* Models */,
-			A0043001 /* Networking */,
-			A0044001 /* Engines */,
-			A0045001 /* Storage */,
-			A0046001 /* Views */,
-			A0007001 /* Assets.xcassets */,
-			A0008001 /* Info.plist */,
-		);
-		path = ElonQuantAgentIOS;
-		sourceTree = SOURCE_ROOT;
-	};
-	A0041001 /* App */ = {isa = PBXGroup; children = (A0001001 /* ElonQuantAgentIOSApp.swift */); path = App; sourceTree = "<group>"; };
-	A0042001 /* Models */ = {isa = PBXGroup; children = (A0002001 /* Asset.swift */, A0002002 /* Timeframe.swift */, A0002003 /* OHLCV.swift */, A0002004 /* AnalysisRequest.swift */, A0002005 /* AnalysisResult.swift */, A0002006 /* HistoryRecord.swift */); path = Models; sourceTree = "<group>"; };
-	A0043001 /* Networking */ = {isa = PBXGroup; children = (A0003001 /* MarketAPI.swift */); path = Networking; sourceTree = "<group>"; };
-	A0044001 /* Engines */ = {isa = PBXGroup; children = (A0004001 /* IndicatorEngine.swift */, A0004002 /* PatternEngine.swift */, A0004003 /* DecisionEngine.swift */); path = Engines; sourceTree = "<group>"; };
-	A0045001 /* Storage */ = {isa = PBXGroup; children = (A0005001 /* HistoryStore.swift */); path = Storage; sourceTree = "<group>"; };
-	A0046001 /* Views */ = {isa = PBXGroup; children = (A0006001 /* HomeView.swift */, A0006002 /* ResultView.swift */, A0006003 /* HistoryView.swift */, A0006004 /* SettingsView.swift */); path = Views; sourceTree = "<group>"; };
+		A0000002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A0000001 /* ElonQuantAgentIOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A0030001 = {
+			isa = PBXGroup;
+			children = (
+				A0040001 /* ElonQuantAgentIOS */,
+				A0000002 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A0040001 /* ElonQuantAgentIOS */ = {
+			isa = PBXGroup;
+			children = (
+				A0041001 /* App */,
+				A0042001 /* Models */,
+				A0043001 /* Networking */,
+				A0044001 /* Engines */,
+				A0045001 /* Storage */,
+				A0046001 /* Views */,
+				A0007001 /* ElonQuantAgentIOS/Assets.xcassets */,
+				A0008001 /* ElonQuantAgentIOS/Info.plist */,
+			);
+			path = ElonQuantAgentIOS;
+			sourceTree = SOURCE_ROOT;
+		};
+		A0041001 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				A0001001 /* ElonQuantAgentIOS/App/ElonQuantAgentIOSApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A0042001 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A0002001 /* ElonQuantAgentIOS/Models/Asset.swift */,
+				A0002002 /* ElonQuantAgentIOS/Models/Timeframe.swift */,
+				A0002003 /* ElonQuantAgentIOS/Models/OHLCV.swift */,
+				A0002004 /* ElonQuantAgentIOS/Models/AnalysisRequest.swift */,
+				A0002005 /* ElonQuantAgentIOS/Models/AnalysisResult.swift */,
+				A0002006 /* ElonQuantAgentIOS/Models/HistoryRecord.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A0043001 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				A0003001 /* ElonQuantAgentIOS/Networking/MarketAPI.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		A0044001 /* Engines */ = {
+			isa = PBXGroup;
+			children = (
+				A0004001 /* ElonQuantAgentIOS/Engines/IndicatorEngine.swift */,
+				A0004002 /* ElonQuantAgentIOS/Engines/PatternEngine.swift */,
+				A0004003 /* ElonQuantAgentIOS/Engines/DecisionEngine.swift */,
+			);
+			path = Engines;
+			sourceTree = "<group>";
+		};
+		A0045001 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				A0005001 /* ElonQuantAgentIOS/Storage/HistoryStore.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		A0046001 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A0006001 /* ElonQuantAgentIOS/Views/HomeView.swift */,
+				A0006002 /* ElonQuantAgentIOS/Views/ResultView.swift */,
+				A0006003 /* ElonQuantAgentIOS/Views/HistoryView.swift */,
+				A0006004 /* ElonQuantAgentIOS/Views/SettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-	A0050001 /* ElonQuantAgentIOS */ = {
-		isa = PBXNativeTarget;
-		buildConfigurationList = A0060001 /* Build configuration list for PBXNativeTarget "ElonQuantAgentIOS" */;
-		buildPhases = (
-			A0020002 /* Sources */,
-			A0020001 /* Frameworks */,
-			A0020003 /* Resources */,
-		);
-		buildRules = ();
-		dependencies = ();
-		name = ElonQuantAgentIOS;
-		productName = ElonQuantAgentIOS;
-		productReference = A0000001 /* ElonQuantAgentIOS.app */;
-		productType = "com.apple.product-type.application";
-	};
+		A0050001 /* ElonQuantAgentIOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A0060001 /* Build configuration list for PBXNativeTarget "ElonQuantAgentIOS" */;
+			buildPhases = (
+				A0020002 /* Sources */,
+				A0020001 /* Frameworks */,
+				A0020003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ElonQuantAgentIOS;
+			productName = ElonQuantAgentIOS;
+			productReference = A0000001 /* ElonQuantAgentIOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-	A0070001 /* Project object */ = {
-		isa = PBXProject;
-		attributes = {
-			BuildIndependentTargetsInParallel = YES;
-			LastSwiftUpdateCheck = 1500;
-			LastUpgradeCheck = 1500;
-			TargetAttributes = {
-				A0050001 = {
-					CreatedOnToolsVersion = 15.0;
+		A0070001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A0050001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
 				};
 			};
+			buildConfigurationList = A0060002 /* Build configuration list for PBXProject "ElonQuantAgentIOS" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A0030001;
+			productRefGroup = A0000002 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A0050001 /* ElonQuantAgentIOS */,
+			);
 		};
-		buildConfigurationList = A0060002 /* Build configuration list for PBXProject "ElonQuantAgentIOS" */;
-		compatibilityVersion = "Xcode 14.0";
-		developmentRegion = en;
-		hasScannedForEncodings = 0;
-		knownRegions = (
-			en,
-			Base,
-		);
-		mainGroup = A0030001;
-		productRefGroup = A0000002 /* Products */;
-		projectDirPath = "";
-		projectRoot = "";
-		targets = (
-			A0050001 /* ElonQuantAgentIOS */,
-		);
-	};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-	A0020003 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (
-		A0010011 /* Assets.xcassets in Resources */,
-	); runOnlyForDeploymentPostprocessing = 0; };
+		A0020003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A0010011 /* ElonQuantAgentIOS/Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-	A0020002 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (
-		A0010001 /* ElonQuantAgentIOSApp.swift in Sources */,
-		A0010002 /* Asset.swift in Sources */,
-		A0010003 /* Timeframe.swift in Sources */,
-		A0010004 /* OHLCV.swift in Sources */,
-		A0010005 /* AnalysisRequest.swift in Sources */,
-		A0010006 /* AnalysisResult.swift in Sources */,
-		A0010007 /* HistoryRecord.swift in Sources */,
-		A0010008 /* MarketAPI.swift in Sources */,
-		A0010009 /* IndicatorEngine.swift in Sources */,
-		A001000A /* PatternEngine.swift in Sources */,
-		A001000B /* DecisionEngine.swift in Sources */,
-		A001000C /* HistoryStore.swift in Sources */,
-		A001000D /* HomeView.swift in Sources */,
-		A001000E /* ResultView.swift in Sources */,
-		A001000F /* HistoryView.swift in Sources */,
-		A0010010 /* SettingsView.swift in Sources */,
-	); runOnlyForDeploymentPostprocessing = 0; };
+		A0020002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A0010001 /* ElonQuantAgentIOS/App/ElonQuantAgentIOSApp.swift in Sources */,
+				A0010002 /* ElonQuantAgentIOS/Models/Asset.swift in Sources */,
+				A0010003 /* ElonQuantAgentIOS/Models/Timeframe.swift in Sources */,
+				A0010004 /* ElonQuantAgentIOS/Models/OHLCV.swift in Sources */,
+				A0010005 /* ElonQuantAgentIOS/Models/AnalysisRequest.swift in Sources */,
+				A0010006 /* ElonQuantAgentIOS/Models/AnalysisResult.swift in Sources */,
+				A0010007 /* ElonQuantAgentIOS/Models/HistoryRecord.swift in Sources */,
+				A0010008 /* ElonQuantAgentIOS/Networking/MarketAPI.swift in Sources */,
+				A0010009 /* ElonQuantAgentIOS/Engines/IndicatorEngine.swift in Sources */,
+				A001000A /* ElonQuantAgentIOS/Engines/PatternEngine.swift in Sources */,
+				A001000B /* ElonQuantAgentIOS/Engines/DecisionEngine.swift in Sources */,
+				A001000C /* ElonQuantAgentIOS/Storage/HistoryStore.swift in Sources */,
+				A001000D /* ElonQuantAgentIOS/Views/HomeView.swift in Sources */,
+				A001000E /* ElonQuantAgentIOS/Views/ResultView.swift in Sources */,
+				A001000F /* ElonQuantAgentIOS/Views/HistoryView.swift in Sources */,
+				A0010010 /* ElonQuantAgentIOS/Views/SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-	A0060003 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
-            IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-            PRODUCT_BUNDLE_IDENTIFIER = com.elonquant.ElonQuantAgentIOS;
-            PRODUCT_NAME = ElonQuantAgentIOS;
-            ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-            INFOPLIST_FILE = ElonQuantAgentIOS/Info.plist;
-            CODE_SIGN_STYLE = Automatic;
-            CURRENT_PROJECT_VERSION = 1;
-            MARKETING_VERSION = 1.0;
-            SWIFT_VERSION = 5.0;
-            TARGETED_DEVICE_FAMILY = "1,2";
-        }; name = Debug; };
-	A0060004 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
-            IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-            PRODUCT_BUNDLE_IDENTIFIER = com.elonquant.ElonQuantAgentIOS;
-            PRODUCT_NAME = ElonQuantAgentIOS;
-            ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-            INFOPLIST_FILE = ElonQuantAgentIOS/Info.plist;
-            CODE_SIGN_STYLE = Automatic;
-            CURRENT_PROJECT_VERSION = 1;
-            MARKETING_VERSION = 1.0;
-            SWIFT_VERSION = 5.0;
-            TARGETED_DEVICE_FAMILY = "1,2";
-        }; name = Release; };
-	A0060005 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = { }; name = Debug; };
-	A0060006 /* Release */ = {isa = XCBuildConfiguration; buildSettings = { }; name = Release; };
+		A0060003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = ElonQuantAgentIOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.elonquant.ElonQuantAgentIOS;
+				PRODUCT_NAME = ElonQuantAgentIOS;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A0060004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = ElonQuantAgentIOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.elonquant.ElonQuantAgentIOS;
+				PRODUCT_NAME = ElonQuantAgentIOS;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A0060005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		A0060006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-	A0060001 /* Build configuration list for PBXNativeTarget "ElonQuantAgentIOS" */ = {isa = XCConfigurationList; buildConfigurations = (
-            A0060003 /* Debug */, A0060004 /* Release */
-        ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
-	A0060002 /* Build configuration list for PBXProject "ElonQuantAgentIOS" */ = {isa = XCConfigurationList; buildConfigurations = (
-            A0060005 /* Debug */, A0060006 /* Release */
-        ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+		A0060001 /* Build configuration list for PBXNativeTarget "ElonQuantAgentIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0060003 /* Debug */,
+				A0060004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A0060002 /* Build configuration list for PBXProject "ElonQuantAgentIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0060005 /* Debug */,
+				A0060006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 /* End XCConfigurationList section */
-
-};
-
-rootObject = A0070001 /* Project object */;
+	};
+	rootObject = A0070001 /* Project object */;
 }
