@@ -243,10 +243,12 @@ class WebTradingAnalyzer:
             print(f"DataFrame shape: {df.shape}")
 
             # Prepare data for analysis
-            if len(df) > 49:
-                df_slice = df.tail(49).iloc[:-3]
-            else:
-                df_slice = df.tail(45)
+            # if len(df) > 49:
+            #     df_slice = df.tail(49).iloc[:-3]
+            # else:
+            #     df_slice = df.tail(45)
+
+            df_slice = df.tail(45)
 
             # Ensure DataFrame has the expected structure
             required_columns = ["Datetime", "Open", "High", "Low", "Close"]
