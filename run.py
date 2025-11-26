@@ -73,7 +73,7 @@ def setup_data_directories():
     
     print("✅ 数据目录设置完成")
 
-def start_web_interface(port=5002):
+def start_web_interface(port=5001):
     """启动Web界面"""
     print(f"🚀 启动Web交易分析界面...")
     print(f"   访问地址: http://127.0.0.1:{port}")
@@ -99,7 +99,7 @@ def main():
     
     # 解析命令行参数
     parser = argparse.ArgumentParser(description='ElonQuantAgent')
-    parser.add_argument('--port', type=int, default=5002, help='Server port (default: 5002)')
+    parser.add_argument('--port', type=int, default=5001, help='Server port (default: 5001)')
     args = parser.parse_args()
     
     # 检查环境变量

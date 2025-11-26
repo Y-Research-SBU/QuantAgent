@@ -648,9 +648,12 @@ class WebTradingAnalyzer:
             }
             
             # 根据generate_charts参数决定是否生成图表
+            print(f"📊 [DEBUG] run_analysis 中 generate_charts={generate_charts}")
             if generate_charts:
+                print(f"✅ [DEBUG] 启用图表生成模式")
                 analysis_result = self.trading_graph.analyze(df_slice_dict, asset_name, display_timeframe, trading_strategy)
             else:
+                print(f"⚠️ [DEBUG] 仅文本分析模式，不生成图表")
                 # 只进行文本分析，不生成图表
                 analysis_result = self.trading_graph.analyze_text_only(df_slice_dict, asset_name, display_timeframe, trading_strategy)
             
@@ -917,12 +920,36 @@ def QuantAgent():
 def output():
     """Display analysis results page"""
     try:
-        # Get results from URL parameters
+        # 优先尝试通过ID从数据库加载结果
+        result_id = request.args.get('id')
+        if result_id:
+            try:
+                print(f"📊 [DEBUG] 从数据库加载结果，ID: {result_id}")
+                # 从数据库获取分析结果
+                history_record = db_manager.get_analysis_history_by_id(int(result_id))
+                if history_record:
+                    results = history_record.get('result_details', {})
+                    # 添加缓存标记信息
+                    results['cache_info'] = {
+                        'cache_id': result_id,
+                        'cache_timestamp': history_record.get('created_at'),
+                        'is_cached': True
+                    }
+                    print(f"✅ [DEBUG] 成功从数据库加载结果")
+                    return render_template('output.html', results=results)
+                else:
+                    print(f"⚠️ [DEBUG] 未找到ID为 {result_id} 的记录")
+                    # 如果找不到记录，继续尝试其他方式
+            except Exception as e:
+                print(f"❌ [DEBUG] 从数据库加载结果失败: {safe_str(e)}")
+                # 如果加载失败，继续尝试其他方式
+        
+        # Get results from URL parameters (后备方案)
         results_param = request.args.get('results')
         if results_param:
             import urllib.parse
             try:
-                print(f"原始URL参数: {results_param}")
+                print(f"原始URL参数: {results_param[:100]}...")
                 # 先进行URL解码
                 decoded_results = urllib.parse.unquote(results_param, encoding='utf-8')
                 print(f"解码后结果: {decoded_results[:200]}...")  # 只显示前200个字符
@@ -1070,25 +1097,24 @@ def analyze():
                 "cache_timestamp": existing_analysis['created_at']
             }
             
+            
             if redirect_to_output:
-                # Handle URL-encoded results for redirect
-                import urllib.parse
-                try:
-                    # 确保所有字符串都是UTF-8编码
-                    results_json = json.dumps(formatted_results, ensure_ascii=False)
-                    encoded_results = urllib.parse.quote(results_json, safe='')
-                    redirect_url = f"/output?results={encoded_results}"
+                # 使用数据库ID传递缓存结果，避免URL过长
+                cache_id = existing_analysis.get('id')
+                if cache_id:
+                    redirect_url = f"/output?id={cache_id}"
+                    print(f"📊 [DEBUG] 使用缓存结果重定向，ID: {cache_id}")
                     return jsonify({"redirect": redirect_url})
-                except Exception as e:
-                    # If encoding fails, return results directly
-                    error_msg = safe_str(e)
-                    print(f"URL encoding failed: {error_msg}")
-                    return jsonify(formatted_results)
+                else:
+                    # 如果没有ID，返回错误
+                    return jsonify({"error": "Cache ID not found"})
             else:
                 return jsonify(formatted_results)
         
         # 如果没有找到缓存结果，继续执行原有的分析流程
         print(f"🔍 未找到缓存，开始执行新的分析...")
+        print(f"📊 [DEBUG] generate_charts 参数: {generate_charts}")
+        print(f"📊 [DEBUG] trading_strategy 参数: {trading_strategy}")
         
         # Use new data fetching method
         df = analyzer.fetch_market_data(asset, timeframe, start_dt, end_dt)
@@ -1096,10 +1122,12 @@ def analyze():
             return jsonify({"error": "Unable to fetch data, please check the code or try other data sources"})
         
         display_name = analyzer.asset_mapping.get(asset, asset)
+        print(f"📊 [DEBUG] 调用 run_analysis, generate_charts={generate_charts}")
         results = analyzer.run_analysis(df, display_name, timeframe, generate_charts, trading_strategy)  # 传递generate_charts和trading_strategy参数
         formatted_results = analyzer.extract_analysis_results(results)
         
         # 保存分析结果到数据库
+        history_id = None
         try:
             history_id = db_manager.save_analysis_history(
                 asset=asset,
@@ -1122,19 +1150,14 @@ def analyze():
             print(f"⚠️ 保存分析结果到数据库失败: {safe_str(e)}")
         
         if redirect_to_output:
-            # Handle URL-encoded results for redirect
-            import urllib.parse
-            try:
-                # 确保所有字符串都是UTF-8编码
-                results_json = json.dumps(formatted_results, ensure_ascii=False)
-                encoded_results = urllib.parse.quote(results_json, safe='')
-                redirect_url = f"/output?results={encoded_results}"
+            # 使用数据库ID传递结果，避免URL过长
+            if history_id:
+                redirect_url = f"/output?id={history_id}"
+                print(f"📊 [DEBUG] 重定向到结果页面，使用ID: {history_id}")
                 return jsonify({"redirect": redirect_url})
-            except Exception as e:
-                # If encoding fails, return results directly
-                error_msg = safe_str(e)
-                print(f"URL encoding failed: {error_msg}")
-                return jsonify(formatted_results)
+            else:
+                # 如果保存失败，返回错误
+                return jsonify({"error": "Failed to save analysis results to database"})
         else:
             return jsonify(formatted_results)
         
