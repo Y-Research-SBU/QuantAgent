@@ -255,8 +255,9 @@ class MultiSourceDataFetcher:
                     continue
             
             if df.empty:
-                print(f"所有akshare方法都失败，使用demo数据")
-                return self.get_demo_data(symbol, start_date, end_date)
+                print(f"❌ 所有akshare方法都失败,无法获取 {symbol} 的真实数据")
+                print(f"   请检查股票代码是否正确,或稍后重试")
+                return pd.DataFrame()  # 返回空DataFrame,不生成误导性的模拟数据
             
             # Standardize column names - 更全面的映射
             column_mapping = {
@@ -302,16 +303,29 @@ class MultiSourceDataFetcher:
             required_columns = ['Open', 'High', 'Low', 'Close', 'Volume']
             missing_columns = [col for col in required_columns if col not in df.columns]
             if missing_columns:
-                print(f"缺少必要的列: {missing_columns}，使用demo数据")
-                return self.get_demo_data(symbol, start_date, end_date)
+                print(f"❌ 数据缺少必要的列: {missing_columns}")
+                print(f"   无法进行分析,请检查数据源")
+                return pd.DataFrame()  # 返回空DataFrame,不生成误导性的模拟数据
             
             print(f"成功获取 {len(df)} 条数据")
+            
+            # 添加详细的价格数据日志
+            print(f"\n📊 [数据获取] {symbol} 价格数据详情:")
+            print(f"  数据形状: {df.shape}")
+            if 'Close' in df.columns:
+                close_prices = df['Close'].values
+                print(f"  收盘价范围: ${close_prices.min():.2f} - ${close_prices.max():.2f}")
+                print(f"  最新收盘价: ${close_prices[-1]:.2f}")
+                print(f"  前3条收盘价: {close_prices[:3].tolist()}")
+                print(f"  后3条收盘价: {close_prices[-3:].tolist()}")
+            
             return df
             
         except Exception as e:
             error_msg = safe_str(e)
-            print(f"akshare数据获取失败: {error_msg}，使用demo数据")
-            return self.get_demo_data(symbol, start_date, end_date)
+            print(f"❌ akshare数据获取失败: {error_msg}")
+            print(f"   无法获取真实市场数据,请稍后重试")
+            return pd.DataFrame()  # 返回空DataFrame,不生成误导性的模拟数据
     
     def get_demo_data(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """生成demo数据用于测试"""
@@ -332,18 +346,22 @@ class MultiSourceDataFetcher:
             np.random.seed(seed)
             
             # 基础价格 - 根据股票名称生成更有差异化的基础价格
+            # 使用绝对值确保hash值为正数
+            hash_value = abs(hash(symbol))
+            
             if symbol.upper() in ['BTC', 'ETH', 'SOL']:
                 # 加密货币价格较高
-                base_price = 50000 + (hash(symbol) % 10000)
-            elif symbol.upper() in ['AAPL', 'MSFT', 'GOOGL']:
+                base_price = 50000 + (hash_value % 50000)
+            elif symbol.upper() in ['AAPL', 'MSFT', 'GOOGL', 'TSLA', 'NVDA']:
                 # 大型科技股
-                base_price = 150 + (hash(symbol) % 100)
+                base_price = 100 + (hash_value % 400)
             elif re.match(r'^\d{6}$', symbol):
                 # 可能是A股代码
-                base_price = 10 + (hash(symbol) % 90)
+                base_price = 5 + (hash_value % 95)
             else:
-                # 其他股票
-                base_price = 50 + (hash(symbol) % 150)
+                # 其他股票 - 使用更合理的价格范围
+                # 确保价格在5-200之间,避免过低的价格
+                base_price = 5 + (hash_value % 195)
             
             # 生成价格序列
             returns = np.random.normal(0, 0.02, len(dates))  # 2%日波动率
@@ -629,6 +647,15 @@ class WebTradingAnalyzer:
                     df_slice_dict[col] = [float(x) if pd.notna(x) else 0.0 for x in df_slice[col].tolist()]
                 except Exception:
                     df_slice_dict[col] = [safe_str(x) for x in df_slice[col].tolist()]
+            
+            # 添加数据转换后的日志
+            print(f"\n📊 [数据转换] {asset_name} 转换为字典后:")
+            if 'Close' in df_slice_dict:
+                close_prices = df_slice_dict['Close']
+                print(f"  收盘价数量: {len(close_prices)}")
+                print(f"  收盘价范围: ${min(close_prices):.2f} - ${max(close_prices):.2f}")
+                print(f"  前3条: {close_prices[:3]}")
+                print(f"  后3条: {close_prices[-3:]}")
             
             display_timeframe = timeframe
             if timeframe.endswith('h'):
@@ -1119,7 +1146,12 @@ def analyze():
         # Use new data fetching method
         df = analyzer.fetch_market_data(asset, timeframe, start_dt, end_dt)
         if df.empty:
-            return jsonify({"error": "Unable to fetch data, please check the code or try other data sources"})
+            error_message = (
+                f"无法获取 {asset} 的真实市场数据。"
+                f"请检查: 1) 股票代码是否正确; 2) 数据源是否可用; 3) 稍后重试。"
+                f"注意: 系统不会生成模拟数据以避免误导决策。"
+            )
+            return jsonify({"error": error_message})
         
         display_name = analyzer.asset_mapping.get(asset, asset)
         print(f"📊 [DEBUG] 调用 run_analysis, generate_charts={generate_charts}")

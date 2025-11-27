@@ -84,39 +84,54 @@ def create_pattern_agent(llm, tools):
             pattern_image_filename = ""
             chart_result = {"error": error_msg}
 
-        # --- Step 2: 根据交易策略生成模式分析报告 ---
+        # --- Step 2: 根据交易策略生成形态分析报告 ---
         trading_strategy = state.get('trading_strategy', 'high_frequency')
+        
+        # 从kline_data提取实际价格范围,确保LLM使用真实数据
+        kline_data = state["kline_data"]
+        close_prices = kline_data.get("Close", [])
+        if close_prices:
+            price_min = min(close_prices)
+            price_max = max(close_prices)
+            price_current = close_prices[-1]
+            price_range_info = f"\n\n**重要: 实际价格数据**\n- 价格范围: ${price_min:.2f} - ${price_max:.2f}\n- 当前价格: ${price_current:.2f}\n- 数据点数: {len(close_prices)}\n"
+        else:
+            price_range_info = ""
         
         if trading_strategy == 'low_frequency':
             # 低频交易策略提示词
             system_prompt = (
-                "你是一位专业的低频交易形态识别助手，专注于长期趋势和价格行为分析。请用中文回答。"
+                "你是低频交易的K线形态识别专家,专注于长期形态和价格模式分析。请用中文回答。"
                 f"股票代码: {state.get('stock_name', 'Unknown')}\n"
-                f"图表是基于{time_frame}间隔数据生成的。\n\n"
+                f"K线图表是基于{time_frame}间隔数据生成的。\n"
+                f"{price_range_info}\n"
                 "图表生成结果: {chart_result}\n\n"
-                "将生成的图表与经典形态描述进行比较，确定是否存在已知形态:\n\n"
-                "{pattern_descriptions}\n\n"
-                "请提供详细的中文形态分析报告，包括:\n"
-                "1. 识别的形态（如有）\n"
-                "2. 形态可靠性和强度\n"
-                "3. 长期交易含义\n"
-                "4. 长期关键支撑/阻力位\n"
-                "5. 形态对未来1-6个月价格走势的影响"
+                "分析K线形态并提供全面的中文报告,包括:\n"
+                "1. 识别的长期经典K线形态(如头肩顶/底、双顶/底、三角形等)\n"
+                "2. 长期形态的完成度和可靠性\n"
+                "3. 长期形态的看涨/看跌含义\n"
+                "4. 长期形态的目标价位预测\n"
+                "5. 基于长期形态分析的交易建议\n"
+                "6. 长期形态失效的条件\n\n"
+                "**注意: 请基于上述实际价格数据进行分析,不要仅凭图表视觉推断价格。**\n"
+                "专注于为低频交易决策提供可操作的中文见解,重点关注长期形态。"
             )
         else:
             # 高频交易策略提示词
             system_prompt = (
-                "你是一位专门识别经典高频交易形态的交易形态识别助手。请用中文回答。"
+                "你是高频交易的K线形态识别专家。请用中文回答。"
                 f"股票代码: {state.get('stock_name', 'Unknown')}\n"
-                f"图表是基于{time_frame}间隔数据生成的。\n\n"
+                f"K线图表是基于{time_frame}间隔数据生成的。\n"
+                f"{price_range_info}\n"
                 "图表生成结果: {chart_result}\n\n"
-                "将生成的图表与经典形态描述进行比较，确定是否存在已知形态:\n\n"
-                "{pattern_descriptions}\n\n"
-                "请提供详细的中文形态分析报告，包括:\n"
-                "1. 识别的形态（如有）\n"
-                "2. 形态可靠性和强度\n"
-                "3. 交易含义\n"
-                "4. 关键支撑/阻力位"
+                "分析K线形态并提供全面的中文报告,包括:\n"
+                "1. 识别的经典K线形态(如锤子线、吞没形态、十字星等)\n"
+                "2. 形态的完成度和可靠性\n"
+                "3. 形态的看涨/看跌含义\n"
+                "4. 形态的目标价位预测\n"
+                "5. 基于形态分析的交易建议\n\n"
+                "**注意: 请基于上述实际价格数据进行分析,不要仅凭图表视觉推断价格。**\n"
+                "专注于为高频交易决策提供可操作的中文见解。"
             )
             
         # 创建提示词模板
@@ -164,7 +179,13 @@ def create_pattern_agent(llm, tools):
                 
             # 安全地处理chart_result
             try:
-                chart_result_str = json.dumps(chart_result, indent=2, ensure_ascii=False)
+                # 创建副本以避免修改原始数据
+                safe_chart_result = chart_result.copy() if isinstance(chart_result, dict) else {}
+                # 移除base64图片数据
+                if "pattern_image" in safe_chart_result:
+                    safe_chart_result["pattern_image"] = "<base64_image_removed>"
+                
+                chart_result_str = json.dumps(safe_chart_result, indent=2, ensure_ascii=False)
                 chart_result_str = chart_result_str.encode('utf-8', errors='replace').decode('utf-8')
             except:
                 chart_result_str = "Unable to display chart result"
