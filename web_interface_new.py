@@ -34,6 +34,7 @@ import finnhub
 import numpy as np
 from openai import OpenAI as OpenAIClient
 from dotenv import load_dotenv
+import yfinance as yf
 
 # Load environment variables
 load_dotenv()
@@ -434,9 +435,59 @@ class MultiSourceDataFetcher:
             })
             
             return df
-            
+
         except Exception as e:
-            print(f"Finnhub data fetch failed for {symbol}: {e}")
+            print(f"Finnhub data fetch failed for {symbol}: {safe_str(e)}")
+            return pd.DataFrame()
+
+    def fetch_yfinance_data_with_datetime(self, symbol: str, interval: str,
+                                          start_datetime: datetime, end_datetime: datetime) -> pd.DataFrame:
+        try:
+            df = yf.download(
+                tickers=symbol,
+                start=start_datetime,
+                end=end_datetime,
+                interval=interval,
+                auto_adjust=True,
+                prepost=False
+            )
+
+            if df is None or df.empty:
+                return pd.DataFrame()
+
+            if isinstance(df, pd.Series):
+                df = df.to_frame()
+
+            df = df.reset_index()
+
+            if not isinstance(df, pd.DataFrame):
+                return pd.DataFrame()
+
+            if isinstance(df.columns, pd.MultiIndex):
+                df.columns = df.columns.get_level_values(0)
+
+            column_mapping = {
+                'Date': 'Datetime',
+                'Open': 'Open',
+                'High': 'High',
+                'Low': 'Low',
+                'Close': 'Close',
+                'Volume': 'Volume'
+            }
+
+            existing = {old: new for old, new in column_mapping.items() if old in df.columns}
+            if existing:
+                df = df.rename(columns=existing)
+
+            required = ["Datetime", "Open", "High", "Low", "Close"]
+            if not all(col in df.columns for col in required):
+                return pd.DataFrame()
+
+            df = df[required + (["Volume"] if "Volume" in df.columns else [])]
+            df['Datetime'] = pd.to_datetime(df['Datetime'])
+            return df
+        except Exception as e:
+            print(f"yfinance fetch failed: {safe_str(e)}")
             return pd.DataFrame()
     
     def fetch_data(self, symbol: str, timeframe: str, 
@@ -575,31 +626,50 @@ class WebTradingAnalyzer:
         # Initialize Finnhub with environment variable
         self.data_fetcher.initialize_finnhub()
 
+    def _is_us_stock(self, symbol: str) -> bool:
+        try:
+            s = safe_str(symbol).upper()
+            return bool(re.match(r'^[A-Z]{1,5}$', s))
+        except Exception:
+            return False
+
     def fetch_market_data(self, symbol: str, interval: str, 
                          start_datetime: datetime, end_datetime: datetime) -> pd.DataFrame:
-        """Fetch OHLCV data from multiple sources with fallback."""
-        # Try akshare first
-        df = self.data_fetcher.fetch_akshare_data(
-            self.symbol_mapping['akshare'].get(symbol, symbol),
-            self.timeframe_mapping['akshare'].get(interval, 'daily'),
-            start_datetime.strftime('%Y%m%d'),
-            end_datetime.strftime('%Y%m%d')
-        )
-        
-        # If akshare fails, try finnhub
-        if df.empty:
-            start_ts = int(start_datetime.timestamp())
-            end_ts = int(end_datetime.timestamp())
-            df = self.data_fetcher.fetch_finnhub_data(
-                self.symbol_mapping['finnhub'].get(symbol, symbol),
-                self.timeframe_mapping['finnhub'].get(interval, 'D'),
-                start_ts, end_ts
+        """Fetch OHLCV data by routing: US stocks → akshare; others → yfinance."""
+        start_str = start_datetime.strftime('%Y%m%d')
+        end_str = end_datetime.strftime('%Y%m%d')
+
+        if self._is_us_stock(symbol):
+            df = self.data_fetcher.fetch_akshare_data(
+                self.symbol_mapping['akshare'].get(symbol, symbol),
+                self.timeframe_mapping['akshare'].get(interval, 'daily'),
+                start_str,
+                end_str
             )
-        
-        # If both fail, provide empty DataFrame
+            if df.empty:
+                df = self.data_fetcher.fetch_yfinance_data_with_datetime(
+                    self.symbol_mapping['yfinance'].get(symbol, symbol),
+                    self.timeframe_mapping['yfinance'].get(interval, '1d'),
+                    start_datetime,
+                    end_datetime
+                )
+        else:
+            df = self.data_fetcher.fetch_yfinance_data_with_datetime(
+                self.symbol_mapping['yfinance'].get(symbol, symbol),
+                self.timeframe_mapping['yfinance'].get(interval, '1d'),
+                start_datetime,
+                end_datetime
+            )
+            if df.empty:
+                df = self.data_fetcher.fetch_akshare_data(
+                    self.symbol_mapping['akshare'].get(symbol, symbol),
+                    self.timeframe_mapping['akshare'].get(interval, 'daily'),
+                    start_str,
+                    end_str
+                )
+
         if df.empty:
             print(f"All data sources failed to fetch data for {symbol}")
-        
         return df
 
     # Keep other methods unchanged, only modify data fetching part
