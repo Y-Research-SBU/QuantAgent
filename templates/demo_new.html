@@ -1225,6 +1225,9 @@
                                             <button type="button" class="timeframe-btn" data-strategy="low_frequency" onclick="selectTradingStrategy(this, 'low_frequency')">
                                                 Low Frequency
                                             </button>
+                                            <button type="button" class="timeframe-btn" data-strategy="both" onclick="selectTradingStrategy(this, 'both')">
+                                                Dual Mode (Compare)
+                                            </button>
                                         </div>
                                         <small class="form-text text-muted">
                                             <span id="strategyDescription">High Frequency: Short-term trades with tight stop-loss. Low Frequency: Monthly to semi-annual holding periods.</span>
@@ -1495,7 +1498,8 @@
             const strategyDescription = document.getElementById('strategyDescription');
             if (strategy === 'low_frequency') {
                 strategyDescription.textContent = 'Low Frequency: Monthly to semi-annual holding periods. Focuses on long-term trends and fundamental analysis.';
-                // 不再自动选择时间框架，保持用户选择
+            } else if (strategy === 'both') {
+                strategyDescription.textContent = 'Dual Mode: Run both High Frequency and Low Frequency strategies simultaneously and compare results side-by-side.';
             } else {
                 strategyDescription.textContent = 'High Frequency: Short-term trades with tight stop-loss. Focuses on technical indicators and short-term patterns.';
             }
@@ -1531,7 +1535,7 @@
             updateApiKeyFields();
             // Set default dates
             const now = new Date();
-            const thirtyDaysAgo = new Date(now.getTime() - (90 * 24 * 60 * 60 * 1000));
+            const thirtyDaysAgo = new Date(now.getTime() - (180 * 24 * 60 * 60 * 1000));
             
             // Format dates for input fields
             const formatDate = (date) => {
@@ -1721,8 +1725,8 @@
         
                  // Global variables
          let selectedAsset = '';
-         let selectedTimeframe = '1h'; // Default timeframe
-         let selectedStrategy = 'high_frequency'; // Default strategy
+         let selectedTimeframe = '1d'; // Default timeframe
+         let selectedStrategy = 'both'; // Default strategy
          
          function selectAsset(button, asset) {
              // Remove active class from all asset buttons

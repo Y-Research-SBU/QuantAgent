@@ -1017,6 +1017,39 @@ def QuantAgent():
 def output():
     """Display analysis results page"""
     try:
+        # Check for comparison mode
+        mode = request.args.get('mode')
+        if mode == 'compare':
+            id1 = request.args.get('id1')
+            id2 = request.args.get('id2')
+            if id1 and id2:
+                try:
+                    print(f"📊 [DEBUG] Loading comparison results: id1={id1}, id2={id2}")
+                    record1 = db_manager.get_analysis_history_by_id(int(id1))
+                    record2 = db_manager.get_analysis_history_by_id(int(id2))
+                    
+                    results_1 = record1.get('result_details', {}) if record1 else {}
+                    results_2 = record2.get('result_details', {}) if record2 else {}
+                    
+                    # Add cache info
+                    if record1:
+                        results_1['cache_info'] = {
+                            'cache_id': id1,
+                            'cache_timestamp': record1.get('created_at'),
+                            'is_cached': True
+                        }
+                    if record2:
+                        results_2['cache_info'] = {
+                            'cache_id': id2,
+                            'cache_timestamp': record2.get('created_at'),
+                            'is_cached': True
+                        }
+                        
+                    return render_template('output.html', comparison_mode=True, results_1=results_1, results_2=results_2)
+                except Exception as e:
+                    print(f"❌ [DEBUG] Error loading comparison results: {safe_str(e)}")
+                    # Fall through to standard error handling or single result display
+        
         # 优先尝试通过ID从数据库加载结果
         result_id = request.args.get('id')
         if result_id:
@@ -1153,6 +1186,57 @@ def analyze():
         except ValueError:
             return jsonify({"error": "Invalid date or time format. Please use YYYY-MM-DD for date and HH:MM for time."})
         
+        # Handle Dual Strategy Mode
+        if trading_strategy == 'both':
+            print(f"🔍 [Dual Mode] Starting dual strategy analysis for {asset}")
+            
+            # Fetch data once for both strategies
+            df = analyzer.fetch_market_data(asset, timeframe, start_dt, end_dt)
+            if df.empty:
+                error_message = (
+                    f"无法获取 {asset} 的真实市场数据。"
+                    f"请检查: 1) 股票代码是否正确; 2) 数据源是否可用; 3) 稍后重试。"
+                )
+                return jsonify({"error": error_message})
+            
+            display_name = analyzer.asset_mapping.get(asset, asset)
+            
+            # 1. Run High Frequency Analysis
+            print(f"📊 [Dual Mode] Running High Frequency Analysis...")
+            results_high = analyzer.run_analysis(df, display_name, timeframe, generate_charts, 'high_frequency')
+            formatted_high = analyzer.extract_analysis_results(results_high)
+            
+            id_high = db_manager.save_analysis_history(
+                asset=asset, timeframe=timeframe, start_date=start_date, end_date=end_date,
+                start_time=start_time, end_time=end_time, generate_charts=generate_charts,
+                trading_strategy='high_frequency', result_summary=f"{asset} HF Analysis",
+                result_details=formatted_high, status='completed', session_id=session_id, user_ip=request.remote_addr
+            )
+            
+            # 2. Run Low Frequency Analysis
+            print(f"📊 [Dual Mode] Running Low Frequency Analysis...")
+            results_low = analyzer.run_analysis(df, display_name, timeframe, generate_charts, 'low_frequency')
+            formatted_low = analyzer.extract_analysis_results(results_low)
+            
+            id_low = db_manager.save_analysis_history(
+                asset=asset, timeframe=timeframe, start_date=start_date, end_date=end_date,
+                start_time=start_time, end_time=end_time, generate_charts=generate_charts,
+                trading_strategy='low_frequency', result_summary=f"{asset} LF Analysis",
+                result_details=formatted_low, status='completed', session_id=session_id, user_ip=request.remote_addr
+            )
+            
+            if redirect_to_output:
+                redirect_url = f"/output?id1={id_high}&id2={id_low}&mode=compare"
+                print(f"📊 [DEBUG] Dual mode redirect: {redirect_url}")
+                return jsonify({"redirect": redirect_url})
+            else:
+                return jsonify({
+                    "success": True,
+                    "mode": "compare",
+                    "results_high": formatted_high,
+                    "results_low": formatted_low
+                })
+
         # 首先检查数据库中是否存在相同查询条件的分析结果（24小时内）
         print(f"🔍 检查数据库缓存...")
         print(f"   📊 查询条件: {asset} {timeframe} {start_date}~{end_date} {trading_strategy}")
