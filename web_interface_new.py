@@ -161,7 +161,9 @@ class MultiSourceDataFetcher:
     
     def __init__(self):
         self.sources = ['akshare', 'finnhub', 'yfinance']
-        self.current_source = 'akshare'
+        configured_source = os.environ.get("DATA_SOURCE", "akshare")
+        configured_source = safe_str(configured_source).strip().lower()
+        self.current_source = configured_source if configured_source in self.sources else 'akshare'
         self.finnhub_client = None
         
     def initialize_finnhub(self, api_key: str = None):
@@ -494,20 +496,19 @@ class MultiSourceDataFetcher:
                   start_date: datetime, end_date: datetime) -> pd.DataFrame:
         """Fetch data from multiple sources with priority fallback"""
         df = pd.DataFrame()
-        
-        # 首先尝试akshare
-        if self.current_source == 'akshare' or df.empty:
-            df = self.fetch_akshare_data(symbol, self._convert_timeframe(timeframe),
-                                       start_date.strftime('%Y%m%d'), 
-                                       end_date.strftime('%Y%m%d'))
-        
-        # 如果akshare失败，尝试finnhub
+
+        df = self.fetch_akshare_data(
+            symbol,
+            self._convert_timeframe(timeframe),
+            start_date.strftime('%Y%m%d'),
+            end_date.strftime('%Y%m%d')
+        )
+
         if df.empty and self.finnhub_client:
             start_ts = int(start_date.timestamp())
             end_ts = int(end_date.timestamp())
-            df = self.fetch_finnhub_data(symbol, self._convert_timeframe(timeframe),
-                                      start_ts, end_ts)
-        
+            df = self.fetch_finnhub_data(symbol, self._convert_timeframe(timeframe), start_ts, end_ts)
+
         return df
     
     def _convert_timeframe(self, timeframe: str) -> str:
@@ -633,47 +634,74 @@ class WebTradingAnalyzer:
         except Exception:
             return False
 
-    def fetch_market_data(self, symbol: str, interval: str, 
-                         start_datetime: datetime, end_datetime: datetime) -> pd.DataFrame:
-        """Fetch OHLCV data by routing: US stocks → akshare; others → yfinance."""
+    def fetch_market_data(
+        self,
+        symbol: str,
+        interval: str,
+        start_datetime: datetime,
+        end_datetime: datetime,
+        market_data_source: str = None
+    ) -> pd.DataFrame:
+        """Fetch OHLCV data using explicit data source priority from configuration."""
         start_str = start_datetime.strftime('%Y%m%d')
         end_str = end_datetime.strftime('%Y%m%d')
+        start_ts = int(start_datetime.timestamp())
+        end_ts = int(end_datetime.timestamp())
 
-        if self._is_us_stock(symbol):
-            df = self.data_fetcher.fetch_akshare_data(
-                self.symbol_mapping['akshare'].get(symbol, symbol),
-                self.timeframe_mapping['akshare'].get(interval, 'daily'),
-                start_str,
-                end_str
-            )
-            if df.empty:
-                df = self.data_fetcher.fetch_yfinance_data_with_datetime(
-                    self.symbol_mapping['yfinance'].get(symbol, symbol),
-                    self.timeframe_mapping['yfinance'].get(interval, '1d'),
-                    start_datetime,
-                    end_datetime
-                )
+        preferred = safe_str(market_data_source).strip().lower() if market_data_source else self.data_fetcher.current_source
+        sources = []
+        if preferred in self.data_fetcher.sources:
+            sources.append(preferred)
+        for s in self.data_fetcher.sources:
+            if s not in sources:
+                sources.append(s)
+
+        last_error = None
+        for source in sources:
+            try:
+                if source == 'akshare':
+                    df = self.data_fetcher.fetch_akshare_data(
+                        self.symbol_mapping['akshare'].get(symbol, symbol),
+                        self.timeframe_mapping['akshare'].get(interval, 'daily'),
+                        start_str,
+                        end_str
+                    )
+                elif source == 'finnhub':
+                    if not self.data_fetcher.finnhub_client:
+                        self.data_fetcher.initialize_finnhub()
+                    if not self.data_fetcher.finnhub_client:
+                        df = pd.DataFrame()
+                    else:
+                        df = self.data_fetcher.fetch_finnhub_data(
+                            self.symbol_mapping['finnhub'].get(symbol, symbol),
+                            self.timeframe_mapping['finnhub'].get(interval, 'D'),
+                            start_ts,
+                            end_ts
+                        )
+                elif source == 'yfinance':
+                    df = self.data_fetcher.fetch_yfinance_data_with_datetime(
+                        self.symbol_mapping['yfinance'].get(symbol, symbol),
+                        self.timeframe_mapping['yfinance'].get(interval, '1d'),
+                        start_datetime,
+                        end_datetime
+                    )
+                else:
+                    df = pd.DataFrame()
+
+                if not df.empty:
+                    return df
+            except Exception as e:
+                last_error = safe_str(e)
+                continue
+
+        if last_error:
+            print(f"All data sources failed to fetch data for {symbol}: {last_error}")
         else:
-            df = self.data_fetcher.fetch_yfinance_data_with_datetime(
-                self.symbol_mapping['yfinance'].get(symbol, symbol),
-                self.timeframe_mapping['yfinance'].get(interval, '1d'),
-                start_datetime,
-                end_datetime
-            )
-            if df.empty:
-                df = self.data_fetcher.fetch_akshare_data(
-                    self.symbol_mapping['akshare'].get(symbol, symbol),
-                    self.timeframe_mapping['akshare'].get(interval, 'daily'),
-                    start_str,
-                    end_str
-                )
-
-        if df.empty:
             print(f"All data sources failed to fetch data for {symbol}")
-        return df
+        return pd.DataFrame()
 
     # Keep other methods unchanged, only modify data fetching part
-    def run_analysis(self, df: pd.DataFrame, asset_name: str, timeframe: str, generate_charts: bool = False, trading_strategy: str = 'high_frequency') -> Dict[str, Any]:
+    def run_analysis(self, df: pd.DataFrame, asset_name: str, timeframe: str, generate_charts: bool = False, trading_strategy: str = 'both') -> Dict[str, Any]:
         """Run the trading analysis on the provided DataFrame."""
         try:
             # 确保asset_name是安全的字符串
@@ -1163,6 +1191,7 @@ def analyze():
         data = request.get_json()
         asset = data.get('asset')
         timeframe = data.get('timeframe')
+        market_data_source = data.get('market_data_source')
         start_date = data.get('start_date')
         start_time = data.get('start_time', '00:00')
         end_date = data.get('end_date')
@@ -1191,7 +1220,7 @@ def analyze():
             print(f"🔍 [Dual Mode] Starting dual strategy analysis for {asset}")
             
             # Fetch data once for both strategies
-            df = analyzer.fetch_market_data(asset, timeframe, start_dt, end_dt)
+            df = analyzer.fetch_market_data(asset, timeframe, start_dt, end_dt, market_data_source=market_data_source)
             if df.empty:
                 error_message = (
                     f"无法获取 {asset} 的真实市场数据。"
@@ -1210,6 +1239,7 @@ def analyze():
                 asset=asset, timeframe=timeframe, start_date=start_date, end_date=end_date,
                 start_time=start_time, end_time=end_time, generate_charts=generate_charts,
                 trading_strategy='high_frequency', result_summary=f"{asset} HF Analysis",
+                analysis_params={"market_data_source": market_data_source or analyzer.data_fetcher.current_source},
                 result_details=formatted_high, status='completed', session_id=session_id, user_ip=request.remote_addr
             )
             
@@ -1222,6 +1252,7 @@ def analyze():
                 asset=asset, timeframe=timeframe, start_date=start_date, end_date=end_date,
                 start_time=start_time, end_time=end_time, generate_charts=generate_charts,
                 trading_strategy='low_frequency', result_summary=f"{asset} LF Analysis",
+                analysis_params={"market_data_source": market_data_source or analyzer.data_fetcher.current_source},
                 result_details=formatted_low, status='completed', session_id=session_id, user_ip=request.remote_addr
             )
             
@@ -1248,6 +1279,7 @@ def analyze():
             start_time=start_time,
             end_time=end_time,
             trading_strategy=trading_strategy,
+            analysis_params={"market_data_source": market_data_source or analyzer.data_fetcher.current_source},
             max_hours_old=24
         )
         
@@ -1298,7 +1330,7 @@ def analyze():
         print(f"📊 [DEBUG] trading_strategy 参数: {trading_strategy}")
         
         # Use new data fetching method
-        df = analyzer.fetch_market_data(asset, timeframe, start_dt, end_dt)
+        df = analyzer.fetch_market_data(asset, timeframe, start_dt, end_dt, market_data_source=market_data_source)
         if df.empty:
             error_message = (
                 f"无法获取 {asset} 的真实市场数据。"
@@ -1324,6 +1356,7 @@ def analyze():
                 end_time=end_time,
                 generate_charts=generate_charts,
                 trading_strategy=trading_strategy,
+                analysis_params={"market_data_source": market_data_source or analyzer.data_fetcher.current_source},
                 result_summary=f"{asset} {timeframe} 分析结果",
                 result_details=formatted_results,
                 status='completed',

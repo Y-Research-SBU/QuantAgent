@@ -935,6 +935,7 @@ class DatabaseManager:
         start_time: str = None,
         end_time: str = None,
         trading_strategy: str = None,
+        analysis_params: Dict[str, Any] = None,
         max_hours_old: int = 24
     ) -> Optional[Dict[str, Any]]:
         """
@@ -987,35 +988,47 @@ class DatabaseManager:
                 SELECT * FROM analysis_history 
                 WHERE {where_clause}
                 ORDER BY created_at DESC
-                LIMIT 1
+                LIMIT 20
             """, params)
-            
-            row = cursor.fetchone()
-            if row:
-                record = dict(row)
-                
-                # 添加调试信息
-                print(f"🔍 找到数据库记录 - ID: {record['id']}")
-                print(f"   📊 查询条件匹配成功")
-                
-                # 解析JSON字段
-                try:
-                    if record.get('analysis_params'):
-                        record['analysis_params'] = json.loads(record['analysis_params'])
-                    if record.get('result_details'):
-                        record['result_details'] = json.loads(record['result_details'])
+
+            rows = cursor.fetchall()
+            if rows:
+                for row in rows:
+                    record = dict(row)
+                    try:
+                        parsed_analysis_params = json.loads(record['analysis_params']) if record.get('analysis_params') else {}
+                    except Exception:
+                        parsed_analysis_params = {}
                     
+                    if analysis_params:
+                        matched = True
+                        for k, v in analysis_params.items():
+                            if v is None:
+                                continue
+                            if parsed_analysis_params.get(k) != v:
+                                matched = False
+                                break
+                        if not matched:
+                            continue
+                    
+                    try:
+                        record['analysis_params'] = parsed_analysis_params
+                        if record.get('result_details'):
+                            record['result_details'] = json.loads(record['result_details'])
+                    except Exception as e:
+                        print(f"⚠️ JSON解析失败: {e}")
+                        record['analysis_params'] = parsed_analysis_params
+
+                    print(f"🔍 找到数据库记录 - ID: {record['id']}")
+                    print(f"   📊 查询条件匹配成功")
+                    if analysis_params:
+                        print(f"   🧩 分析参数匹配: {analysis_params}")
                     print(f"✅ 找到缓存的分析结果 - ID: {record['id']}")
                     print(f"   📊 资产: {asset}, 时间周期: {timeframe}")
                     print(f"   📅 日期范围: {start_date} 到 {end_date}")
                     print(f"   ⏰ 时间范围: {start_time} 到 {end_time}")
                     print(f"   🔧 交易策略: {trading_strategy}")
                     print(f"   📈 创建时间: {record['created_at']}")
-                    
-                    return record
-                except Exception as e:
-                    print(f"⚠️ JSON解析失败: {e}")
-                    # 即使JSON解析失败，也返回记录
                     return record
             
             print(f"❌ 未找到缓存的分析结果")
@@ -1023,6 +1036,8 @@ class DatabaseManager:
             print(f"   📅 日期范围: {start_date} 到 {end_date}")
             print(f"   ⏰ 时间范围: {start_time} 到 {end_time}")
             print(f"   🔧 交易策略: {trading_strategy}")
+            if analysis_params:
+                print(f"   🧩 分析参数: {analysis_params}")
             
             return None
 
