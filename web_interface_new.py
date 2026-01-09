@@ -30,7 +30,6 @@ import base64
 import io
 from PIL import Image
 import akshare as ak
-import finnhub
 import numpy as np
 from openai import OpenAI as OpenAIClient
 from dotenv import load_dotenv
@@ -160,17 +159,10 @@ class MultiSourceDataFetcher:
     """支持多数据源的类"""
     
     def __init__(self):
-        self.sources = ['akshare', 'finnhub', 'yfinance']
+        self.sources = ['akshare', 'yfinance']
         configured_source = os.environ.get("DATA_SOURCE", "akshare")
         configured_source = safe_str(configured_source).strip().lower()
         self.current_source = configured_source if configured_source in self.sources else 'akshare'
-        self.finnhub_client = None
-        
-    def initialize_finnhub(self, api_key: str = None):
-        """Initialize Finnhub client"""
-        api_key = api_key or os.environ.get("FINNHUB_API_KEY")
-        if api_key and api_key != "your-finnhub-api-key-here":
-            self.finnhub_client = finnhub.Client(api_key=api_key)
     
     def fetch_akshare_data(self, symbol: str, period: str = "daily", 
                           start_date: str = None, end_date: str = None) -> pd.DataFrame:
@@ -330,117 +322,6 @@ class MultiSourceDataFetcher:
             print(f"   无法获取真实市场数据,请稍后重试")
             return pd.DataFrame()  # 返回空DataFrame,不生成误导性的模拟数据
     
-    def get_demo_data(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
-        """生成demo数据用于测试"""
-        try:
-            # 生成日期范围
-            start_dt = pd.to_datetime(start_date)
-            end_dt = pd.to_datetime(end_date)
-            dates = pd.date_range(start=start_dt, end=end_dt, freq='D')
-            
-            # 过滤工作日
-            dates = dates[dates.weekday < 5]  # 0-4 是周一到周五
-            
-            if len(dates) == 0:
-                return pd.DataFrame()
-            
-            # 生成模拟价格数据，使用股票名称的哈希值作为种子，确保不同股票生成不同数据
-            seed = hash(symbol) % 10000
-            np.random.seed(seed)
-            
-            # 基础价格 - 根据股票名称生成更有差异化的基础价格
-            # 使用绝对值确保hash值为正数
-            hash_value = abs(hash(symbol))
-            
-            if symbol.upper() in ['BTC', 'ETH', 'SOL']:
-                # 加密货币价格较高
-                base_price = 50000 + (hash_value % 50000)
-            elif symbol.upper() in ['AAPL', 'MSFT', 'GOOGL', 'TSLA', 'NVDA']:
-                # 大型科技股
-                base_price = 100 + (hash_value % 400)
-            elif re.match(r'^\d{6}$', symbol):
-                # 可能是A股代码
-                base_price = 5 + (hash_value % 95)
-            else:
-                # 其他股票 - 使用更合理的价格范围
-                # 确保价格在5-200之间,避免过低的价格
-                base_price = 5 + (hash_value % 195)
-            
-            # 生成价格序列
-            returns = np.random.normal(0, 0.02, len(dates))  # 2%日波动率
-            prices = [base_price]
-            
-            for ret in returns[1:]:
-                prices.append(prices[-1] * (1 + ret))
-            
-            # 生成OHLC数据
-            data = []
-            for i, (date, price) in enumerate(zip(dates, prices)):
-                daily_volatility = 0.01  # 1%日内波动
-                high = price * (1 + np.random.uniform(0, daily_volatility))
-                low = price * (1 - np.random.uniform(0, daily_volatility))
-                open_price = prices[i-1] if i > 0 else price
-                close_price = price
-                volume = np.random.randint(1000000, 10000000)
-                
-                data.append({
-                    'Open': open_price,
-                    'High': high,
-                    'Low': low,
-                    'Close': close_price,
-                    'Volume': volume
-                })
-            
-            df = pd.DataFrame(data, index=dates)
-            df.index.name = 'Datetime'
-            
-            # 重置索引，将Datetime作为列
-            df = df.reset_index()
-            
-            print(f"生成了 {len(df)} 条 {symbol} 的demo数据")
-            return df
-            
-        except Exception as e:
-            print(f"生成demo数据失败: {safe_str(e)}")
-            return pd.DataFrame()
-    
-    def fetch_finnhub_data(self, symbol: str, resolution: str = 'D', 
-                          start_timestamp: int = None, end_timestamp: int = None) -> pd.DataFrame:
-        """Fetch stock data using Finnhub"""
-        try:
-            if not self.finnhub_client:
-                self.initialize_finnhub()
-                if not self.finnhub_client:
-                    return pd.DataFrame()
-            
-            # Use default range if no timestamp provided
-            if not start_timestamp:
-                start_timestamp = int((datetime.now() - timedelta(days=30)).timestamp())
-            if not end_timestamp:
-                end_timestamp = int(datetime.now().timestamp())
-            
-            # Get candlestick data
-            data = self.finnhub_client.stock_candles(symbol, resolution, 
-                                                   start_timestamp, end_timestamp)
-            
-            if not data or data.get('s') != 'ok':
-                return pd.DataFrame()
-            
-            # 转换为DataFrame
-            df = pd.DataFrame({
-                'Datetime': pd.to_datetime(data['t'], unit='s'),
-                'Open': data['o'],
-                'High': data['h'],
-                'Low': data['l'], 
-                'Close': data['c'],
-                'Volume': data['v']
-            })
-            
-            return df
-
-        except Exception as e:
-            print(f"Finnhub data fetch failed for {symbol}: {safe_str(e)}")
-            return pd.DataFrame()
 
     def fetch_yfinance_data_with_datetime(self, symbol: str, interval: str,
                                           start_datetime: datetime, end_datetime: datetime) -> pd.DataFrame:
@@ -492,32 +373,6 @@ class MultiSourceDataFetcher:
             print(f"yfinance fetch failed: {safe_str(e)}")
             return pd.DataFrame()
     
-    def fetch_data(self, symbol: str, timeframe: str, 
-                  start_date: datetime, end_date: datetime) -> pd.DataFrame:
-        """Fetch data from multiple sources with priority fallback"""
-        df = pd.DataFrame()
-
-        df = self.fetch_akshare_data(
-            symbol,
-            self._convert_timeframe(timeframe),
-            start_date.strftime('%Y%m%d'),
-            end_date.strftime('%Y%m%d')
-        )
-
-        if df.empty and self.finnhub_client:
-            start_ts = int(start_date.timestamp())
-            end_ts = int(end_date.timestamp())
-            df = self.fetch_finnhub_data(symbol, self._convert_timeframe(timeframe), start_ts, end_ts)
-
-        return df
-    
-    def _convert_timeframe(self, timeframe: str) -> str:
-        """Convert timeframe format"""
-        timeframe_map = {
-            '1m': '1', '5m': '5', '15m': '15', '30m': '30',
-            '1h': '60', '4h': '240', '1d': 'D', '1w': 'W', '1M': 'M'
-        }
-        return timeframe_map.get(timeframe, 'D')
 
 class WebTradingAnalyzer:
     def __init__(self):
@@ -551,6 +406,7 @@ class WebTradingAnalyzer:
         self.asset_mapping = {
             'SPX': 'S&P 500',
             'BTC': 'Bitcoin', 
+            'ETH': 'Ethereum',
             'GC': 'Gold Futures',
             'NQ': 'Nasdaq Futures',
             'CL': 'Crude Oil',
@@ -572,6 +428,7 @@ class WebTradingAnalyzer:
             'akshare': {
                 'SPX': 'SPX',
                 'BTC': 'BTC-USD',
+                'ETH': 'ETH-USD',
                 'AAPL': 'AAPL',
                 'TSLA': 'TSLA',
                 '000001': '000001',
@@ -579,15 +436,10 @@ class WebTradingAnalyzer:
                 'SH000300': '000300',
                 'SH510300': '510300',
             },
-            'finnhub': {
-                'SPX': 'SPX',
-                'BTC': 'BINANCE:BTCUSDT',
-                'AAPL': 'AAPL',
-                'TSLA': 'TSLA',
-            },
             'yfinance': {
                 'SPX': '^GSPC',
                 'BTC': 'BTC-USD',
+                'ETH': 'ETH-USD',
                 'GC': 'GC=F',
                 'NQ': 'NQ=F',
                 'CL': 'CL=F',
@@ -607,10 +459,6 @@ class WebTradingAnalyzer:
                 '1m': '1', '5m': '5', '15m': '15', '30m': '30',
                 '1h': '60', '4h': '240', '1d': 'daily', '1w': 'weekly', '1M': 'monthly'
             },
-            'finnhub': {
-                '1m': '1', '5m': '5', '15m': '15', '30m': '30',
-                '1h': '60', '4h': '240', '1d': 'D', '1w': 'W', '1M': 'M'
-            },
             'yfinance': {
                 '1m': '1m', '5m': '5m', '15m': '15m', '30m': '30m',
                 '1h': '1h', '4h': '4h', '1d': '1d', '1w': '1wk', '1M': '1mo'
@@ -623,9 +471,6 @@ class WebTradingAnalyzer:
         # Load persisted custom assets
         self.custom_assets_file = self.data_dir / "custom_assets.json"
         self.custom_assets = self.load_custom_assets()
-        
-        # Initialize Finnhub with environment variable
-        self.data_fetcher.initialize_finnhub()
 
     def _is_us_stock(self, symbol: str) -> bool:
         try:
@@ -666,18 +511,6 @@ class WebTradingAnalyzer:
                         start_str,
                         end_str
                     )
-                elif source == 'finnhub':
-                    if not self.data_fetcher.finnhub_client:
-                        self.data_fetcher.initialize_finnhub()
-                    if not self.data_fetcher.finnhub_client:
-                        df = pd.DataFrame()
-                    else:
-                        df = self.data_fetcher.fetch_finnhub_data(
-                            self.symbol_mapping['finnhub'].get(symbol, symbol),
-                            self.timeframe_mapping['finnhub'].get(interval, 'D'),
-                            start_ts,
-                            end_ts
-                        )
                 elif source == 'yfinance':
                     df = self.data_fetcher.fetch_yfinance_data_with_datetime(
                         self.symbol_mapping['yfinance'].get(symbol, symbol),
