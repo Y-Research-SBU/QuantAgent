@@ -2,14 +2,19 @@
 Agent for technical indicator analysis in high-frequency trading (HFT) context.
 Uses LLM and toolkit to compute and interpret indicators like MACD, RSI, ROC, Stochastic, and Williams %R.
 """
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import ToolMessage, AIMessage
+
+import copy
 import json
+
+from langchain_core.messages import ToolMessage, HumanMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+
 
 def create_indicator_agent(llm, toolkit):
     """
     Create an indicator analysis agent node for HFT. The agent uses LLM and indicator tools to analyze OHLCV data.
     """
+
     def indicator_agent_node(state):
         time_frame = state['time_frame']
         

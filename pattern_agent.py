@@ -1,9 +1,11 @@
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import ToolMessage, HumanMessage, SystemMessage
+import copy
 import json
 import time
-import copy
+
+from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from openai import RateLimitError
+
 
 def invoke_tool_with_retry(tool_fn, tool_args, retries=3, wait_sec=4):
     """
@@ -14,7 +16,9 @@ def invoke_tool_with_retry(tool_fn, tool_args, retries=3, wait_sec=4):
         img_b64 = result.get("pattern_image")
         if img_b64:
             return result
-        print(f"Tool returned no image, retrying in {wait_sec}s (attempt {attempt + 1}/{retries})...")
+        print(
+            f"Tool returned no image, retrying in {wait_sec}s (attempt {attempt + 1}/{retries})..."
+        )
         time.sleep(wait_sec)
     raise RuntimeError("Tool failed to generate image after multiple retries")
 
@@ -22,8 +26,9 @@ def invoke_tool_with_retry(tool_fn, tool_args, retries=3, wait_sec=4):
 def create_pattern_agent(llm, tools):
     """
     Create a pattern recognition agent node for candlestick pattern analysis.
-    The agent uses an LLM and a chart generation tool to identify classic trading patterns.
+    The agent uses precomputed images from state or falls back to tool generation.
     """
+
     def pattern_agent_node(state):
         time_frame = state['time_frame']
         pattern_text = """

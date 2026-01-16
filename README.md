@@ -41,10 +41,10 @@
   <a href="https://Y-Research-SBU.github.io/QuantAgent">
     <img src="https://img.shields.io/badge/Project-Website-blue?style=flat-square&logo=googlechrome" alt="Project Website">
   </a>
-  <a href="https://github.com/Y-Research-SBU/QuantAgent/blob/main/assets/wechat_0928.png">
+  <a href="https://github.com/Y-Research-SBU/QuantAgent/blob/main/assets/wechat_1223.jpg">
     <img src="https://img.shields.io/badge/WeChat-Group-green?style=flat-square&logo=wechat" alt="WeChat Group">
   </a>
-  <a href="https://discord.gg/K8DqX53q">
+  <a href="https://discord.gg/t9nQ6VXQ">
     <img src="https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord" alt="Discord Community">
   </a>
 </p>
@@ -102,7 +102,7 @@ Modern Flask-based web application with:
 ### 1. Create and Activate Conda Environment
 
 ```bash
-conda create -n quantagents python=3.10
+conda create -n quantagents python=3.11
 conda activate quantagents
 ```
 
@@ -121,13 +121,22 @@ conda install -c conda-forge ta-lib
 
 Or visit the [TA-Lib Python repository](https://github.com/ta-lib/ta-lib-python) for detailed installation instructions.
 
-### 3. Set Up OpenAI API Key
+### 3. Set Up LLM API Key
 You can set it in our Web InterFace Later,
+
 ![alt text](assets/apibox.png)
 
 Or set it as an environment variable:
 ```bash
-export OPENAI_API_KEY="your_api_key_here"
+# For OpenAI
+export OPENAI_API_KEY="your_openai_api_key_here"
+
+# For Anthropic (Claude)
+export ANTHROPIC_API_KEY="your_anthropic_api_key_here"
+
+# For Qwen (DashScope, based in Singapore — delays may occur)
+export DASHSCOPE_API_KEY="your_dashscope_api_key_here"
+
 ```
 
 
@@ -191,24 +200,30 @@ print(final_state.get("pattern_report"))
 print(final_state.get("trend_report"))
 ```
 
-You can also adjust the default configuration to set your own choice of LLMs, analysis parameters, etc.
+You can also adjust the default configuration to set your own choice of LLMs or analysis parameters in web_interface.py.
 
 ```python
-from trading_graph import TradingGraph
-from default_config import DEFAULT_CONFIG
+if provider == "anthropic":
+    # Set default Claude models if not already set to Anthropic models
+    if not analyzer.config["agent_llm_model"].startswith("claude"):
+        analyzer.config["agent_llm_model"] = "claude-haiku-4-5-20251001"
+    if not analyzer.config["graph_llm_model"].startswith("claude"):
+        analyzer.config["graph_llm_model"] = "claude-haiku-4-5-20251001"
 
-# Create a custom config
-config = DEFAULT_CONFIG.copy()
-config["agent_llm_model"] = "gpt-4o-mini"  # Use a different model for agents
-config["graph_llm_model"] = "gpt-4o"       # Use a different model for graph logic
-config["agent_llm_temperature"] = 0.2      # Adjust creativity level for agents
-config["graph_llm_temperature"] = 0.1      # Adjust creativity level for graph logic
-
-# Initialize with custom config
-trading_graph = TradingGraph(config=config)
-
-# Run analysis with custom configuration
-final_state = trading_graph.graph.invoke(initial_state)
+elif provider == "qwen":
+    # Set default Qwen models if not already set to Qwen models
+    if not analyzer.config["agent_llm_model"].startswith("qwen"):
+        analyzer.config["agent_llm_model"] = "qwen3-max"
+    if not analyzer.config["graph_llm_model"].startswith("qwen"):
+        analyzer.config["graph_llm_model"] = "qwen3-vl-plus"
+    
+else:
+    # Set default OpenAI models if not already set to OpenAI models
+    if analyzer.config["agent_llm_model"].startswith(("claude", "qwen")):
+        analyzer.config["agent_llm_model"] = "gpt-4o-mini"
+    if analyzer.config["graph_llm_model"].startswith(("claude", "qwen")):
+        analyzer.config["graph_llm_model"] = "gpt-4o"
+        
 ```
 
 For live data, we recommend using the web interface as it provides access to real-time market data through yfinance. The system automatically fetches the most recent 30 candlesticks for optimal LLM analysis accuracy.
@@ -251,8 +266,16 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🙏 Acknowledgements
 
-This repository was built off of [**LangGraph**](https://github.com/langchain-ai/langgraph), [**OpenAI**](https://github.com/openai/openai-python), [**yfinance**](https://github.com/ranaroussi/yfinance), [**Flask**](https://github.com/pallets/flask), [**TechnicalAnalysisAutomation**](https://github.com/neurotrader888/TechnicalAnalysisAutomation/tree/main) and [**tvdatafeed**](https://github.com/rongardF/tvdatafeed).
+This repository was built with the help of the following libraries and frameworks:
 
+- [**LangGraph**](https://github.com/langchain-ai/langgraph)
+- [**OpenAI**](https://github.com/openai/openai-python)
+- [**Anthropic (Claude)**](https://github.com/anthropics/anthropic-sdk-python)
+- [**Qwen**](https://github.com/QwenLM/Qwen)
+- [**yfinance**](https://github.com/ranaroussi/yfinance)
+- [**Flask**](https://github.com/pallets/flask)
+- [**TechnicalAnalysisAutomation**](https://github.com/neurotrader888/TechnicalAnalysisAutomation/tree/main)
+- [**tvdatafeed**](https://github.com/rongardF/tvdatafeed)
 ## ⚠️ Disclaimer
 
 This software is for educational and research purposes only. It is not intended to provide financial advice. Always do your own research and consider consulting with a financial advisor before making investment decisions.
@@ -263,7 +286,7 @@ This software is for educational and research purposes only. It is not intended 
 
 1. **TA-Lib Installation**: If you encounter TA-Lib installation issues, refer to the [official repository](https://github.com/ta-lib/ta-lib-python) for platform-specific instructions.
 
-2. **OpenAI API Key**: Ensure your API key is properly set in the environment or through the web interface.
+2. **LLM API Key**: Ensure your API key is properly set in the environment or through the web interface.
 
 3. **Data Fetching**: The system uses Yahoo Finance for data. Some symbols might not be available or have limited historical data.
 
@@ -272,10 +295,12 @@ This software is for educational and research purposes only. It is not intended 
 ### Support
 
 If you encounter any issues, please:
+
+0. Try refresh and re-enter LLM API key
 1. Check the troubleshooting section above
 2. Review the error messages in the console
 3. Ensure all dependencies are properly installed
-4. Verify your OpenAI API key is valid and has sufficient credits
+4. Verify your API key is valid and has sufficient credits
 
 ## 📧 Contact
 

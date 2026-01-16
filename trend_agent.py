@@ -167,6 +167,7 @@ def create_trend_agent_text_only(llm, tools):
     Create a trend analysis agent node for text-only support/resistance and trend line analysis.
     The agent uses an LLM to identify trend patterns without generating charts.
     """
+
     def trend_agent_node(state):
         time_frame = state['time_frame']
         

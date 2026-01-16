@@ -4,6 +4,9 @@ Directly calls agent functions without LangGraph tool calling complexity.
 """
 import os
 from typing import Dict
+
+from langchain_anthropic import ChatAnthropic
+from langchain_core.language_models import BaseChatModel
 from langchain_openai import ChatOpenAI
 from default_config import DEFAULT_CONFIG
 from graph_util import TechnicalTools
@@ -28,6 +31,7 @@ class TradingGraph:
     Simplified orchestrator for the multi-agent trading system.
     Directly calls agent functions without complex tool calling.
     """
+
     def __init__(self, config=None):
         # --- Configuration and LLMs ---
         self.config = config if config is not None else DEFAULT_CONFIG.copy()
@@ -35,11 +39,11 @@ class TradingGraph:
         # Initialize LLMs with proper provider support
         self.agent_llm = self._create_llm(
             model=self.config.get("agent_llm_model", "gpt-4o-mini"),
-            temperature=self.config.get("agent_llm_temperature", 0.1)
+            temperature=self.config.get("agent_llm_temperature", 0.1),
         )
         self.graph_llm = self._create_llm(
             model=self.config.get("graph_llm_model", "gpt-4o"),
-            temperature=self.config.get("graph_llm_temperature", 0.1)
+            temperature=self.config.get("graph_llm_temperature", 0.1),
         )
         self.toolkit = TechnicalTools()
 
