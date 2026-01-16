@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  elonquantagent:
+    build: .
+    container_name: elonquantagent
+    ports:
+      - "5001:5001"
+    environment:
+      - LLM_PROVIDER=${LLM_PROVIDER:-openai}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - FINNHUB_API_KEY=${FINNHUB_API_KEY}
+      - DATA_SOURCE=${DATA_SOURCE:-akshare}
+      - PORT=5001
+      - DEBUG=${DEBUG:-False}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ./data:/app/data
+      - ./trading_data.db:/app/trading_data.db
+      - ./record.csv:/app/record.csv
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
