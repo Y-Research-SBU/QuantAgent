@@ -41,7 +41,7 @@
   <a href="https://Y-Research-SBU.github.io/QuantAgent">
     <img src="https://img.shields.io/badge/Project-Website-blue?style=flat-square&logo=googlechrome" alt="Project Website">
   </a>
-  <a href="https://github.com/Y-Research-SBU/QuantAgent/blob/main/assets/wechat_0122.jpg">
+  <a href="https://github.com/Y-Research-SBU/QuantAgent/blob/main/assets/wechat_0203.jpg">
     <img src="https://img.shields.io/badge/WeChat-Group-green?style=flat-square&logo=wechat" alt="WeChat Group">
   </a>
   <a href="https://discord.gg/t9nQ6VXQ">
